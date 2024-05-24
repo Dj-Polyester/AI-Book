@@ -1,2 +1,2 @@
 # AI-Book
-Repository for the files of the book
+Repository for the files of the book (WIP)
