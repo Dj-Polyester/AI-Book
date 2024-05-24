@@ -1,0 +1,400 @@
+\documentclass{article}
+\usepackage{graphicx} % Required for inserting images
+\usepackage{amsmath}
+\usepackage{mathtools}
+\usepackage{hyperref}
+\usepackage{geometry}
+\geometry{margin=1in}
+
+\title{AI Manifesto: Appreciation of Mathematics Underlying Machine Learning Concepts}
+
+\author{Batuhan Karaca}
+
+\numberwithin{equation}{subsection}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+\section{Linear Algebra Used In Learning and Optimization}
+\subsection{Proving that a matrix of the form $X^TX$ is positive semi-definite}
+Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$, 
+\begin{equation}
+z^TAz = z^TX^TXz = (Xz)^T(Xz) \geq 0
+\end{equation}
+Since squared norm is non-negative, $A=X^TX$ is positive semi-definite.
+\subsection{Proving the Existence of a (Trivially Unique) Orthonormal Basis of Eigenvectors for a Symmetric Diagonalizable Matrix}
+Let $A$ be a diagonalizable symmetric square matrix. Let $P$ be a square matrix such that it's $i$th column $v_i$ is the $i$th eigenvector of $A$. Let $\Lambda$ be the diagonal matrix whose $i$th diagonal $\lambda_i$ is the eigenvalue corresponding to $v_i$. According to definition of eigenvalues/eigenvectors.
+\begin{align}
+    AP &= P\Lambda\\
+    A &= P\Lambda P^{-1}\\
+    \Lambda &= P^{-1}AP\\
+    \lambda_iv_i &= Av_i\\
+    \lambda_iv_i^T &= v_i^TA^T\\
+    \lambda_iv_i^Tv_j &= v_i^TA^Tv_j\\
+    &= v_i^TAv_j\\
+    &= \lambda_jv_i^Tv_j\\
+    (\lambda_i-\lambda_j)v_i^Tv_j &= 0
+\end{align}
+Since $A$ is diagonalizable, $\lambda_i=\lambda_j$ if and only if $i=j$. Hence if $i \neq j$, $v_i^Tv_j = 0$ and $P$ is orthogonal, hence 
+$PP^T = D$ such that 
+\begin{equation}
+D_{ij} = \begin{cases}
+    |v_i|^2 & i = j\\
+    0 & otherwise
+\end{cases}
+\end{equation}
+We can have $P' = PD^{-\frac{1}{2}}$, and $\Lambda' = \Lambda D = D^{\frac{1}{2}} \Lambda D^{\frac{1}{2}}$. Then
+\begin{equation}
+    A = P'\Lambda'P'^T 
+\end{equation}
+such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as $P$ and $\Lambda$ respectively. We have shown that any symmetric diagonalizable matrix has orthonormal basis of eigenvectors.
+\subsection{Relation Between Definiteness and Sign of the Eigenvectors}
+\begin{align}
+    z^TAz &= z^TP\Lambda P^Tz\\
+    &= (P^Tz)^T\Lambda (P^Tz)\\
+    &= \sum_i (P^Tz)_i^2 \lambda_i\\
+    &= \sum_i z'_i^2 \lambda_i
+\end{align}
+The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices (we cannot say anything about indefinite matrices). 
+\subsection{Relation Between Invertability and Definiteness}
+For any diagonalizable matrix $A$, 
+\begin{align}
+    det(A) &= det(P) det(\Lambda) det(P^{-1})\\
+    &= det(P) det(\Lambda) \frac{1}{det(P)}\\
+    &= det(\Lambda)\\
+    &= \prod_i \lambda_i
+\end{align}
+We see that the semi-definite matrices are not invertible since they have at least one zero eigenvalue. We have shown that semi-definite matrices are not invertible and definite matrices are invertible.
+\subsection{Definiteness of Hessian Matrix to Determine Curvature Near Critical Points}
+\subsubsection{Quadratic Function}
+Let $q(x)$ be a quadratic function with $\prescript{d \times d}{}{A}, \prescript{d \times 1}{}{x}, \prescript{d \times 1}{}{b}$ and a scalar $c$
+\begin{equation}
+    q(x) = x^TAx+x^Tb+c
+\end{equation}
+of the form where $A$ is symmetric.
+\begin{align}
+    \nabla q(x) &= (A+A^T)x+b\\
+     &= 2Ax+b
+\end{align}
+The critical point $x^* = -\frac{1}{2}A^{-1}b$ where $\nabla q(x^*) = 0$.
+\begin{align}
+    q(x^*+\Delta x) &= q(x^*) + \Delta x^TA\Delta x + 2\Delta x^TAx^* + \Delta x^Tb\\
+    &= q(x^*) + \Delta x^TA\Delta x
+\end{align}
+We can deduce from previous results, 
+\begin{align}
+    \forall \Delta x [q(x^*) < q(x^*+\Delta x)] & \ \text{if $A$ is positive definite ($x^*$ is minimum, minimization problem)}\\
+    \forall \Delta x [q(x^*) > q(x^*+\Delta x)] & \ \text{if $A$ is negative definite ($x^*$ is maximum, maximization problem)}
+\end{align}
+If $A$ is indefinite, then depending on $\Delta x$, $q(x^*)$ can be less or greater than $q(x^*+\Delta x)$, which means $x^*$ is a saddle point. Since semi-definite matrices are not invertible we cannot use $x^* = -\frac{1}{2}A^{-1}b$. If $A$ is semi-definite, for some $x$, we have $q(x) = x^Tb+c$ (a hyperplane with a $d+1$-dimensional normal having scalars of $b$ and having $1$ in the dimension of a reference axis, i.e. inclined-plane). If $b$ is zero, then we have infinitely many critical points (a hyperplane with a normal along the reference axis, i.e. ground-plane).
+
+Let $d$ be an arbitrary vector.
+\begin{align}
+    \nabla q(x^* + Pd) &= 2A(Pd + x^*)+b\\
+    &= 2(P\Lambda P^T)(Pd + x^*)+b\\
+    &= 2P\Lambda P^TPd + 2Ax^*+b\\
+    &= 2P\Lambda d\\
+    &= \sum_i 2d_i\lambda_i v_i\\
+    \nabla q(x^*+Pd)^T \nabla q(x^*+Pd) &= (2P\Lambda d)^T2P\Lambda d\\
+    &= 4d^T\Lambda P^TP\Lambda d\\
+    &= 4d^T\Lambda^2 d\\
+    &= \sum_i 4d_i^2  \lambda_i^2\\
+    &= \Tilde{c}^2 \quad \text{For an arbitary multiplier $\Tilde{c}$}\\
+    \sum_i \frac{d_i^2}{\frac{\Tilde{c}^2}{4\lambda_i^2}} &= 1
+\end{align}
+We have shown that contours (curves where gradient magnitudes/norms are equal) are ellipsoids.
+\begin{equation}
+    \nabla q(x^* + \frac{\Tilde{c}}{2\lambda_i}v_i) = \Tilde{c}v_i
+\end{equation}
+in a contour with multiplier $\Tilde{c}$. The eigenvector $v_i$ is a unit direction along a principal semi-axis of the ellipsoid. Note that in order to reach to a contour with multiplier $\Tilde{c}$ from $x^*$, the magnitude/norm of the vector is $\frac{\Tilde{c}}{2\lambda_i}$. As $\lambda_i$ increases, the magnitude/norm decreases, and vice-versa.
+
+For any function, $f(x)$ its second order Tailor expansion approximates it in the neighbor of $x$.
+\begin{equation}
+    f(x+\Delta x) \sim f(x)+\Delta x^T\nabla f(x)+\Delta x^TH(x)\Delta x
+\end{equation}
+where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
+
+\subsubsection{Arbitrary Gaussian Function}
+Let $g(x) = he^{q(x)}$, with an arbitrary scalar $h$. 
+\begin{equation}
+    \nabla g(x) = \nabla q(x) g(x)
+\end{equation}
+We see that the critical points of $g(x)$ are the same as of $q(x)$. 
+\begin{align}
+    g(x^*+\Delta x) &= he^{q(x^*+\Delta x)}\\
+     &= he^{q(x^*) + \Delta x^TA\Delta x}\\
+     &= e^{\Delta x^TA\Delta x}g(x^*)
+\end{align}
+Similarly from previous subsection
+\begin{align}
+    \forall \Delta x [g(x^*) < g(x^*+\Delta x)] & \ \text{if $A$ is positive definite ($x^*$ is minimum, minimization problem)}\\
+    \forall \Delta x [g(x^*) > g(x^*+\Delta x)] & \ \text{if $A$ is negative definite ($x^*$ is maximum, maximization problem)}
+\end{align}
+Same as the previous subsection, If $A$ is indefinite, then depending on $\Delta x$, $g(x^*)$ can be less or greater (saddle point). If $A$ is semi-sefinite, for some infinitely many $x$, we have $g(x) = e^{x^Tb+c}$ (inclined-plane). If $b$ is zero, then we have infinitely many critical points (ground-plane). Otherwise, we have no critical points at all.
+\begin{align}
+    \nabla g(x^*+Pd) &= \nabla q(x^*+Pd) g(x^*+Pd)\\
+    &= (2P\Lambda d) e^{(Pd)^TA(Pd)}g(x^*)\\
+    &= (2P\Lambda d) e^{d^TP^TAPd}g(x^*)\\
+    &= (2P\Lambda d) e^{d^T\Lambda d}g(x^*)\\
+    \nabla g(x^*+Pd)^T \nabla g(x^*+Pd) &= (\sum_i 4d_i^2\lambda_i^2)e^{2d^T\Lambda d}g(x^*)^2\\
+    &= (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2\\
+    (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \Tilde{c}^2
+\end{align}
+Note that after this point, I could not come with a rigorous proof, but used a computer.
+If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
+This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
+\section{Probability Theory Concepts Used In Learning}
+\subsection{Distinction Between Correlation and Dependence}
+We have seen the relationship between eigenvectors/values and the covariance matrix (remember $\Sigma$) in linear algebra notes. Assume that we fitted a continuous normal distribution to an elliptic
+sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous notes along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, the covariance matrix only gives information about this type of dependence. There can be infinitely many other types such as quadratic, cubic and so on. Hence, correlation is a subset of dependence.  
+\subsubsection{Arbitrary Gaussian Function}
+By definition, if
+\begin{equation}
+    p(A|B,C) = p(A|C)
+\end{equation}
+then $A$ and $B$ are conditionally independent given $C$. We also know that 
+\begin{equation}
+    p(D|E)P(E) = p(D,E)
+\end{equation}
+for any $E, F$. Then given previous conditions
+\begin{align}
+    p(A|B,C)p(B|C) &= p(A,B|C)\\
+    p(A|C)p(B|C) &= p(A,B|C)
+\end{align}
+Now assume that for a vector of input $x$ and vector output (label) $y$, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$.
+\begin{align}
+    p(y|x) &= \prod_i p(y_i|x)\\
+           &= \prod_i p(y_i|x_i)
+\end{align}
+If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that the input $x_i$ can be further divided into features $x_ij$ that could be correlated among each other. Then we can further remove those features in the equation above, still having $p(y|x)$. 
+
+People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
+\subsection{Derivation of Cross-Entropy and KL-Divergence via Maximum-Likelihood}
+We know that when training with given parameters $\theta$ and input $x$, learning models choose the combination of parameters that yields the maximum output $y_{max}$, the process known as the maximum likelihood estimation. We assume that $y_i$ can only be a positive integer in the range $[1,C]$, where $C$ is the maximum number of classes. In this case, $y_i$ represents the class of the input $x_i$.
+For $p(y_i|x_i,\theta)$ we come up with the most generalized discrete generalized distribution, categorical distribution. It is actually generalized Bernoulli distribution including non-binary random variables. Mathematically
+\begin{equation}
+    p(y_i) = \prod_j p(y_i=j)^{1\{y_i=j\}}
+\end{equation}
+\begin{equation}
+1\{y_i=j\} = \begin{cases}
+    1 & y_i=j\\
+    0 & otherwise
+    \end{cases}
+\end{equation}
+\begin{align}
+    \hat{\theta}_{MLE} &= \text{arg}_\theta \text{max}p(y|x,\theta)\\
+     &= \text{arg}_\theta \text{max} \prod_i p(y_i|x_i,\theta)\\
+     &= \text{arg}_\theta \text{max} \prod_i \prod_j p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
+     -\text{log}\hat{\theta}_{MLE} &= \text{arg}_\theta \text{min} \sum_i \sum_j -\text{log}p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
+     &= \text{arg}_\theta \text{min} \sum_i \sum_j -(1\{y_i=j\})\text{log}p(y_i=j|x_i,\theta)
+\end{align} 
+We assume there is an underlying data distribution that we try to approximate with a model distribution. Simple substitution gives 
+\begin{align}
+    -\text{log}\hat{\theta}_{MLE} &= \text{arg}_\theta \text{min} \sum_i \sum_j -p_{data}(y_i=j|x_i)\text{log}p_{model}(y_i=j|x_i,\theta)\\
+    &= \text{arg}_\theta \text{min} [H(p_{data}(y|x),p_{model}(y|x,\theta))]\\
+    &= \text{arg}_\theta \text{min} [\sum_i \sum_j p_{data}(y_i=j|x_i)\text{log}\frac{p_{data}(y_i=j|x_i)}{p_{model}(y_i=j|x_i,\theta)} + \sum_i \sum_j -p_{data}(y_i=j|x_i)\text{log}p_{data}(y_i=j|x_i)]\\
+    &= \text{arg}_\theta \text{min}[KL(p_{data}(y_i=j|x_i)\ ||\ p_{model}(y_i=j|x_i,\theta)) + H(p_{data}(y_i=j|x_i))]\\
+    &= \text{arg}_\theta \text{min}[KL(p_{data}(y_i=j|x_i)\ ||\ p_{model}(y_i=j|x_i,\theta))]
+\end{align}
+$H(p,q), H(p)$ and $KL(p\ ||\ q)$ denote cross-entropy, Shannon's entropy and KL-divergence respectively. Shannon's entropy cancels out since it does not depend on parameters. We have shown that maximizing likelihood will minimize the cross-entropy, which minimizes KL-divergence between data and model distributions. In this regard, the model distribution tries to approximate the data distribution when training. 
+\subsection{Derivation of Mean Squared Error via Maximum-Likelihood}
+We again use maximum likelihood. However, this time we assume $y_i$ is a real number with noise $\epsilon_i \sim \mathcal{N}(0, I)$ around the real output intended (by the nature :D).
+\begin{align}
+    y_i &= f(x_i,\theta)+\epsilon_i\\
+    \hat{\theta}_{MLE} &= \text{arg}_\theta \text{max} \prod_i p(y_i|x_i,\theta)\\
+    &= \text{arg}_\theta \text{max} \prod_i \frac{1}{2\pi}e^{-\frac{\epsilon_i^2}{2}}\\
+    &= \text{arg}_\theta \text{max} \prod_i \frac{1}{2\pi}e^{-\frac{1}{2}(f(x_i,\theta)-y_i)^2}\\
+    -\text{log}\hat{\theta}_{MLE} &= \text{arg}_\theta \text{min} [\sum_i \text{log}2\pi + \sum_i \frac{1}{2}(f(x_i,\theta)-y_i)^2]\\
+    &= \text{arg}_\theta \text{min} \sum_i \frac{1}{2}(f(x_i,\theta)-y_i)^2
+\end{align}
+In this case, maximizing likelihood will minimize the mean-squared error. Deriving the formulae for both of the important functions in learning, we see a pattern in which we try to minimize a loss function. 
+\begin{equation}
+    \hat{\theta}_{MLE} = \text{arg}_\theta \text{min} \sum_i \mathcal{L}(\hat{y_i},y_i)
+\end{equation}
+\subsection{Preference of Mean over Summation}
+It is easy to prove that the mean (expected value) has the super-position property
+\begin{align}
+    \mu_{aX+bY} &= \int \int p(X,Y)(aX+bY) dXdY\\
+    &= a\int (\int p(X,Y)dY) X) dX+b\int (\int p(X,Y)dX) Y) dY\\
+    &= a\int p(X) X dX+b\int p(Y) Y dY\\
+    &= a\mu_X+b\mu_Y
+\end{align}
+\begin{align}
+    Cov(aX+bY,cZ+dT) &= \int \int \int \int p(X,Y,Z,T)(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})dXdYdZdT\\
+    &= \int \int \int \int p(X,Y,Z,T)(a(X-\mu_X)+b(Y-\mu_Y))(c(Z-\mu_Z)+d(T-\mu_T))dXdYdZdT
+\end{align}
+\begin{equation}
+    \begin{split}
+        = \int \int \int \int [p(X,Y,Z,T)ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+\\
+        bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)] dXdYdZdT
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+        = ac\int \int (\int \int p(X,Y,Z,T)dYdT)(X-\mu_X)(Z-\mu_Z)dXdZ+\\
+        ad\int \int (\int \int p(X,Y,Z,T)dYdZ)(X-\mu_X)(T-\mu_T)dXdT+\\
+        bc\int \int (\int \int p(X,Y,Z,T)dXdT)(Y-\mu_Y)(Z-\mu_Z)dYdZ+\\
+        bd\int \int (\int \int p(X,Y,Z,T)dXdZ)(Y-\mu_Y)(T-\mu_T)dYdT
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+        = ac\int \int p(X,Z)(X-\mu_X)(Z-\mu_Z)dXdZ+\\
+        ad\int \int p(X,T)(X-\mu_X)(T-\mu_T)dXdT+\\
+        bc\int \int p(Y,Z)(Y-\mu_Y)(Z-\mu_Z)dYdZ+\\
+        bd\int \int p(Y,T)(Y-\mu_Y)(T-\mu_T)dYdT
+    \end{split}
+\end{equation}
+\begin{equation}
+    = acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)
+\end{equation}
+We assume the equation
+\begin{equation}
+    Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
+\end{equation}
+holds. 
+\begin{equation}
+    Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
+\end{equation}
+\begin{equation}
+    \begin{split}
+        =Cov(\sum_{i=1}^{m-1} a_i X_i,\sum_{i=1}^{n-1} b_i Y_i)+b_nCov(\sum_{i=1}^{m-1} a_i X_i,Y_n)+
+        a_mCov(X_m,\sum_{i=1}^{n-1} b_i Y_i)+a_n b_mCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)+b_n\sum_{i=1}^{m-1} a_iCov(X_i, Y_n)+a_m\sum_{j=1}^{n-1} b_j Cov(X_m, Y_j)+a_n b_mCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m} \sum_{j=1}^{n} a_i b_j Cov(X_i, Y_j)
+    \end{split}
+\end{equation}
+If we assume all the values (including zero) that the coefficients can take, then using mathematical induction, we prove that the equation (3) holds. 
+\begin{align}
+    Var(\sum_{i=1}^{n} a_i X_i) &= Cov(\sum_{i=1}^{n} a_i X_i, \sum_{i=1}^{n} a_i X_i)\\
+    &= \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Cov(X_i, X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i) \quad (\text{Since we assumed $X$ is uncorrelated})
+\end{align}
+Then for a sample with constant variance $\sigma^2$ the variance of the sample mean,
+\begin{align}
+    Var(\overline{X}) &= Var(\frac{1}{n}\sum_{i=1}^{n} X_i)\\
+    &= \frac{1}{n^2} \sum_{i=1}^{n} Var(X_i)\\
+    &= \frac{1}{n^2} \sum_{i=1}^{n} \sigma^2\\
+    &= \frac{1}{n^2} n \sigma^2\\
+    &= \frac{\sigma^2}{n}\\
+    Std(\overline{X}) &= \sqrt{Var(\overline{X})}\\
+    &= \frac{\sigma}{\sqrt{n}}
+\end{align}
+We realize that as number of samples increases, the mean of the sample approximates the true mean of the distribution better. That is why people usually use mean instead of sum. Hence new expression for the loss function becomes 
+\begin{equation}
+    \hat{\theta}_{MLE} = \frac{1}{n}\text{arg}_\theta \text{min} \sum_{i=1}^n \mathcal{L}(\hat{y_i},y_i)
+\end{equation}
+As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
+\section{Gradients of Layers in Backpropagation}
+\subsection{FC (Fully Connected) layer}
+An FC layer implements the function on a set of matrices
+\begin{equation}
+    \prescript{N\times M}{}{Y} = \prescript{N\times D}{}{X}\prescript{D\times M}{}{W} + \prescript{N\times1}{}{1}\prescript{1\times M}{}{b}
+\end{equation}
+with shapes given as subscripts of the operand matrices. Using the definition of matrix multiplication given a scalar with some indices in their corresponding matrices, we have
+\begin{equation}
+y_{nm} = \sum_{d=1}^D x_{nd} w_{dm}+b_m
+\end{equation}
+in which subscripts are indices of the scalars. Looking at this definition, we can find partial derivatives 
+\begin{align}
+    \frac{\delta y_{nm}}{\delta x_{ij}} &= \begin{cases}
+        w_{jm} & if\ n=i\\
+        0 & otherwise
+    \end{cases}\\
+    \frac{\delta y_{nm}}{\delta w_{ij}} &= \begin{cases}
+        x_{ni} & if\ m=j\\
+        0 & otherwise
+    \end{cases}\\
+    \frac{\delta y_{nm}}{\delta b_{j}} &= \begin{cases}
+        1 & if\ m=j\\
+        0 & otherwise
+    \end{cases}
+\end{align}
+Using the chain rule with a loss function gives
+\begin{align}
+    L_{x_{ij}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta x_{ij}}\\
+    &= \sum_{m=1}^M L_{y_{nm}} w_{jm}\\
+    \prescript{N\times D}{}{L_X} &= \prescript{N\times M}{}{L_Y}\prescript{M\times D}{}{W^T}\\
+    L_{w_{ij}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta w_{ij}}\\
+    &= \sum_{n=1}^N L_{y_{nm}} x_{ni}\\
+    \prescript{D\times M}{}{L_W} &= \prescript{D\times N}{}{X_T}\prescript{N\times M}{}{L_Y}\\
+    L_{b_{j}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta b_{j}}\\
+    &= \sum_{n=1}^N L_{y_{nm}}\\
+    \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
+\end{align}
+\section{Mathematics of Diffusion Models}
+\subsection{What is a Diffusion Model}
+
+Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times. 
+\subsection{Solving for the Forward Process}
+Let \textit{forward process} be defined as a Markov Chain as in the original paper:
+
+\begin{align}
+    q(x_{1:T}|x_0) &= \prod_{t=1}^T q(x_t|x_{t-1})\\
+    q(x_t|x_{t-1}) &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t I)
+\end{align}
+where $\mathcal{N}(x;\mu, \Sigma)$ is the Gaussian with mean $\mu$ and $\Sigma$ is the covariance matrix (notice when $\Sigma = \sigma^2 I$, then every dimension has the same variance $sigma^2$). Using the reparameterization trick as in the VAE (Variational Autoencoder), paper and substituting $\alpha = 1-\beta_t$ we have
+\begin{equation}
+    x_t = \sqrt{\alpha_t}x_{t-1}+\sqrt{1-\alpha_t}\epsilon_{t-1}
+\end{equation}
+where $\epsilon_\tau \sim \mathcal{N}(0, I)$ is sampled from the standard normal distribution. Then
+\begin{equation}
+    x_t = (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}) x_0+\sum_{\tau=0}^{t-2}(\sqrt{\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i})\epsilon_\tau+(\sqrt{1-\alpha_t})\epsilon_{t-1}
+\end{equation}
+Let us prove this argument using mathematical induction. When $t=1$, it is easy to see equations (1) and (2) are the same. For an arbitrary $t$
+\begin{align}
+    x_{t-1} &= (\sqrt{\prod_{\tau=1}^{t-1}\alpha_\tau}) x_0+\sum_{\tau=0}^{t-3}(\sqrt{\prod_{i=\tau+2}^{t-1}\alpha_i-\prod_{i=\tau+1}^{t-1}\alpha_i})\epsilon_\tau+(\sqrt{1-\alpha_{t-1}})\epsilon_{t-2}\\
+    (\sqrt{\alpha_t})x_{t-1} &= (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}) x_0+\sum_{\tau=0}^{t-3}(\sqrt{\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i})\epsilon_\tau+(\sqrt{\alpha_t-\alpha_t\alpha_{t-1}})\epsilon_{t-2}\\
+     &= (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}) x_0+\sum_{\tau=0}^{t-2}(\sqrt{\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i})\epsilon_\tau\\
+     (\sqrt{\alpha_t})x_{t-1}+(\sqrt{1-\alpha_t})\epsilon_{t-1}&= (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}) x_0+\sum_{\tau=0}^{t-2}(\sqrt{\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i})\epsilon_\tau+(\sqrt{1-\alpha_t})\epsilon_{t-1} = x_t
+\end{align}
+Therefore, by induction we have proven that the equation (2) is true. 
+We should have an equation of the form 
+\begin{equation}
+    x_t = \mu + \sigma \cdot \epsilon
+\end{equation}
+We found that $\mu = (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau})x_0 = \sqrt{\Tilde{\alpha}_t}x_0$. By the property of \textit{sum of normally distributed random variables} if 
+\begin{equation}
+    X_i \sim \mathcal{N}(x_i; \mu_i, \sigma_i^2 I)
+\end{equation}
+and
+\begin{equation}
+    Y = \sum_{i=1}^{n}c_iX_i
+\end{equation}
+then
+\begin{equation}
+    Y \sim N(y; \sum_{i=1}^{n}c_i\mu_i,\sum_{i=1}^{n}c_i^2\sigma_i^2)
+\end{equation}
+We know $\epsilon$ is normally distributed. Substituting $X_i = \epsilon_i$ and the corresponding coefficients 
+\begin{align}
+    \sum_{\tau=0}^{t-2}(\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i)+(1-\alpha_t) &= \prod_{i=2}^{t}\alpha_i-\prod_{i=1}^{t}\alpha_i+\prod_{i=3}^{t}\alpha_i-\prod_{i=2}^{t}\alpha_i+...+\prod_{i=t-1}^{t}\alpha_i-\prod_{i=t-2}^{t}\alpha_i+\prod_{i=t}^{t}\alpha_i-\prod_{i=t-1}^{t}\alpha_i+(1-\alpha_t)\\
+    &= \cancel{\prod_{i=2}^{t}\alpha_i}-\prod_{i=1}^{t}\alpha_i\cancel{+\prod_{i=3}^{t}\alpha_i}\cancel{-\prod_{i=2}^{t}\alpha_i}+...\cancel{+\prod_{i=t-1}^{t}\alpha_i}\cancel{-\prod_{i=t-2}^{t}\alpha_i}\cancel{+\alpha_t}\cancel{-\prod_{i=t-1}^{t}\alpha_i}+1\cancel{-\alpha_t}
+\end{align}
+Note that similar elements cancel each other and we find $\sigma^2 = 1-\prod_{i=1}^{t}\alpha_i = 1 - \Tilde{\alpha}_t$, finding 
+\begin{align}
+    x_t &= \sqrt{\Tilde{\alpha}_t}x_0 + \sqrt{1 - \Tilde{\alpha}_t} \cdot \epsilon\\
+    q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\Tilde{\alpha}_t}x_0,(1 - \Tilde{\alpha}_t)I)
+\end{align}
+as given in the paper.
+\subsection{Solving for the Reverse Process and the Loss Function}
+
+
+We found a closed form solution for the forward process function. However, reverse process will be learnt by a machine learning algorithm. The authors decided to use a type of CNN (Convolutional Neural Network), U-Net.
+
+Let \textit{reverse process} be defined as another Markov Chain (backward in time) as in the original paper:
+\begin{align}
+    p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)\\
+    p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))
+\end{align}
+\end{document}
