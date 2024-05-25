@@ -15,7 +15,10 @@
 
 \maketitle
 \tableofcontents
+\section{Introduction}
+This book aims to give theoretical background of the machine learning concepts. It is not mandatory, but recommended to have basic knowledge in linear algebra and probability theory and some familiarity with the concepts (e.g. through courses). 
 
+Unless stated otherwise, these math notations apply. Capital letters represent matrices (or hypermatrices in general) and random variables. Lowercase symbols denote vectors and scalars. Scalar (or a row/column vector) of a matrix is denoted with corresponding lowercase symbol. Pre-superscript on a symbol of a matrix denotes the shape of the matrix.  Subscript on a scalar variable symbol denotes the index of that symbol in its corresponding matrix.
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Proving that a matrix of the form $X^TX$ is positive semi-definite}
 Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$, 
@@ -100,7 +103,7 @@ Let $d$ be an arbitrary vector.
     &= 4d^T\Lambda P^TP\Lambda d\\
     &= 4d^T\Lambda^2 d\\
     &= \sum_i 4d_i^2  \lambda_i^2\\
-    &= \Tilde{c}^2 \quad \text{For an arbitary multiplier $\Tilde{c}$}\\
+    &= \Tilde{c}^2 \quad \text{For an arbitary scalar $\Tilde{c}$}\\
     \sum_i \frac{d_i^2}{\frac{\Tilde{c}^2}{4\lambda_i^2}} &= 1
 \end{align}
 We have shown that contours (curves where gradient magnitudes/norms are equal) are ellipsoids.
@@ -142,12 +145,12 @@ Same as the previous subsection, If $A$ is indefinite, then depending on $\Delta
     (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \Tilde{c}^2
 \end{align}
 Note that after this point, I could not come with a rigorous proof, but used a computer.
-If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
+If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
 \section{Probability Theory Concepts Used In Learning}
 \subsection{Distinction Between Correlation and Dependence}
-We have seen the relationship between eigenvectors/values and the covariance matrix (remember $\Sigma$) in linear algebra notes. Assume that we fitted a continuous normal distribution to an elliptic
-sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous notes along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, the covariance matrix only gives information about this type of dependence. There can be infinitely many other types such as quadratic, cubic and so on. Hence, correlation is a subset of dependence.  
+We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
+sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Hence, correlation is a subset of dependence.  
 \subsubsection{Arbitrary Gaussian Function}
 By definition, if
 \begin{equation}
@@ -296,17 +299,17 @@ We realize that as number of samples increases, the mean of the sample approxima
     \hat{\theta}_{MLE} = \frac{1}{n}\text{arg}_\theta \text{min} \sum_{i=1}^n \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
-\section{Gradients of Layers in Backpropagation}
-\subsection{FC (Fully Connected) layer}
+\section{Gradients of Functions in Backpropagation}
+\subsection{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
 \begin{equation}
     \prescript{N\times M}{}{Y} = \prescript{N\times D}{}{X}\prescript{D\times M}{}{W} + \prescript{N\times1}{}{1}\prescript{1\times M}{}{b}
 \end{equation}
-with shapes given as subscripts of the operand matrices. Using the definition of matrix multiplication given a scalar with some indices in their corresponding matrices, we have
+Using the definition of matrix multiplication, we have
 \begin{equation}
 y_{nm} = \sum_{d=1}^D x_{nd} w_{dm}+b_m
 \end{equation}
-in which subscripts are indices of the scalars. Looking at this definition, we can find partial derivatives 
+Looking at this definition, we can find partial derivatives 
 \begin{align}
     \frac{\delta y_{nm}}{\delta x_{ij}} &= \begin{cases}
         w_{jm} & if\ n=i\\
@@ -333,7 +336,7 @@ Using the chain rule with a loss function gives
     &= \sum_{n=1}^N L_{y_{nm}}\\
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
-\section{Mathematics of Diffusion Models}
+\section{Diffusion Models}
 \subsection{What is a Diffusion Model}
 
 Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times. 
