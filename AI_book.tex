@@ -16,8 +16,13 @@
 \maketitle
 \tableofcontents
 \section{Introduction}
-This book aims to give theoretical background of the machine learning concepts. It is not mandatory, but recommended to have basic knowledge in linear algebra and probability theory and some familiarity with the concepts (e.g. through courses). 
+\subsection{TLDR But Binding}
+This book aims to give intuition for some machine learning concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. 
 
+I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
+\subsection{Useful Part}
+It is not mandatory, but recommended to have basic knowledge in linear algebra and probability theory and some familiarity with the concepts (e.g. through courses). 
+\subsubsection{Followed Conventions}
 Unless stated otherwise, these math notations apply. Capital letters represent matrices (or hypermatrices in general) and random variables. Lowercase symbols denote vectors and scalars. Scalar (or a row/column vector) of a matrix is denoted with corresponding lowercase symbol. Pre-superscript on a symbol of a matrix denotes the shape of the matrix.  Subscript on a scalar variable symbol denotes the index of that symbol in its corresponding matrix.
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Proving that a matrix of the form $X^TX$ is positive semi-definite}
@@ -149,9 +154,10 @@ If we use density function of normal distribution which is a special case of $g(
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
 \section{Probability Theory Concepts Used In Learning}
 \subsection{Distinction Between Correlation and Dependence}
+\label{cor_dep}
 We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
-sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Hence, correlation is a subset of dependence.  
-\subsubsection{Arbitrary Gaussian Function}
+sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Correlation is a subset of dependence. When a number of random variables are independent of each other (i.e. mutual independence), they don't have any dependence whatsoever; hence they also become uncorrelated, but the reverse condition does not hold. In other words, independence implies uncorrelatedness but not vice-versa
+\subsubsection{Proving an Equation Using Independence}
 By definition, if
 \begin{equation}
     p(A|B,C) = p(A|C)
@@ -170,7 +176,7 @@ Now assume that for a vector of input $x$ and vector output (label) $y$, for $i 
     p(y|x) &= \prod_i p(y_i|x)\\
            &= \prod_i p(y_i|x_i)
 \end{align}
-If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that the input $x_i$ can be further divided into features $x_ij$ that could be correlated among each other. Then we can further remove those features in the equation above, still having $p(y|x)$. 
+If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that the input $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
 
 People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
 \subsection{Derivation of Cross-Entropy and KL-Divergence via Maximum-Likelihood}
@@ -215,13 +221,15 @@ In this case, maximizing likelihood will minimize the mean-squared error. Derivi
 \begin{equation}
     \hat{\theta}_{MLE} = \text{arg}_\theta \text{min} \sum_i \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
-\subsection{Preference of Mean over Summation}
+\subsection{Preference of Mean over Summation in Loss Functions}
+\label{mean_loss}
 It is easy to prove that the mean (expected value) has the super-position property
 \begin{align}
-    \mu_{aX+bY} &= \int \int p(X,Y)(aX+bY) dXdY\\
+    \mu_{aX+bY} &= \int \int p(X,Y)(aX+bY)\\
     &= a\int (\int p(X,Y)dY) X) dX+b\int (\int p(X,Y)dX) Y) dY\\
     &= a\int p(X) X dX+b\int p(Y) Y dY\\
     &= a\mu_X+b\mu_Y
+    \label{mean_superpos}
 \end{align}
 \begin{align}
     Cov(aX+bY,cZ+dT) &= \int \int \int \int p(X,Y,Z,T)(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})dXdYdZdT\\
@@ -367,18 +375,24 @@ We should have an equation of the form
 \begin{equation}
     x_t = \mu + \sigma \cdot \epsilon
 \end{equation}
-We found that $\mu = (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau})x_0 = \sqrt{\Tilde{\alpha}_t}x_0$. By the property of \textit{sum of normally distributed random variables} if 
+We found that $\mu = (\sqrt{\prod_{\tau=1}^{t}\alpha_\tau})x_0 = \sqrt{\Tilde{\alpha}_t}x_0$. The information in part~\ref{mean_loss} gives some clues on what to do next. Recursively expanding the general case using ~\ref{mean_superpos}, we find
+\begin{align}
+    \mu_{\sum_{i=1}^N a_i X_i} &= a_1\mu_{X_1} + \mu_{\sum_{i=2}^N a_i X_i}\\
+    &= a_1\mu_{X_1} + a_2\mu_{X_2} + \mu_{\sum_{i=3}^N a_i X_i}\\
+    & ...\\
+    &= \sum_{i=1}^N a_i \mu_{X_i}
+    \label{meansum}
+\end{align}
+We also found in the same part
 \begin{equation}
-    X_i \sim \mathcal{N}(x_i; \mu_i, \sigma_i^2 I)
+    Var(\sum_{i=1}^{n} a_i X_i) = \sum_{i=1}^{n} a_i^2 Var(X_i) \quad (\text{Assuming $X$ is uncorrelated})
+    \label{varsum}
 \end{equation}
-and
+Keep in mind that \label{meansum} and \label{varsum} hold for every distribution with uncorrelated random variables. Narrowing down for the normal distribution gives
 \begin{equation}
-    Y = \sum_{i=1}^{n}c_iX_i
+    X_i \sim \mathcal{N}(x_i; \mu_i, \sigma_i^2 I)\ and\ Y = \sum_{i=1}^{n}c_iX_i \longleftrightarrow Y \sim N(y; \sum_{i=1}^{n}c_i\mu_i,\sum_{i=1}^{n}c_i^2\sigma_i^2 I)
 \end{equation}
-then
-\begin{equation}
-    Y \sim N(y; \sum_{i=1}^{n}c_i\mu_i,\sum_{i=1}^{n}c_i^2\sigma_i^2)
-\end{equation}
+This is known as \textit{sum of normally distributed random variables}.
 We know $\epsilon$ is normally distributed. Substituting $X_i = \epsilon_i$ and the corresponding coefficients 
 \begin{align}
     \sum_{\tau=0}^{t-2}(\prod_{i=\tau+2}^{t}\alpha_i-\prod_{i=\tau+1}^{t}\alpha_i)+(1-\alpha_t) &= \prod_{i=2}^{t}\alpha_i-\prod_{i=1}^{t}\alpha_i+\prod_{i=3}^{t}\alpha_i-\prod_{i=2}^{t}\alpha_i+...+\prod_{i=t-1}^{t}\alpha_i-\prod_{i=t-2}^{t}\alpha_i+\prod_{i=t}^{t}\alpha_i-\prod_{i=t-1}^{t}\alpha_i+(1-\alpha_t)\\
