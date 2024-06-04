@@ -21,11 +21,11 @@
 \maketitle
 \tableofcontents
 \section{Introduction}
-\subsection{TLDR But Binding}
+\subsection{Binding Information (TLDR)}
 This book aims to give intuition for some ML (machine learning) concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. I am trying to teach the topic using mostly mathematical proofs, though I also provide examples and/or explanations. I hope this book will be helpful for people wanting a career in the field.
 
 I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
-\subsection{Conventions, Notations and Definitions}
+\subsection{Conventions and Notations of the Book and Definitions (Important)}
 It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory. 
 
 Unless stated otherwise, these math notations apply. 
@@ -39,10 +39,17 @@ Unless stated otherwise, these math notations apply.
     \item Pre-superscript on a symbol of a matrix denotes the shape of the matrix (i.e. $\prescript{M\times N}{}{A}$ is a matrix $A$ with shape $M\times N$).
     \item Subscript of a lowercase variable symbol (i.e. $a_{ijk...}$) denotes the index of that variable in its corresponding matrix with capital letter. Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_{j-1}]$)
     \item Subscript of an integral or sum symbol denoting a variable (i.e. $\sum_X$, $\int_X$) indicates that the operation spans the entire domain of that variable (i.e. $X$).
-    \item Subscript of a probabilitiy distribution denotes conditional probability (i.e. $p_\theta(x) = p(x|\theta)$
+    \item Subscript of a probabilitiy distribution denotes conditional probability (i.e. $p_\theta(x) = p(x|\theta)$. Similarly, Subscript of a function denotes an additional parameter (i.e. $f_\theta(x) = f(x, \theta)$
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
+\subsubsection{Equality Comparison for Functions Finding Extremum}
+Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum finding function.
+\begin{align}
+     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
+     \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
+     \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
+\end{align} 
 \subsubsection{Mean (Expected Value)}
 \begin{equation}
     E[X] = \mu_X = \int_X p(X)X dX
@@ -65,7 +72,7 @@ H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX
 \end{equation}
 \subsubsection{KL Divergence}
 \begin{equation}
-KL(p(X)\|q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
+KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
 \end{equation}
 \subsubsection{P-Norm}
 \begin{align}
@@ -73,19 +80,20 @@ KL(p(X)\|q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(
     \norm[1]{a} & & \text{(Manhattan norm)} \label{man_norm}\\
     \norm[2]{a} &= \norm[]{a} & \text{(Euclidean norm)} \label{euc_norm}
 \end{align}
-\subsubsection{Identity Matrix}
-Identity matrix is the matrix whose diagonal is all 1s and denoted $I$. It is multiplicative identity element of the matrices (i.e. $AI = IA = A$) 
+Note that for the squared Euclidean, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
 \subsubsection{Multi-variate Normal Distribution}
 The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
 \begin{equation}
     \mathcal{N}(x; \mu, \Sigma)=\frac {\exp \left(-{\frac {1}{2}}\left(x-\mu\right)^T\Sigma^{-1}\left(x-\mu\right)\right)}{\sqrt {(2\pi )^{k}|\Sigma|}}
     \label{normal_general}
 \end{equation}
+$|\Sigma|$ and $\det(\Sigma)$ are notations for the determinant of $\Sigma$. $I$ is the identity matrix, the matrix all 0s except the diagonal that is all 1s. It is multiplicative identity element of the matrices (i.e. $AI = IA = A$)
+
 The specific case for when the variance is constant (same for all features, i.e. $\Sigma = \sigma^2 I$)
 \begin{equation}
-    \mathcal{N}(x; \mu, \sigma^2I)=\frac {1}{\sigma^k {\sqrt {2\pi }}} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I}=\frac {1}{\sigma^k {\sqrt {2\pi }}} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
+    \mathcal{N}(x; \mu, \sigma^2I)=\frac {1}{(\sigma\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I}=\frac {1}{(\sigma\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
 \end{equation}
-For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
+For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Cosine Law}
 \begin{figure}[H]
@@ -296,14 +304,14 @@ Let $d$ be an arbitrary vector.
     &= 4d^T\Lambda P^TP\Lambda d\\
     &= 4d^T\Lambda^2 d\\
     &= \sum_i 4d_i^2  \lambda_i^2\\
-    &= \Tilde{c}^2 \quad \text{For an arbitary scalar $\Tilde{c}$}\\
-    \sum_i \frac{d_i^2}{\frac{\Tilde{c}^2}{4\lambda_i^2}} &= 1
+    &= \bar{c}^2 \quad \text{For an arbitary scalar $\bar{c}$}\\
+    \sum_i \frac{d_i^2}{\frac{\bar{c}^2}{4\lambda_i^2}} &= 1
 \end{align}
 We have shown that contours (curves where gradient magnitudes/norms are equal) are ellipsoids.
 \begin{equation}
-    \nabla q(x^* + \frac{\Tilde{c}}{2\lambda_i}v_i) = \Tilde{c}v_i
+    \nabla q(x^* + \frac{\bar{c}}{2\lambda_i}v_i) = \bar{c}v_i
 \end{equation}
-in a contour with multiplier $\Tilde{c}$. The eigenvector $v_i$ is a unit direction along a principal semi-axis of the ellipsoid. Note that in order to reach to a contour with multiplier $\Tilde{c}$ from $x^*$, the magnitude/norm of the vector is $\frac{\Tilde{c}}{2\lambda_i}$. As $\lambda_i$ increases, the magnitude/norm decreases, and vice-versa.
+in a contour with multiplier $\bar{c}$. The eigenvector $v_i$ is a unit direction along a principal semi-axis of the ellipsoid. Note that in order to reach to a contour with multiplier $\bar{c}$ from $x^*$, the magnitude/norm of the vector is $\frac{\bar{c}}{2\lambda_i}$. As $\lambda_i$ increases, the magnitude/norm decreases, and vice-versa.
 
 For any function, $f(x)$ its second order Tailor expansion approximates it in the neighbor of $x$.
 \begin{equation}
@@ -330,7 +338,7 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
     &= (2P\Lambda d) e^{d^T\Lambda d}g(x^*)\\
     \nabla g(x^*+Pd)^T \nabla g(x^*+Pd) &= (\sum_i 4d_i^2\lambda_i^2)e^{2d^T\Lambda d}g(x^*)^2\\
     &= (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2\\
-    (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \Tilde{c}^2
+    (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \bar{c}^2
 \end{align}
 Note that after this point, I could not come with a rigorous proof, but used a computer.
 If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
@@ -356,7 +364,7 @@ for any $E, F$. Then given~\ref{cond_prob} and~\ref{joint_cond_prob}
     p(A|B,C)p(B|C) &= p(A,B|C)\\
     p(A|C)p(B|C) &= p(A,B|C)
 \end{align}
-Now assume that for a vector of input $x$ and vector output (label) $y$, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$.
+Now assume that for an array of inputs $x$ and array of outputs $y$, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$.
 \begin{align}
     p(y|x) &= \prod_i p(y_i|x)\\
            &= \prod_i p(y_i|x_i)
@@ -380,6 +388,12 @@ If we further assume the process involving $p$ has markov property, then
     p(x_{0:T}) &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
     p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
 \end{align}
+\subsection{Reparameterization Trick}
+\label{reparam_trick}
+Used in prominent network architectures such as the VAE (variational autoencoder) and the diffusion models, this technique facilitates calculations, such as the derivatives that are required in backpropagation operations. It is not hard to see a one-to-one and onto (bijective) mapping $x=\mu+\sigma \cdot \epsilon$ since looking at the formula below. Derivation is omitted since it is trivially simple.
+\begin{equation}
+    \mathcal{N}(x;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{x-\mu}{\sigma}\Big)
+\end{equation}
 \subsection{Cross-Entropy}
 \label{ce_derivation}
 When training with given parameters $\theta$ and input $x$, learning models choose the combination of parameters that yields the maximum output $y_{\max}$, the process known as the maximum likelihood estimation. We come up with the most generalized discrete generalized distribution, categorical distribution. It is actually generalized Bernoulli distribution including non-binary random variables. Mathematically
@@ -398,18 +412,21 @@ When training with given parameters $\theta$ and input $x$, learning models choo
      &= \arg_\theta \max \prod_i \prod_j p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
      -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -\log p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
      &= \arg_\theta \min \sum_i \sum_j -(1\{y_i=j\})\log p(y_i=j|x_i,\theta)
-     \label{ce_derivation_res}
-\end{align} 
+\end{align}
+We assume there is an underlying data distribution that we try to approximate with a model distribution. Substituting dummy probability distributions gives 
+\begin{align}
+    -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{model}(y_i=j|x_i,\theta)\label{ce_derivation_res}\\
+    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]
+\end{align}
 \subsection{KL-Divergence}
-We assume there is an underlying data distribution that we try to approximate with a model distribution. Continuing from~\ref{ce_derivation_res}, substituting dummy probability distributions gives 
+Continuing from~\ref{ce_derivation_res},
 \begin{align}
     -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{model}(y_i=j|x_i,\theta)\\
-    &= \arg_\theta \min [H(p_{data}(y|x),p_{model}(y|x,\theta))]\\
     &= \arg_\theta \min [\sum_i \sum_j p_{data}(y_i=j|x_i)\log\frac{p_{data}(y_i=j|x_i)}{p_{model}(y_i=j|x_i,\theta)} + \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{data}(y_i=j|x_i)]\\
-    &= \arg_\theta \min[KL(p_{data}(y_i=j|x_i)\|p_{model}(y_i=j|x_i,\theta)) + H(p_{data}(y_i=j|x_i))]\\
-    &= \arg_\theta \min[KL(p_{data}(y_i=j|x_i)\|p_{model}(y_i=j|x_i,\theta))]
+    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta)) + H(p_{data}(y_i|x_i))]\\
+    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\label{kl_derivation_res}\\
 \end{align}
-Shannon's entropy term can be omitted as it does not depend on parameters. We have shown that maximizing likelihood will minimize the cross-entropy and KL-divergence between data and model distributions. In this regard, the model distribution tries to approximate the data distribution when training. 
+Shannon's entropy term can be omitted as it does not depend on parameters. We have shown that maximizing likelihood, minimizing cross-entropy and KL-divergence between data and model distributions are equivalent. In this regard, the model distribution tries to approximate the data distribution when training. 
 
 In very specific case of supervised classification tasks, it is assumed that $j$ denotes the class of the variable. This general approach can be applied to any type of model as we will see some other(s) along the way.
 \subsection{Non-negativity of KL-Divergence}
@@ -424,20 +441,38 @@ Negative of any function switches its convexity property (i.e. reversing the bow
      &\geq 0
 \end{align}
 \subsection{Mean Squared Error}
-We again use maximum likelihood. However, this time we assume $y_i$ is a real number with noise $\epsilon_i \sim \mathcal{N}(0, 1)$ around the real output intended (by the nature :D).
+We again use maximum likelihood. However, this time we assume $p(y_i|x_i,\theta) = p_{model}(y_i|x_i,\theta) \sim \mathcal{N}(y_i; \mu_\theta(x_i),\sigma^2)$; hence, 
 \begin{align}
-    y_i &= f(x_i,\theta)+\epsilon_i\\
-    \hat{\theta}_{MLE} &= \arg_\theta \max \prod_i p(y_i|x_i,\theta)\\
-    &= \arg_\theta \max \prod_i \frac{1}{2\pi}e^{-\frac{\epsilon_i^2}{2}}\\
-    &= \arg_\theta \max \prod_i \frac{1}{2\pi}e^{-\frac{1}{2}(f(x_i,\theta)-y_i)^2}\\
-    -\log\hat{\theta}_{MLE} &= \arg_\theta \min [\sum_i \log2\pi + \sum_i \frac{1}{2}(f(x_i,\theta)-y_i)^2]\\
-    &= \arg_\theta \min \sum_i \frac{1}{2}(f(x_i,\theta)-y_i)^2
-    \label{mse_derivation_res}
+    \hat{\theta}_{MLE} &= \arg_\theta \max \prod_i p(y_i|x_i,\theta) \label{norm_mul}\\
+    &= \arg_\theta \max \prod_i \frac{1}{(\sigma\sqrt{2\pi})^k}e^{-\frac{1}{2\sigma^2}(\mu_\theta(x_i)-y_i)^2}\\
+    -\log\hat{\theta}_{MLE} &= \arg_\theta \min [\sum_i -k\log(\sigma\sqrt{2\pi}) + \sum_i \frac{1}{2\sigma^2}(\mu_\theta(x_i)-y_i)^2]\\
+    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\ \text{after eliminating the constants}
+    \label{mse_derivation_res1}
 \end{align}
-In this case, maximizing likelihood will minimize the mean-squared error.
+Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
+
+If we multiply multiple single variable Gaussians as in~\ref{norm_mul}, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, supporting our claim in~\ref{cor_dep}. In a sense, we are also claiming $p(y|x,\theta) = p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$. if the noise producing the output is normal around a mean function (i.e. $y = \mu_\theta(x)+\sigma^2\epsilon$), minimizing the noise is equivalent to the expressions below  
+\begin{align}
+    \hat{\theta}_{MLE} &= \arg_\theta \max p(y|x,\theta)\\
+    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]\\
+    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\\ 
+    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\\ 
+\end{align}
+
+We can further assume $p_{data}(y_i|x_i) \sim \mathcal{N}(y_i; \mu(x_i),\beta)$ (hence $p_{data}(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$). We derive the result from KL-divergence, which is not a trivial task on its own. However, deriving the result below, Mr. Easy made our life easier.
+\begin{equation}
+    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
+\end{equation}
+Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
+\begin{align}
+    \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))] &= \arg_\theta \min\sum_i\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu_i-\mu_\theta(x_i)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
+    &= \arg_\theta \min\sum_i\frac{1}{2\sigma^2}\big(\mu_i-\mu_\theta(x_i)\big)^2\label{mse_derivation_res2}
+\end{align}
+
+People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square, variance cannot be negative).
 \subsection{Preference of Mean over Summation in Loss Functions}
 \label{mean_loss}
-Deriving the formulae~\ref{ce_derivation_res} and~\ref{mse_derivation_res}, we see a pattern in which we try to minimize a loss function. 
+Deriving~\ref{ce_derivation_res} and~\ref{mse_derivation_res1}, we see a pattern in which we try to minimize a loss function. 
 \begin{equation}
     \hat{\theta}_{MLE} = \arg_\theta \min \sum_i \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
@@ -526,23 +561,6 @@ We realize that as number of samples increases, the mean of the sample approxima
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
-\subsection{Reparameterization Trick}
-\label{reparam_trick}
-Used in prominent network architectures such as the VAE (Variational Autoencoder) and the diffusion model this technique makes taking derivative of a sampling operation feasible and facilitates some calculations. 
-
-Assuming two variables being sampled
-\begin{equation}
-    X \sim \mathcal{N}(x;\mu, \sigma^2)\ \text{and}\ \epsilon \sim \mathcal{N}(0,1) 
-\end{equation}
-Using~\ref{normal_specific}
-\begin{equation}
-    \mathcal{N}(x; \mu, \sigma^2)\propto  \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2\right)\ \text{and}\ \mathcal{N}(0, 1)\propto  \exp\left(-{\frac {1}{2}}\epsilon^2\right)\  
-\end{equation}
-Comparing both sides gives
-\begin{equation}
-    x=\mu+\sigma\epsilon
-\end{equation}
-The coefficients of the distributions are omitted as sampling operation is independent of them. Now it is easier to do some calculations on $x$ such as derivatives that are required in backpropagation operations.
 \section{Gradients of Functions in Backpropagation}
 \subsection{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
@@ -633,10 +651,10 @@ $\epsilon_t$ is already given to be normally distributed. Substituting $X_i = \e
     \sum_{\tau=1}^{t-1}(\prod_{i=\tau+1}^{t}\alpha_i-\prod_{i=\tau}^{t}\alpha_i)+(1-\alpha_t) &= \prod_{i=2}^{t}\alpha_i-\prod_{i=1}^{t}\alpha_i+\prod_{i=3}^{t}\alpha_i-\prod_{i=2}^{t}\alpha_i+...+\prod_{i=t-1}^{t}\alpha_i-\prod_{i=t-2}^{t}\alpha_i+\prod_{i=t}^{t}\alpha_i-\prod_{i=t-1}^{t}\alpha_i+(1-\alpha_t)\\
     &= \cancel{\prod_{i=2}^{t}\alpha_i}-\prod_{i=1}^{t}\alpha_i\cancel{+\prod_{i=3}^{t}\alpha_i}\cancel{-\prod_{i=2}^{t}\alpha_i}+...\cancel{+\prod_{i=t-1}^{t}\alpha_i}\cancel{-\prod_{i=t-2}^{t}\alpha_i}\cancel{+\alpha_t}\cancel{-\prod_{i=t-1}^{t}\alpha_i}+1\cancel{-\alpha_t}
 \end{align}
-Note that similar elements cancel each other and we are left with $1-\prod_{i=1}^{t}\alpha_i$. Substituting $\prod_{\tau=1}^{t}\alpha_\tau = \Tilde{\alpha}_t$.
+Note that similar elements cancel each other and we are left with $1-\prod_{i=1}^{t}\alpha_i$. Substituting $\prod_{\tau=1}^{t}\alpha_\tau = \bar{\alpha}_t$.
 \begin{align}
-    x_t &= \sqrt{\Tilde{\alpha}_t}x_0 + \sqrt{1 - \Tilde{\alpha}_t}\epsilon_t\label{reparam_xt}\\
-    q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\Tilde{\alpha}_t}x_0,1 - \Tilde{\alpha}_t)
+    x_t &= \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t\label{reparam_xt}\\
+    q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)
 \end{align}
 \subsection{Reverse Process and the Loss Function}
 We found a closed form solution for the forward process function. However, reverse process will be learnt by an ML (machine learning) algorithm. The authors decided to use a type of CNN (Convolutional Neural Network), U-Net.
@@ -657,27 +675,27 @@ Bear in mind that $q$ is now the data distribution (generated by data) whereas $
 which is intractable
 \begin{align}
 -\log p_\theta(x_0) 
-&\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0)\|p_\theta(x_{1:T}|x_0))\ \text{due to~\ref{kl_nonneg}}\\
-&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}]\\
-&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}]\\
-&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}]+\log p_\theta(x_0)\\
-&\leq E_{q(x_{1:T}|x_0)}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}]\\
-E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}]\ \text{(Integrated both sides)}\\
-\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}]
+&\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\ \text{due to~\ref{kl_nonneg}}\\
+&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\Big]\\
+&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}\Big]\\
+&\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
+&\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\\
+E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\ \text{(Integrated both sides)}\\
+\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]
 \end{align}
 We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
 \begin{align}
-\arg_\theta \min E_{q(x_{0:T})}[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}] &= \arg_\theta \min E_{q(x_{0:T})}[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }] \\
-&= \arg_\theta \min E_{q(x_{0:T})}[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}] \\
-&= \arg_\theta \min E_{q(x_{0:T})}[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}]\\
-&= \arg_\theta \min E_{q(x_{0:T})} [ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t | x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)} ]\label{x0cond}\\
-&= \arg_\theta \min E_{q(x_{0:T})} [ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t | x_0)}{q(x_{t-1} | x_0)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)} ] \\
-&= \arg_\theta \min E_{q(x_{0:T})} [ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T | x_0)}{q(x_1 | x_0)} + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)} ]\\
-&= \arg_\theta \min E_{q(x_{0:T})} [ \log\frac{q(x_T | x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 | x_1) ] \\
-&= \arg_\theta \min E_{q(x_{0:T})} [\underbrace{KL(q(x_T | x_0) \parallel p(x_T))}_{L_T} + \sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}]\\
-&= \arg_\theta \min E_{q(x_{0:T})} [\sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}]\\
+\arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{0:T})}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t | x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)} \Big]\label{x0cond}\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t | x_0)}{q(x_{t-1} | x_0)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T | x_0)}{q(x_1 | x_0)} + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T | x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 | x_1)\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T | x_0) \parallel p(x_T))}_{L_T} + \sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
 \end{align}
-We got rid of $L_T$ term since it is constant with respect to parameters $\theta$. As a side note, the authors assume $p(x_T) \sim \mathcal{N}(0,1)$ and $\beta_T=1$ making $L_T \sim 0$.
+We eliminated $L_T$ term since it is constant with respect to parameters $\theta$. As a side note, the authors assume $p(x_T) \sim \mathcal{N}(0,1)$ and $\beta_T=1$ making $L_T \sim 0$.
 
 We conditioned on $x_0$ at~\ref{x0cond} since $q(x_{t-1}|x_t, x_0)$ is tractable and the proof is as follows
 \begin{align}
@@ -685,7 +703,7 @@ We conditioned on $x_0$ at~\ref{x0cond} since $q(x_{t-1}|x_t, x_0)$ is tractable
     q(x_{t-1}|x_t, x_0)q(x_t|x_0) &= q(x_t|x_{t-1}, x_0)q(x_{t-1}|x_0)\\
     q(x_{t-1}|x_t, x_0) &= q(x_t|x_{t-1}, x_0)\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}\\
     &= q(x_t|x_{t-1})\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}\ \text{due to Markov property} \label{x0cond_re}\\
-    &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)\frac{\mathcal{N}(x_{t-1};\sqrt{\Tilde{\alpha}_{t-1}}x_0,1 - \Tilde{\alpha}_{t-1})}{\mathcal{N}(x_t;\sqrt{\Tilde{\alpha}_t}x_0,1 - \Tilde{\alpha}_t)}
+    &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)\frac{\mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0,1 - \bar{\alpha}_{t-1})}{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)}
 \end{align}
 ~\ref{x0cond_re} is apparent in~\ref{x0cond}. Doing the crazy calculations gives
 \begin{align}
@@ -701,27 +719,33 @@ From~\ref{normal_specific}, the Normal distribution has the form
 \end{equation}
 Substituting gives
 \begin{align}
-q(x_{t-1}|x_t, x_0) &= \mathcal{N}(x_{t-1}; \tilde{\mu}_t(x_t, x_0), \tilde{\beta}_t)\\
-\tilde{\beta}_t 
+q(x_{t-1}|x_t, x_0) &= \mathcal{N}(x_{t-1}; \bar{\mu}_t(x_t, x_0), \bar{\beta}_t)\\
+\bar{\beta}_t 
 &= 1/(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})\\ 
 &= 1/(\frac{\alpha_t - \bar{\alpha}_t + \beta_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= 1/(\frac{1 - \bar{\alpha}_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
-\tilde{\mu}_t(x_t, x_0) &= (\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1} }}{1 - \bar{\alpha}_{t-1}} x_0) \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
+\bar{\mu}_t(x_t, x_0) &= (\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1} }}{1 - \bar{\alpha}_{t-1}} x_0) \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
 &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0
 \end{align}
 Remembering~\ref{reparam_xt}, we have
 \begin{equation}
-    x_0 = \frac{1}{\sqrt{\Tilde{\alpha}_t}}(x_t - \sqrt{1 - \Tilde{\alpha}_t}\epsilon_t)
+    x_0 = \frac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\epsilon_t)
 \end{equation}
 Substituting gives
 \begin{align}
-\tilde{\mu}_t
+\bar{\mu}_t
 &= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} \frac{1}{\sqrt{\bar{\alpha}_t}}(x_t - \sqrt{1 - \bar{\alpha}_t}\epsilon_t)\\
 &= \frac{\sqrt{\alpha_t\bar{\alpha}_t}(1-\bar{\alpha}_{t-1})+\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{\sqrt{\bar{\alpha}_{t-1}}\sqrt{1-\bar{\alpha}_t}(1-\alpha_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}\epsilon_t\\
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(\alpha_t-\bar{\alpha}_t)+\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{\sqrt{1-\bar{\alpha}_t}(1-\alpha_t)}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}\epsilon_t\\
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\bar{\alpha}_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1}{\sqrt{\alpha_t}} \Big( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)
+\end{align}
+Let us focus on $L_{t-1}$. 
+Using the derivation leading to~\ref{mse_derivation_res2}, we have (note that the authors use a constant variance $\Sigma_\theta = \sigma_t^2$. See the derivation)
+\begin{align}
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    &= \arg_\theta\min E_{x_{0:T}}\left[\sum_{t=2}^T\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
 \end{align}
 \end{document}
