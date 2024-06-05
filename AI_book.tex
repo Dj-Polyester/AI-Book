@@ -37,7 +37,7 @@ Unless stated otherwise, these math notations apply.
     \item Row vectors are denoted as their transpose with a superscript capital $T$ (i.e. $a^T$).
     \item Scalar (or a row/column vector) of a matrix is denoted with corresponding lowercase symbol.
     \item Pre-superscript on a symbol of a matrix denotes the shape of the matrix (i.e. $\prescript{M\times N}{}{A}$ is a matrix $A$ with shape $M\times N$).
-    \item Subscript of a lowercase variable symbol (i.e. $a_{ijk...}$) denotes the index of that variable in its corresponding matrix with capital letter. Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_{j-1}]$)
+    \item Subscript of a lowercase variable symbol (i.e. $a_{ijk...}$) denotes the index of that variable in its corresponding matrix with capital letter. Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_j]$). In a similar fashion, this notation can be used for parameters of a function (i.e. $f(x^T_{i:j}) = f(x^T_i, x^T_{i+1}, ..., x^T_j)$).
     \item Subscript of an integral or sum symbol denoting a variable (i.e. $\sum_X$, $\int_X$) indicates that the operation spans the entire domain of that variable (i.e. $X$).
     \item Subscript of a probabilitiy distribution denotes conditional probability (i.e. $p_\theta(x) = p(x|\theta)$. Similarly, Subscript of a function denotes an additional parameter (i.e. $f_\theta(x) = f(x, \theta)$
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
@@ -49,22 +49,22 @@ Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{min
      \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
      \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
      \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
-\end{align} 
+\end{align}
 \subsubsection{Mean (Expected Value)}
 \begin{equation}
-    E[X] = \mu_X = \int_X p(X)X dX
-\end{equation}
-\subsubsection{Variance}
-\begin{equation}
-    Var(X) = \sigma_X = \int_X p(X)(X-\mu_X)^2 dX
+    \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
 \end{equation}
 \subsubsection{Covariance}
 \begin{equation}
-    Cov(X,Y) = \sigma_{XY} = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
+    \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
+\end{equation}
+\subsubsection{Variance}
+\begin{equation}
+    \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
 \end{equation}
 \subsubsection{(Shannon's) Entropy}
 \begin{equation}
-H(p(X)) = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
+H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
 \end{equation}
 \subsubsection{Cross Entropy}
 \begin{equation}
@@ -348,6 +348,66 @@ This analysis gives ellipsidicity information of the Gaussian that is fitted to 
 \label{cor_dep}
 We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
 sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Correlation is a subset of dependence. When a number of random variables are independent of each other (i.e. mutual independence), they don't have any dependence whatsoever; hence they also become uncorrelated, but the reverse condition does not hold. In other words, independence implies uncorrelatedness but not vice-versa
+\subsection{Expected Value of Multiple Variables}
+\label{multi_mean_derivation}
+Here, we are proving that the expected value has the superposition property
+\begin{align}
+     E_{p(X,Y)}[X] 
+     &= \int_X\int_Y p(X,Y)X dX dY\\
+     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dY\\
+     &= \int_X p(X) X dX\\
+     &= E[X]\\
+    E[aX+bY] 
+    &= E_{p(X,Y)}[aX+bY]\\
+    &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
+    &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
+    &= aE[X]+bE[Y]
+\end{align}
+\subsection{Covariance of Multiple Variables}
+Here, we are deriving an equation similar to part~\ref{multi_mean_derivation}
+\begin{align}
+    Cov(aX+bY,cZ+dT) 
+    &= E[(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})]\\
+    &= E[(a(X-\mu_X)+b(Y-\mu_Y))(c(Z-\mu_Z)+d(T-\mu_T))]\\
+    &= E[ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)]\\
+    &= acE[(X-\mu_X)(Z-\mu_Z)]+adE[(X-\mu_X)(T-\mu_T)]+bcE[(Y-\mu_Y)(Z-\mu_Z)]+bdE[(Y-\mu_Y)(T-\mu_T)]\\
+    &=acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)\label{cov_derivation_res}
+\end{align}
+We will use mathematical induction to prove the general case. assuming the equation
+\begin{equation}
+    Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
+\end{equation}
+holds, it is trivial to see for 
+\begin{equation}
+    Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
+\end{equation}
+\begin{equation}
+    \begin{split}
+        =Cov(\sum_{i=1}^{m-1} a_i X_i,\sum_{i=1}^{n-1} b_i Y_i)+\underbrace{b_nCov(\sum_{i=1}^{m-1} a_i X_i,Y_n)}_{c_1}+
+        \underbrace{a_mCov(X_m,\sum_{i=1}^{n-1} b_i Y_i)}_{c_2}+a_m b_nCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+For $c_1$ and $c_2$, substituting the coefficients in~\ref{cov_derivation_res}, we can recursively expand the sum until its components as below.
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)+\underbrace{b_n\sum_{i=1}^{m-1} a_iCov(X_i, Y_n)}_{c_1}+\underbrace{a_m\sum_{j=1}^{n-1} b_j Cov(X_m, Y_j)}_{c_2}+a_m b_nCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m} \sum_{j=1}^{n} a_i b_j Cov(X_i, Y_j)
+    \end{split}
+\end{equation}
+concluding the proof.
+\subsection{Variance of Multiple Variables}
+Using the fact that variance is just the \textit{self-covariance}
+\begin{align}
+    Var(\sum_{i=1}^{n} a_i X_i) &= Cov(\sum_{i=1}^{n} a_i X_i, \sum_{i=1}^{n} a_i X_i)\\
+    &= \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Cov(X_i, X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}\\
+\end{align}
 \subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
 \subsubsection{Conditional Mutual Independence}
 By definition, if
@@ -476,77 +536,7 @@ Deriving~\ref{ce_derivation_res} and~\ref{mse_derivation_res1}, we see a pattern
 \begin{equation}
     \hat{\theta}_{MLE} = \arg_\theta \min \sum_i \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
-
-It is easy to prove that the mean (expected value) has the super-position property
-\begin{align}
-    \mu_{aX+bY} &= \int_X \int_Y p(X,Y)(aX+bY)dX dY\\
-    &= a\int_X (\int_Y p(X,Y)dY) X) dX+b\int_Y (\int_X p(X,Y)dX) Y) dY\\
-    &= a\int_X p(X) X dX+b\int_Y p(Y) Y dY\\
-    &= a\mu_X+b\mu_Y
-    \label{mean_superpos}
-\end{align}
-\begin{align}
-    Cov(aX+bY,cZ+dT) &= \int_X \int_Y \int_Z \int_T p(X,Y,Z,T)(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})dXdYdZdT\\
-    &= \int_X \int_Y \int_Z \int_T p(X,Y,Z,T)(a(X-\mu_X)+b(Y-\mu_Y))(c(Z-\mu_Z)+d(T-\mu_T))dXdYdZdT
-\end{align}
-\begin{equation}
-    \begin{split}
-        = \int_X \int_Y \int_Z \int_T [p(X,Y,Z,T)ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+\\
-        bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)] dXdYdZdT
-    \end{split}
-\end{equation}
-\begin{equation}
-    \begin{split}
-        = ac\int_X \int_Z [\int_Y \int_T p(X,Y,Z,T)dYdT](X-\mu_X)(Z-\mu_Z)dXdZ+\\
-        ad\int_X \int_T [\int_Y \int_Z p(X,Y,Z,T)dYdZ](X-\mu_X)(T-\mu_T)dXdT+\\
-        bc\int_Y \int_Z [\int_X \int_T p(X,Y,Z,T)dXdT](Y-\mu_Y)(Z-\mu_Z)dYdZ+\\
-        bd\int_Y \int_T [\int_X \int_Z p(X,Y,Z,T)dXdZ](Y-\mu_Y)(T-\mu_T)dYdT
-    \end{split}
-\end{equation}
-\begin{equation}
-    \begin{split}
-        = ac\int_X \int_Z p(X,Z)(X-\mu_X)(Z-\mu_Z)dXdZ+\\
-        ad\int_X \int_T p(X,T)(X-\mu_X)(T-\mu_T)dXdT+\\
-        bc\int_Y \int_Z p(Y,Z)(Y-\mu_Y)(Z-\mu_Z)dYdZ+\\
-        bd\int_Y \int_T p(Y,T)(Y-\mu_Y)(T-\mu_T)dYdT
-    \end{split}
-\end{equation}
-\begin{equation}
-    = acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)
-\end{equation}
-We assume the equation
-\begin{equation}
-    Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
-\end{equation}
-holds. 
-\begin{equation}
-    Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
-\end{equation}
-\begin{equation}
-    \begin{split}
-        =Cov(\sum_{i=1}^{m-1} a_i X_i,\sum_{i=1}^{n-1} b_i Y_i)+b_nCov(\sum_{i=1}^{m-1} a_i X_i,Y_n)+
-        a_mCov(X_m,\sum_{i=1}^{n-1} b_i Y_i)+a_n b_mCov(X_m,Y_n)
-    \end{split}
-\end{equation}
-\begin{equation}
-    \begin{split}
-         =\sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)+b_n\sum_{i=1}^{m-1} a_iCov(X_i, Y_n)+a_m\sum_{j=1}^{n-1} b_j Cov(X_m, Y_j)+a_n b_mCov(X_m,Y_n)
-    \end{split}
-\end{equation}
-\begin{equation}
-    \begin{split}
-         =\sum_{i=1}^{m} \sum_{j=1}^{n} a_i b_j Cov(X_i, Y_j)
-    \end{split}
-\end{equation}
-If we assume all the values (including zero) that the coefficients can take, then using mathematical induction, we prove that the equation (3) holds. 
-\begin{align}
-    Var(\sum_{i=1}^{n} a_i X_i) &= Cov(\sum_{i=1}^{n} a_i X_i, \sum_{i=1}^{n} a_i X_i)\\
-    &= \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Cov(X_i, X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Var(X_i) \quad (\text{Since we assumed $X$ is uncorrelated})
-\end{align}
-Then for a sample with constant variance $\sigma^2$ the variance of the sample mean,
+Using the result~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant variance $\sigma^2$, the variance of the sample mean,
 \begin{align}
     Var(\overline{X}) &= Var(\frac{1}{n}\sum_{i=1}^{n} X_i)\\
     &= \frac{1}{n^2} \sum_{i=1}^{n} Var(X_i)\\
@@ -692,8 +682,8 @@ We found another loss function which is an upper bound; hence, minimizing this f
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t | x_0)}{q(x_{t-1} | x_0)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T | x_0)}{q(x_1 | x_0)} + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big]\\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T | x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 | x_1)\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T | x_0) \parallel p(x_T))}_{L_T} + \sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T | x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\sum_{t=2}^T \underbrace{KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]
 \end{align}
 We eliminated $L_T$ term since it is constant with respect to parameters $\theta$. As a side note, the authors assume $p(x_T) \sim \mathcal{N}(0,1)$ and $\beta_T=1$ making $L_T \sim 0$.
 
@@ -743,9 +733,20 @@ Substituting gives
 &= \frac{1}{\sqrt{\alpha_t}} \Big( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)
 \end{align}
 Let us focus on $L_{t-1}$. 
-Using the derivation leading to~\ref{mse_derivation_res2}, we have (note that the authors use a constant variance $\Sigma_\theta = \sigma_t^2$. See the derivation)
 \begin{align}
     \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
-    &= \arg_\theta\min E_{x_{0:T}}\left[\sum_{t=2}^T\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+\end{align}
+If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the derivation leading to~\ref{mse_derivation_res2}, finding
+\begin{align}
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
+\end{align}
+\begin{align}
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)\right)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1-\alpha_t}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\left(\epsilon_t-\epsilon_\theta(x_t,t) \Big)\right)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_0}\left[\frac{1-\alpha_t}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\left(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)\right)^2\right]
 \end{align}
 \end{document}
