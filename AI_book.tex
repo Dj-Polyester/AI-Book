@@ -25,7 +25,7 @@
 This book aims to give intuition for some ML (machine learning) concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. I am trying to teach the topic using mostly mathematical proofs, though I also provide examples and/or explanations. I hope this book will be helpful for people wanting a career in the field.
 
 I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
-\subsection{Conventions and Notations of the Book and Definitions (Important)}
+\subsection{Conventions and Notations of the Book}
 It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory. 
 
 Unless stated otherwise, these math notations apply. 
@@ -36,52 +36,157 @@ Unless stated otherwise, these math notations apply.
     \item Vectors are column vectors by default.
     \item Row vectors are denoted as their transpose with a superscript capital $T$ (i.e. $a^T$).
     \item Scalar (or a row/column vector) of a matrix is denoted with corresponding lowercase symbol.
-    \item Pre-superscript on a symbol of a matrix denotes the shape of the matrix (i.e. $\prescript{M\times N}{}{A}$ is a matrix $A$ with shape $M\times N$).
+    \item Pre-superscript on a symbol of an array denotes the shape of the array (i.e. $\prescript{M\times N}{}{A}$ is a matrix $A$ with shape $M\times N$ and $\prescript{M\times 1}{}{a}$ is a row vector $a$ with shape $M\times 1$).
     \item Subscript of a lowercase variable symbol (i.e. $a_{ijk...}$) denotes the index of that variable in its corresponding matrix with capital letter. Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_j]$). In a similar fashion, this notation can be used for parameters of a function (i.e. $f(x^T_{i:j}) = f(x^T_i, x^T_{i+1}, ..., x^T_j)$).
     \item Subscript of an integral or sum symbol denoting a variable (i.e. $\sum_X$, $\int_X$) indicates that the operation spans the entire domain of that variable (i.e. $X$).
     \item Subscript of a probabilitiy distribution denotes conditional probability (i.e. $p_\theta(x) = p(x|\theta)$. Similarly, Subscript of a function denotes an additional parameter (i.e. $f_\theta(x) = f(x, \theta)$
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
-\subsubsection{Equality Comparison for Functions Finding Extremum}
-Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum finding function.
-\begin{align}
-     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
-     \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
-     \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
-\end{align}
-\subsubsection{Mean (Expected Value)}
+\subsection{Axioms and Theory}
+\subsubsection{Linear Algebra}
+\paragraph{Scalars, Vectors and Matrices}
+A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars. 
+A matrix 
+$$
+M = \begin{bmatrix}
+    v_1^T\\
+    v_2^T\\
+    ...
+    v_m^T\\
+\end{bmatrix}
+$$
+or $M = [v_1 v_2 ... v_m]^T$
+is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars. 
+
+For a matrix $M$, $m_{ij}$ denotes the scalar in $i$th row and $j$th column.
+
+Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$). 
+
+For arrays (vectors and matrices), addition (and subtraction) operates element-wise whereas multiplication (and division) has a special variant (see~\ref{matmult}) beside the traditional element-wise multiplication.
+\paragraph{Dot Product}
+Dot product of two vectors $a\cdot b=\prescript{1\times N}{}{a^T}\prescript{N\times 1}{}{b}=\prescript{1 \times 1}{}{c}$ is defined such that $c$ is a scalar and
 \begin{equation}
-    \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
+    c = \sum_{n=1}^N a_nb_n \label{dotp}
 \end{equation}
-\subsubsection{Covariance}
-\begin{equation}
-    \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
-\end{equation}
-\subsubsection{Variance}
-\begin{equation}
-    \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
-\end{equation}
-\subsubsection{(Shannon's) Entropy}
-\begin{equation}
-H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
-\end{equation}
-\subsubsection{Cross Entropy}
-\begin{equation}
-H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX   
-\end{equation}
-\subsubsection{KL Divergence}
-\begin{equation}
-KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
-\end{equation}
-\subsubsection{P-Norm}
+\paragraph{P-Norm}
+P-Norm of a vector $a$
 \begin{align}
     \norm[p]{a} &= (\sum_i a_i^p)^{\frac{1}{p}} &\\
     \norm[1]{a} & & \text{(Manhattan norm)} \label{man_norm}\\
     \norm[2]{a} &= \norm[]{a} & \text{(Euclidean norm)} \label{euc_norm}
 \end{align}
 Note that for the squared Euclidean, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
-\subsubsection{Multi-variate Normal Distribution}
+\paragraph{Matrix Multiplication}
+Multiplication of two matrices 
+$\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that 
+\begin{equation}
+    c_{ij} = \sum_{k=1}^K a_{ik}b_{kj} 
+    \label{matmult}
+\end{equation}
+\paragraph{Definiteness of a Symmetric Matrix} 
+A symmetric matrix $M$ is positive definite if and only if for any vector $z$
+\begin{equation}
+    z^TMz > 0
+\end{equation}
+Similarly, $M$ is semi-positive definite if and only if for any vector $z$
+\begin{equation}
+    z^TMz \geq 0
+\end{equation}
+Similar definitions for negative and semi-negative definite matrices exist (just reversing the equality sign).
+\subsubsection{Equality Comparison for Minimum and Maximum Functions}
+Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum function.
+\begin{align}
+     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
+     \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
+     \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
+\end{align}
+\subsubsection{Probability Theory}
+\paragraph{Probability}
+Given an event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$. The below is an essential property that all probabilities in the event space will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
+\begin{align}
+    \int_X p(X)dX = 1
+\end{align}
+\paragraph{Joint Probability}
+The probability $p(x_i, y_j)$ denotes multiple events occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation
+\begin{align}
+    \int_Y p(X,Y)dY = p(X)
+\end{align}
+\paragraph{Conditional Probability}
+$p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y=1|X=3)=1$ is certain. If we know the outcome is 3, the outcome is an odd number for sure. Below is an essential formulation
+\begin{align}
+    p(X,Y) = p(X|Y)p(Y)
+    \label{joint_cond_prob}
+\end{align}
+\paragraph{Bayesian Formula} 
+\begin{align}
+    p(A,B) &= p(B,A)\\
+    p(A|B)P(B) &= p(B|A)P(A)\\
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{P(A)}^\text{prior}}{\underbrace{P(B)}_\text{evidence}}\\
+    p(B) &= \int_A p(A,B)dA\\
+    &= \int_A p(B|A)p(A)dA\\
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{P(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
+\end{align}
+\paragraph{Independence}
+By definition, if
+\begin{equation}
+    p(A,B) = p(A)p(B) \label{independence1}
+\end{equation}
+then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independence1}
+\begin{align}
+    p(A|B) &= p(A)\\
+    p(B|A) &= p(B)
+\end{align}
+\paragraph{Conditional Dependence}
+By definition, if
+\begin{equation}
+    p(A|B,C) = p(A|C) \label{cond_independence1}
+\end{equation}
+then $A$ and $B$ are conditionally independent given $C$.
+Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
+\begin{align}
+    p(A|B,C)p(B|C)p(C) &= p(A,B|C)p(C)\\
+    p(A|B,C)p(B|C) &= p(A,B|C)\\
+    p(A|C)p(B|C) &= p(A,B|C) \label{cond_independence2}
+\end{align}
+\subsubsection{Statistics}
+\paragraph{Mean (Expected Value)}
+\begin{equation}
+    \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
+\end{equation}
+\paragraph{Covariance}
+\begin{equation}
+    \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
+\end{equation}
+\paragraph{Variance}
+\begin{equation}
+    \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
+\end{equation}
+\paragraph{(Shannon's) Entropy}
+\begin{equation}
+H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
+\end{equation}
+\paragraph{Cross Entropy}
+\begin{equation}
+H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX   
+\end{equation}
+\paragraph{KL Divergence}
+\begin{equation}
+KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
+\end{equation}
+\paragraph{Categorical Distribution}
+Can be thought of as the general distribution
+\begin{equation}
+    p(y) = \prod_j p(y=j)^{1\{y=j\}}
+    \label{catdist}
+\end{equation}
+\begin{equation}
+1\{expression\} = \begin{cases}
+    1 & \text{$expression$ evaluates to true}\\
+    0 & \text{otherwise}
+    \end{cases}
+\end{equation}
+\paragraph{Multi-variate Normal Distribution}
 The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
 \begin{equation}
     \mathcal{N}(x; \mu, \Sigma)=\frac {\exp \left(-{\frac {1}{2}}\left(x-\mu\right)^T\Sigma^{-1}\left(x-\mu\right)\right)}{\sqrt {(2\pi )^{k}|\Sigma|}}
@@ -94,6 +199,12 @@ The specific case for when the variance is constant (same for all features, i.e.
     \mathcal{N}(x; \mu, \sigma^2I)=\frac {1}{(\sigma\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I}=\frac {1}{(\sigma\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
 \end{equation}
 For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
+\paragraph{Reparameterization Trick}
+\label{reparam_trick}
+Used in prominent network architectures such as the VAE (variational autoencoder) and the diffusion models, this technique facilitates calculations, such as the derivatives that are required in backpropagation operations. It is not hard to see a one-to-one and onto (bijective) mapping $x=\mu+\sigma \cdot \epsilon$ since looking at the formula below. Derivation is omitted since it is trivially simple.
+\begin{equation}
+    \mathcal{N}(x;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{x-\mu}{\sigma}\Big)
+\end{equation}
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Cosine Law}
 \begin{figure}[H]
@@ -155,7 +266,7 @@ such that $a, b$ and $c$ are vectors. We define an operation (dot product) on ve
     \item distributivity (i.e. $a^T(b+c) = a^Tb+a^Tc)$)
     \item dot product of a vector with itself is equivalent to squared Euclidean norm (length) (i.e. $a^Ta = \norm{a}^2$)
 \end{itemize}
-and many other properties of the scalar multiplication we know of (In fact, the well known dot product formula $a^Tb = \sum_i a_i b_i$ satisfies all of these properties).
+and many other properties of the scalar multiplication we know of (In fact, the well known dot product formula~\ref{dotp} satisfies all of these properties).
 These properties in mind we find
 \begin{align}
     c^2 &= (a-b)^T(a-b)\\
@@ -206,6 +317,7 @@ We have shown for a point $x_c=Xc$
 \begin{equation}
     y(Xc)=f(X)c=\sum_i c_if(x_i)
 \end{equation}
+We will further assume for all $i$, $c_i$ is non-negative (i.e. $c_i \in [0,1]$)
 \begin{align}
     \min_kx_{kj} &\leq x_{ij} \leq \max_kx_{kj}\\
     c_i\min_kx_{kj} &\leq c_ix_{ij} \leq c_i\max_kx_{kj}\\
@@ -343,11 +455,128 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
 Note that after this point, I could not come with a rigorous proof, but used a computer.
 If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
-\section{Probability Theory Concepts Used In Learning}
+\section{Probability Theory and Statistics Concepts Used In Learning}
 \subsection{Distinction Between Correlation and Dependence}
 \label{cor_dep}
 We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
 sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Correlation is a subset of dependence. When a number of random variables are independent of each other (i.e. mutual independence), they don't have any dependence whatsoever; hence they also become uncorrelated, but the reverse condition does not hold. In other words, independence implies uncorrelatedness but not vice-versa
+\subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
+\subsubsection{Conditional Mutual Independence}
+\label{cond_mutual_independence}
+Now assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. As a cliché example, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not.
+
+Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$. Using~\ref{cond_independence1} and~\ref{cond_independence2}
+\begin{align}
+    p(y|x) &= \prod_i p(y_i|x)\\
+           &= \prod_i p(y_i|x_i)
+\end{align}
+If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
+
+People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
+\subsubsection{Markov Property and Markov Chain}
+Markov property is defined for a stochastic process when the future only depends on the present. Using the equation~\ref{cond_independence1} along this definition gives
+\begin{equation}
+    p(x_t|x_{t-1},x_{t-2},...,x_0) = p(x_t|x_{t-1})
+\end{equation}
+Using the equation~\ref{joint_cond_prob}, we can recursively expand any joint probability as follows
+\begin{align}
+    p(x_{0:T}) &= p(x_0,x_1,...,x_T) \\
+    &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)\\
+    p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)
+\end{align}
+If we further assume the process involving $p$ has markov property, then
+\begin{align}
+    p(x_{0:T}) &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
+    p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
+\end{align}
+\subsection{Non-negativity of KL-Divergence}
+\label{kl_nonneg}
+Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function 
+\begin{align}
+     \int_X p(X)\log\frac{p(X)}{q(X)} dX &= \int_X p(X)(-\log)\frac{q(X)}{p(X)} dX\\
+     &\geq -\log \int_X p(X)\frac{q(X)}{p(X)} dX\\
+     &\geq -\log \int_X q(X) dX\\
+     &\geq -\log \int_X q(X) dX\\
+     &\geq -\log 1 \\
+     &\geq 0
+\end{align}
+Bear in mind that this was true because our assumptions of having a vector of all positive entries and Manhattan norm of 1 aligns with the probability distribution (Integral is a type of sum).
+\subsection{Monotonicity of KL-Divergence}
+A function $f$ is \textit{monotonically decreasing} if
+\begin{equation}
+    f(x) \leq f(y) \longleftrightarrow x \geq y
+\end{equation}
+similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $KL(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$ 
+\begin{align}
+    \frac{\delta}{\delta q_j}\int_i p_i\log\frac{p_i}{q_i} di &= \int_i p_i\frac{\delta}{\delta q_j}\log\frac{p_i}{q_i} di\\
+    &= p_j\frac{-\frac{p_j}{q_j^2}}{\frac{p_j}{q_j}}\\
+    &= -\frac{p_j}{q_j} \label{klmonotonicity}
+\end{align}
+Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $KL(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $KL(q_1)=KL(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
+\subsection{Cross-Entropy}
+\label{ce_derivation}
+In ML problems, we want to find the underlying distribution $p_{data}(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p_{model}(y|x,\theta)$ with parameters $\theta$. The ideal distribution $p_{model}(y|x,\theta)$ should be equal to $p_{data}(y|x)$, which is equivalent to saying that the difference $KL(p_{data}(y|x)\parallel p_{model}(y|x,\theta))$ should be zero. Then the optimum parameters
+\begin{align}
+    \hat{\theta} &= \arg_\theta \min[KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta))]\\
+    &= \arg_\theta \min[ KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta)) + H(p_{data}(y|x))]\\
+    &= \arg_\theta \min \left( E_{p_{data}(y|x)}\Big[\log\frac{p_{data}(y|x)}{p_{model}(y|x,\theta)}\Big] + E_{p_{data}(y|x)}\Big[-\log p_{data}(y|x)\Big]\right)\\
+    &= \arg_\theta \min \left( E_{p_{data}(y|x)}\Big[-\log p_{model}(y|x,\theta)\Big]\right)\\
+    &= \arg_\theta \min H(p_{data}(y|x), p_{model}(y|x,\theta))\\
+\end{align}
+\subsubsection{Another Derivation for Supervised Tasks}
+When training with given parameters $\theta$ and $x$, learning models choose the combination of parameters that yields the maximum observation, $y_{\max}$, the process known as the maximum likelihood estimation. We will use the categorical distribution in~\ref{catdist}. Maximum likelihood estimator is as follows
+\begin{align}
+    \hat{\theta}_{MLE} 
+    &= \arg_\theta \max p_{data}(y|x)\\
+    &= \arg_\theta \max p_{model}(y|x,\theta)\\
+    &= \arg_\theta \max \prod_j p_{model}(y=j|x,\theta)^{1\{y=j\}}\\
+    -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_j -\log p(y=j|x,\theta)^{1\{y=j\}}\\
+    &= \arg_\theta \min \sum_j -(1\{y=j\})\log p(y=j|x,\theta)
+\end{align}
+We assume there is an underlying data distribution that we try to approximate with a model distribution. Substituting dummy probability distributions gives 
+\begin{align}
+    &= \arg_\theta \min \sum_j -p_{data}(y=j|x)\log p_{model}(y=j|x,\theta)\label{ce_derivation_res}\\
+    &= \arg_\theta \min \left[H(p_{data}(y|x),p_{model}(y|x,\theta))\right]
+\end{align}
+This derivation applies when $p_{data}$ is known (only one element in the event space is certain to occur). Supervised tasks are such a scenario, where we are given labels.
+\subsection{Mean Squared Error}
+\label{mse_derivation}
+Continuing from~\ref{ce_derivation_res} with the assumption $p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
+\begin{align}
+    \hat{\theta}_{MLE} 
+    &= \arg_\theta \max p_{model}(y|x,\theta)\\
+    &= \arg_\theta \max \frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\\
+    -\log\hat{\theta}_{MLE} &= \arg_\theta\min\left[-\log\left(\frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\right)\right]\\
+    &= \arg_\theta\min[-k\log(\sigma\sqrt{2\pi}) + \frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2]\\
+    &= \arg_\theta \min\frac{1}{2}(\mu_\theta(x)-y)^2\ \text{after eliminating the constants}
+    \label{mse_derivation_res1}
+\end{align}
+Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
+
+We can further assume $p_{data}(y_i|x_i) \sim \mathcal{N}(y_i; \mu(x_i),\beta)$ (hence $p_{data}(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$). We will obtain the result using KL-divergence. Deriving the equation below, Mr. Easy made our life easier.
+\begin{equation}
+    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
+\end{equation}
+Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
+\begin{align}
+    \arg_\theta \min[ KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta))] &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
+    &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
+\end{align}
+
+People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
+\subsection{Loss Function as a Sum of Elements}
+The losses we found in~\ref{ce_derivation} and~\ref{mse_derivation} are for a single data point. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then 
+$
+    p_{model}(y|x,\theta) = \prod_i p_{model}(y_i|x_i,\theta)
+$ and 
+
+If we multiply multiple single variable Gaussians, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, supporting our claim in~\ref{cor_dep}. In a sense, we are also claiming $p(y|x,\theta) = p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$. if the noise producing the observation is normal around a mean function (i.e. $y = \mu_\theta(x)+\sigma^2\epsilon$), minimizing the noise is equivalent to the expressions below  
+\begin{align}
+    \hat{\theta}_{MLE} &= \arg_\theta \max p(y|x,\theta)\\
+    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]\\
+    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\\ 
+    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\\ 
+\end{align}
 \subsection{Expected Value of Multiple Variables}
 \label{multi_mean_derivation}
 Here, we are proving that the expected value has the superposition property
@@ -408,128 +637,6 @@ Using the fact that variance is just the \textit{self-covariance}
     &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
     &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}\\
 \end{align}
-\subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
-\subsubsection{Conditional Mutual Independence}
-By definition, if
-\begin{equation}
-    p(A|B,C) = p(A|C) \label{cond_prob}
-\end{equation}
-then $A$ and $B$ are conditionally independent given $C$. The relationship between joint and conditional probabilities is defined as 
-\begin{equation}
-    p(D|E)P(E) = p(D,E) \label{joint_cond_prob}
-\end{equation}
-for any $E, F$. Then given~\ref{cond_prob} and~\ref{joint_cond_prob}
-\begin{align}
-    p(A|B,C)p(B|C)p(C) &= p(A,B|C)p(C)\\
-    p(A|B,C)p(B|C) &= p(A,B|C)\\
-    p(A|C)p(B|C) &= p(A,B|C)
-\end{align}
-Now assume that for an array of inputs $x$ and array of outputs $y$, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$.
-\begin{align}
-    p(y|x) &= \prod_i p(y_i|x)\\
-           &= \prod_i p(y_i|x_i)
-\end{align}
-If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that the input $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
-
-People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
-\subsubsection{Markov Property and Markov Chain}
-Markov property is defined for a stochastic process when the future only depends on the present. Using the equation~\ref{cond_prob} along this definition gives
-\begin{equation}
-    p(x_t|x_{t-1},x_{t-2},...,x_0) = p(x_t|x_{t-1})
-\end{equation}
-Using the equation~\ref{joint_cond_prob}, we can recursively expand any joint probability as follows
-\begin{align}
-    p(x_{0:T}) &= p(x_0,x_1,...,x_T) \\
-    &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)\\
-    p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)
-\end{align}
-If we further assume the process involving $p$ has markov property, then
-\begin{align}
-    p(x_{0:T}) &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
-    p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
-\end{align}
-\subsection{Reparameterization Trick}
-\label{reparam_trick}
-Used in prominent network architectures such as the VAE (variational autoencoder) and the diffusion models, this technique facilitates calculations, such as the derivatives that are required in backpropagation operations. It is not hard to see a one-to-one and onto (bijective) mapping $x=\mu+\sigma \cdot \epsilon$ since looking at the formula below. Derivation is omitted since it is trivially simple.
-\begin{equation}
-    \mathcal{N}(x;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{x-\mu}{\sigma}\Big)
-\end{equation}
-\subsection{Cross-Entropy}
-\label{ce_derivation}
-When training with given parameters $\theta$ and input $x$, learning models choose the combination of parameters that yields the maximum output $y_{\max}$, the process known as the maximum likelihood estimation. We come up with the most generalized discrete generalized distribution, categorical distribution. It is actually generalized Bernoulli distribution including non-binary random variables. Mathematically
-\begin{equation}
-    p(y_i) = \prod_j p(y_i=j)^{1\{y_i=j\}}
-\end{equation}
-\begin{equation}
-1\{y_i=j\} = \begin{cases}
-    1 & y_i=j\\
-    0 & \text{otherwise}
-    \end{cases}
-\end{equation}
-\begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta \max p(y|x,\theta)\\
-     &= \arg_\theta \max \prod_i p(y_i|x_i,\theta)\\
-     &= \arg_\theta \max \prod_i \prod_j p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
-     -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -\log p(y_i=j|x_i,\theta)^{1\{y_i=j\}}\\
-     &= \arg_\theta \min \sum_i \sum_j -(1\{y_i=j\})\log p(y_i=j|x_i,\theta)
-\end{align}
-We assume there is an underlying data distribution that we try to approximate with a model distribution. Substituting dummy probability distributions gives 
-\begin{align}
-    -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{model}(y_i=j|x_i,\theta)\label{ce_derivation_res}\\
-    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]
-\end{align}
-\subsection{KL-Divergence}
-Continuing from~\ref{ce_derivation_res},
-\begin{align}
-    -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{model}(y_i=j|x_i,\theta)\\
-    &= \arg_\theta \min [\sum_i \sum_j p_{data}(y_i=j|x_i)\log\frac{p_{data}(y_i=j|x_i)}{p_{model}(y_i=j|x_i,\theta)} + \sum_i \sum_j -p_{data}(y_i=j|x_i)\log p_{data}(y_i=j|x_i)]\\
-    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta)) + H(p_{data}(y_i|x_i))]\\
-    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\label{kl_derivation_res}\\
-\end{align}
-Shannon's entropy term can be omitted as it does not depend on parameters. We have shown that maximizing likelihood, minimizing cross-entropy and KL-divergence between data and model distributions are equivalent. In this regard, the model distribution tries to approximate the data distribution when training. 
-
-In very specific case of supervised classification tasks, it is assumed that $j$ denotes the class of the variable. This general approach can be applied to any type of model as we will see some other(s) along the way.
-\subsection{Non-negativity of KL-Divergence}
-\label{kl_nonneg}
-Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function 
-\begin{align}
-     \int_X p(X)\log\frac{p(X)}{q(X)} dX &= \int_X p(X)(-\log)\frac{q(X)}{p(X)} dX\\
-     &\geq -\log \int_X p(X)\frac{q(X)}{p(X)} dX\\
-     &\geq -\log \int_X q(X) dX\\
-     &\geq -\log \int_X q(X) dX\\
-     &\geq -\log 1 \\
-     &\geq 0
-\end{align}
-\subsection{Mean Squared Error}
-We again use maximum likelihood. However, this time we assume $p(y_i|x_i,\theta) = p_{model}(y_i|x_i,\theta) \sim \mathcal{N}(y_i; \mu_\theta(x_i),\sigma^2)$; hence, 
-\begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta \max \prod_i p(y_i|x_i,\theta) \label{norm_mul}\\
-    &= \arg_\theta \max \prod_i \frac{1}{(\sigma\sqrt{2\pi})^k}e^{-\frac{1}{2\sigma^2}(\mu_\theta(x_i)-y_i)^2}\\
-    -\log\hat{\theta}_{MLE} &= \arg_\theta \min [\sum_i -k\log(\sigma\sqrt{2\pi}) + \sum_i \frac{1}{2\sigma^2}(\mu_\theta(x_i)-y_i)^2]\\
-    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\ \text{after eliminating the constants}
-    \label{mse_derivation_res1}
-\end{align}
-Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
-
-If we multiply multiple single variable Gaussians as in~\ref{norm_mul}, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, supporting our claim in~\ref{cor_dep}. In a sense, we are also claiming $p(y|x,\theta) = p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$. if the noise producing the output is normal around a mean function (i.e. $y = \mu_\theta(x)+\sigma^2\epsilon$), minimizing the noise is equivalent to the expressions below  
-\begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta \max p(y|x,\theta)\\
-    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]\\
-    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\\ 
-    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\\ 
-\end{align}
-
-We can further assume $p_{data}(y_i|x_i) \sim \mathcal{N}(y_i; \mu(x_i),\beta)$ (hence $p_{data}(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$). We derive the result from KL-divergence, which is not a trivial task on its own. However, deriving the result below, Mr. Easy made our life easier.
-\begin{equation}
-    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
-\end{equation}
-Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
-\begin{align}
-    \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))] &= \arg_\theta \min\sum_i\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu_i-\mu_\theta(x_i)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
-    &= \arg_\theta \min\sum_i\frac{1}{2\sigma^2}\big(\mu_i-\mu_\theta(x_i)\big)^2\label{mse_derivation_res2}
-\end{align}
-
-People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square, variance cannot be negative).
 \subsection{Preference of Mean over Summation in Loss Functions}
 \label{mean_loss}
 Deriving~\ref{ce_derivation_res} and~\ref{mse_derivation_res1}, we see a pattern in which we try to minimize a loss function. 
@@ -551,13 +658,14 @@ We realize that as number of samples increases, the mean of the sample approxima
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
+
 \section{Gradients of Functions in Backpropagation}
 \subsection{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
 \begin{equation}
     \prescript{N\times M}{}{Y} = \prescript{N\times D}{}{X}\prescript{D\times M}{}{W} + \prescript{N\times1}{}{1}\prescript{1\times M}{}{b}
 \end{equation}
-Using the definition of matrix multiplication, we have
+Using the definition of matrix multiplication in~\ref{matmult}, we have
 \begin{equation}
 y_{nm} = \sum_{d=1}^D x_{nd} w_{dm}+b_m
 \end{equation}
@@ -588,11 +696,14 @@ Using the chain rule with a loss function gives
     &= \sum_{n=1}^N L_{y_{nm}}\\
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
-\section{Diffusion Models}
-\subsection{What is a Diffusion Model}
+\section{Generative Models}
+\subsection{Variational Autoencoder}
+
+\subsection{Diffusion Models}
+\subsubsection{What is a Diffusion Model}
 
 Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times. 
-\subsection{Forward Process}
+\subsubsection{Forward Process}
 Let \textit{forward process} be defined as a Markov Chain (see~\ref{markov_chain_cond}):
 
 \begin{align}
@@ -646,7 +757,7 @@ Note that similar elements cancel each other and we are left with $1-\prod_{i=1}
     x_t &= \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t\label{reparam_xt}\\
     q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)
 \end{align}
-\subsection{Reverse Process and the Loss Function}
+\subsubsection{Reverse Process and the Loss Function}
 We found a closed form solution for the forward process function. However, reverse process will be learnt by an ML (machine learning) algorithm. The authors decided to use a type of CNN (Convolutional Neural Network), U-Net.
 
 Let \textit{reverse process} be defined as another Markov Chain (backward in time, see~\ref{markov_chain_joint}):
@@ -739,7 +850,7 @@ Let us focus on $L_{t-1}$.
     &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
     &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
 \end{align}
-If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the derivation leading to~\ref{mse_derivation_res2}, finding
+If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
     \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
