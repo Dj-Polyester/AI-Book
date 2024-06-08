@@ -514,37 +514,55 @@ similarly, there is also increasing monotonicity which is irrelevant at this poi
 \end{align}
 Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $KL(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $KL(q_1)=KL(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
 \subsection{Cross-Entropy}
+\subsubsection{General Derivation}
 \label{ce_derivation}
-In ML problems, we want to find the underlying distribution $p_{data}(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p_{model}(y|x,\theta)$ with parameters $\theta$. The ideal distribution $p_{model}(y|x,\theta)$ should be equal to $p_{data}(y|x)$, which is equivalent to saying that the difference $KL(p_{data}(y|x)\parallel p_{model}(y|x,\theta))$ should be zero. Then the optimum parameters
+In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$. The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $KL(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters
 \begin{align}
-    \hat{\theta} &= \arg_\theta \min[KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta))]\\
-    &= \arg_\theta \min[ KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta)) + H(p_{data}(y|x))]\\
-    &= \arg_\theta \min \left( E_{p_{data}(y|x)}\Big[\log\frac{p_{data}(y|x)}{p_{model}(y|x,\theta)}\Big] + E_{p_{data}(y|x)}\Big[-\log p_{data}(y|x)\Big]\right)\\
-    &= \arg_\theta \min \left( E_{p_{data}(y|x)}\Big[-\log p_{model}(y|x,\theta)\Big]\right)\\
-    &= \arg_\theta \min H(p_{data}(y|x), p_{model}(y|x,\theta))\\
+    \hat{\theta} 
+    &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
+    &= \arg_\theta \min[ KL(q(y|x) \parallel p(y|x,\theta)) + H(q(y|x))]\\
+    &= \arg_\theta \min \left( E_{q(y|x)}\Big[\log\frac{q(y|x)}{p(y|x,\theta)}\Big] + E_{q(y|x)}\Big[-\log q(y|x)\Big]\right)\\
+    &= \arg_\theta \min \left( E_{q(y|x)}\Big[-\log p(y|x,\theta)\Big]\right)\label{ce_derivation_res}\\
+    &= \arg_\theta \min H(q(y|x), p(y|x,\theta))
 \end{align}
-\subsubsection{Another Derivation for Supervised Tasks}
-When training with given parameters $\theta$ and $x$, learning models choose the combination of parameters that yields the maximum observation, $y_{\max}$, the process known as the maximum likelihood estimation. We will use the categorical distribution in~\ref{catdist}. Maximum likelihood estimator is as follows
+\subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
+\label{mle_ce}
+Continuing from~\ref{ce_derivation_res}, 
+\begin{equation}
+    = \arg_\theta \min \sum_j -q(y=j|x)\log p(y=j|x,\theta)
+\end{equation}
+We will assume $q$ is known (see~\ref{catdist}).
 \begin{align}
-    \hat{\theta}_{MLE} 
-    &= \arg_\theta \max p_{data}(y|x)\\
-    &= \arg_\theta \max p_{model}(y|x,\theta)\\
-    &= \arg_\theta \max \prod_j p_{model}(y=j|x,\theta)^{1\{y=j\}}\\
-    -\log \hat{\theta}_{MLE} &= \arg_\theta \min \sum_j -\log p(y=j|x,\theta)^{1\{y=j\}}\\
-    &= \arg_\theta \min \sum_j -(1\{y=j\})\log p(y=j|x,\theta)
+    &= \arg_\theta \min \sum_j -(1\{y=j\})\log p(y=j|x,\theta)\\
+    &= \arg_\theta \min \sum_j -\log p(y=j|x,\theta)^{1\{y=j\}}\\
+    \arg_\theta \max\big(\exp\big[-H(q(y|x), p(y|x,\theta))\big]\big)
+    &= \arg_\theta\max \sum_j \exp\left[\log p(y=j|x,\theta)^{1\{y=j\}}\right]\\
+    &= \arg_\theta\max \sum_j p(y=j|x,\theta)^{1\{y=j\}}\\
+    &= \arg_\theta\max p(y|x,\theta) \ \text{(see~\ref{catdist})}\\
+    &= \hat{\theta}_{MLE}\label{mle_ce_res}
 \end{align}
-We assume there is an underlying data distribution that we try to approximate with a model distribution. Substituting dummy probability distributions gives 
-\begin{align}
-    &= \arg_\theta \min \sum_j -p_{data}(y=j|x)\log p_{model}(y=j|x,\theta)\label{ce_derivation_res}\\
-    &= \arg_\theta \min \left[H(p_{data}(y|x),p_{model}(y|x,\theta))\right]
-\end{align}
-This derivation applies when $p_{data}$ is known (only one element in the event space is certain to occur). Supervised tasks are such a scenario, where we are given labels.
 \subsection{Mean Squared Error}
+\subsubsection{General Derivation}
 \label{mse_derivation}
-Continuing from~\ref{ce_derivation_res} with the assumption $p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
+We assume $p(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Mr. Easy made our life easier.
+\begin{equation}
+    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
+\end{equation}
+Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
+\begin{align}
+    \hat{\theta} 
+    &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
+    &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
+    &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
+\end{align}
+
+People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
+\subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
+\label{mle_mse}
+Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
 \begin{align}
     \hat{\theta}_{MLE} 
-    &= \arg_\theta \max p_{model}(y|x,\theta)\\
+    &= \arg_\theta \max p(y|x,\theta)\\
     &= \arg_\theta \max \frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\\
     -\log\hat{\theta}_{MLE} &= \arg_\theta\min\left[-\log\left(\frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\right)\right]\\
     &= \arg_\theta\min[-k\log(\sigma\sqrt{2\pi}) + \frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2]\\
@@ -553,30 +571,18 @@ Continuing from~\ref{ce_derivation_res} with the assumption $p_{model}(y|x,\thet
 \end{align}
 Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
 
-We can further assume $p_{data}(y_i|x_i) \sim \mathcal{N}(y_i; \mu(x_i),\beta)$ (hence $p_{data}(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$). We will obtain the result using KL-divergence. Deriving the equation below, Mr. Easy made our life easier.
-\begin{equation}
-    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
-\end{equation}
-Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
+Notice that in~\ref{mle_ce}, we are approximating a probability distribution (minimizing KL-divergence) between $\hat{y} = p(y|x,\theta)$ and an underlying distribution $q(y|x)$ with labels $y$ (whose hot-encoding is the distribution itself). However, when substituting with the Gaussian, we see we are fitting a Gaussian by minimizing the distance of its mean to the datapoint $y$.  
+\subsection{Loss Function as a Sum of Elements in Supervised Tasks}
+For supervised tasks, we found a relationship between MLE and the loss functions $\mathcal{L}_\theta(\hat{y},y)$ in~\ref{mle_ce} and~\ref{mle_mse} for a single data point $(x,y)$. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then 
 \begin{align}
-    \arg_\theta \min[ KL(p_{data}(y|x) \parallel p_{model}(y|x,\theta))] &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
-    &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
+    \hat{\theta}_{MLE} 
+    &= \arg_\theta \max p_{model}(y|x,\theta)\\
+    &= \arg_\theta \max \prod_i p_{model}(y_i|x_i,\theta)\\
+    -\log\hat{\theta}_{MLE}
+    &= \arg_\theta \min \sum_i -\log p_{model}(y_i|x_i,\theta)\\
+    &= \arg_\theta \min \sum_i \mathcal{L}_\theta(\hat{y_i},y_i)\label{loss_sum_res}
 \end{align}
-
-People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
-\subsection{Loss Function as a Sum of Elements}
-The losses we found in~\ref{ce_derivation} and~\ref{mse_derivation} are for a single data point. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then 
-$
-    p_{model}(y|x,\theta) = \prod_i p_{model}(y_i|x_i,\theta)
-$ and 
-
-If we multiply multiple single variable Gaussians, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, supporting our claim in~\ref{cor_dep}. In a sense, we are also claiming $p(y|x,\theta) = p_{model}(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$. if the noise producing the observation is normal around a mean function (i.e. $y = \mu_\theta(x)+\sigma^2\epsilon$), minimizing the noise is equivalent to the expressions below  
-\begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta \max p(y|x,\theta)\\
-    &= \arg_\theta \min [\sum_i H(p_{data}(y_i|x_i),p_{model}(y_i|x_i,\theta))]\\
-    &= \arg_\theta \min[\sum_i KL(p_{data}(y_i|x_i) \parallel p_{model}(y_i|x_i,\theta))]\\ 
-    &= \arg_\theta \min \sum_i \frac{1}{2}(\mu_\theta(x_i)-y_i)^2\\ 
-\end{align}
+If we multiply multiple single variable Gaussians, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, not contradicting our claim in~\ref{cor_dep}. In this case, we are also claiming $p(y|x,\theta)=\mathcal{N}(y; \mu_\theta(x),\sigma^2)$.
 \subsection{Expected Value of Multiple Variables}
 \label{multi_mean_derivation}
 Here, we are proving that the expected value has the superposition property
@@ -637,13 +643,10 @@ Using the fact that variance is just the \textit{self-covariance}
     &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
     &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}\\
 \end{align}
-\subsection{Preference of Mean over Summation in Loss Functions}
+\subsection{Preference of Mean over Summation for Loss Functions in Supervised Tasks}
 \label{mean_loss}
-Deriving~\ref{ce_derivation_res} and~\ref{mse_derivation_res1}, we see a pattern in which we try to minimize a loss function. 
-\begin{equation}
-    \hat{\theta}_{MLE} = \arg_\theta \min \sum_i \mathcal{L}(\hat{y_i},y_i)
-\end{equation}
-Using the result~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant variance $\sigma^2$, the variance of the sample mean,
+Deriving~\ref{loss_sum_res} for a dataset, we see a pattern in which we try to minimize a sum.
+Using~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant variance $\sigma^2$, the variance of the sample mean,
 \begin{align}
     Var(\overline{X}) &= Var(\frac{1}{n}\sum_{i=1}^{n} X_i)\\
     &= \frac{1}{n^2} \sum_{i=1}^{n} Var(X_i)\\
@@ -655,7 +658,7 @@ Using the result~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant 
 \end{align}
 We realize that as number of samples increases, the mean of the sample approximates the true mean of the distribution better. That is why people usually use mean instead of sum. Hence new expression for the loss function becomes 
 \begin{equation}
-    \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}(\hat{y_i},y_i)
+    \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
 
@@ -765,13 +768,13 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
     p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)\\
     p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))
 \end{align}
-Using the approach in~\ref{ce_derivation},
+We want to minimize $KL(q(x_0)\parallel p_\theta(x_0))$. The formulation in~\ref{ce_derivation} gives,
 \begin{equation}
-    \hat{\theta}_{MLE} = \arg_\theta \max p_\theta(x_0) = \arg_\theta \min\int_{j} -q(x_0=j)\log p_\theta(x_0=j) dj
+    \arg_\theta \min KL(q(x_0)\parallel p_\theta(x_0)) = \arg_\theta \min H(q(x_0), p_\theta(x_0))
 \end{equation}
 Bear in mind that $q$ is now the data distribution (generated by data) whereas $p$ is the model distribution (generated by model). Our loss function becomes
 \begin{equation}
-    \mathcal{L}(x_0)=H(q(x_0), p_\theta(x_0))= E_{q(x_0)}[-\log p_\theta(x_0)]
+    \mathcal{L}_\theta(x_0)=H(q(x_0), p_\theta(x_0))= E_{q(x_0)}[-\log p_\theta(x_0)]
 \end{equation}
 which is intractable
 \begin{align}
