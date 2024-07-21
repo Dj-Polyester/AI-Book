@@ -1,13 +1,19 @@
 \documentclass{article}
-\usepackage{graphicx} % Required for inserting images
+\usepackage{geometry}
+\geometry{margin=.5in}
 \usepackage{amsmath}
 \usepackage{mathtools}
+%Figures and tables
+\usepackage{float}
+%Inserts images
+\usepackage{graphicx}
+%Linking
 \usepackage{hyperref}
-\usepackage{geometry}
+%Drawing
 \usepackage{tikz}
 \usetikzlibrary{angles, quotes}
-\usepackage{float}
-\geometry{margin=.5in}
+%Includes "References" in the table of contents
+\usepackage[nottoc]{tocbibind}
 
 \newcommand{\norm}[2][]{\left\lVert#2\right\rVert_{#1}}
 
@@ -30,22 +36,22 @@ It is not mandatory, but recommended to have some familiarity with the concepts 
 
 Unless stated otherwise, these math notations apply. 
 \begin{itemize}
-    \item Capital letters represent matrices (or hypermatrices in general) and random variables.
-    \item Lowercase symbols denote vectors and scalars.
-    \item In some contexts, $0$ and $1$ may indicate a vector or matrix only composed of these scalars.
+    \item The symbol $\approx$ is the approximation symbol, which is used to indicate that the left-hand-side approximates the right-hand-side (i.e. $2.1 \approx 2$).
+    \item Depending on the context, $0$ and $1$ may indicate a vector or matrix only composed of these scalars.
     \item Vectors are column vectors by default.
     \item Row vectors are denoted as their transpose with a superscript capital $T$ (i.e. $a^T$).
     \item Scalar (or a row/column vector) of a matrix is denoted with corresponding lowercase symbol.
     \item Pre-superscript on a symbol of an array denotes the shape of the array (i.e. $\prescript{M\times N}{}{A}$ is a matrix $A$ with shape $M\times N$ and $\prescript{M\times 1}{}{a}$ is a row vector $a$ with shape $M\times 1$).
-    \item Subscript of a lowercase variable symbol (i.e. $a_{ijk...}$) denotes the index of that variable in its corresponding matrix with capital letter. Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_j]$). In a similar fashion, this notation can be used for parameters of a function (i.e. $f(x^T_{i:j}) = f(x^T_i, x^T_{i+1}, ..., x^T_j)$).
+    \item Subscript of a lowercase variable symbol denotes the index of that variable in its corresponding array (i.e. $a_{ij}$ of matrix $A$ and $a_i$ of vector $a$). Furthermore, colon between indices indicates the ordered array (vector/matrix etc.) of variables whose indices are bounded between upper and lower bounds ordered (i.e. $a^T_{i:j} = [a^T_i, a^T_{i+1}, ..., a^T_j]$). In a similar fashion, this notation can be used for parameters of a function (i.e. $f(x^T_{i:j}) = f(x^T_i, x^T_{i+1}, ..., x^T_j)$). This is similar to NumPy's indexing notation if you are familiar with it.
     \item Subscript of an integral or sum symbol denoting a variable (i.e. $\sum_X$, $\int_X$) indicates that the operation spans the entire domain of that variable (i.e. $X$).
     \item Subscript of a probabilitiy distribution denotes conditional probability (i.e. $p_\theta(x) = p(x|\theta)$. Similarly, Subscript of a function denotes an additional parameter (i.e. $f_\theta(x) = f(x, \theta)$
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
 \subsection{Axioms and Theory}
-\subsubsection{Linear Algebra}
+\subsubsection{Numbers and Linear Algebra}
 \paragraph{Scalars, Vectors and Matrices}
+\label{defn_svm}
 A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars. 
 A matrix 
 $$
@@ -59,16 +65,29 @@ $$
 or $M = [v_1 v_2 ... v_m]^T$
 is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars. 
 
-For a matrix $M$, $m_{ij}$ denotes the scalar in $i$th row and $j$th column.
-
 Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$). 
 
 For arrays (vectors and matrices), addition (and subtraction) operates element-wise whereas multiplication (and division) has a special variant (see~\ref{matmult}) beside the traditional element-wise multiplication.
+\paragraph{Equality Comparison for Minimum and Maximum Functions}
+Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum function.
+\begin{align}
+    \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
+     \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
+     \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
+\end{align}
 \paragraph{Dot Product}
+\label{dotp}
 Dot product of two vectors $a\cdot b=\prescript{1\times N}{}{a^T}\prescript{N\times 1}{}{b}=\prescript{1 \times 1}{}{c}$ is defined such that $c$ is a scalar and
 \begin{equation}
-    c = \sum_{n=1}^N a_nb_n \label{dotp}
+    c = \sum_{n=1}^N a_nb_n \label{dotp_defn}
 \end{equation}
+with properties some of which is given below (assuming the dimensions fit of course)
+\begin{itemize}
+    \item commutativity (order of the operands), i.e. $a^Tb = b^Ta$
+    \item distributivity, i.e. $a^T(b+c) = a^Tb+a^Tc$
+    \item associativity (order of the operation), i.e. $(a^Tb)d^T = a^T(bd^T)$
+\end{itemize}
+Note the similarity of dot product with the traditional standard multiplication. Indeed, the formula~\ref{dotp_defn} satisfies these properties, which is easy to prove.
 \paragraph{P-Norm}
 P-Norm of a vector $a$
 \begin{align}
@@ -76,7 +95,7 @@ P-Norm of a vector $a$
     \norm[1]{a} & & \text{(Manhattan norm)} \label{man_norm}\\
     \norm[2]{a} &= \norm[]{a} & \text{(Euclidean norm)} \label{euc_norm}
 \end{align}
-Note that for the squared Euclidean, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
+Notice that the squared Euclidean is the dot product of two equal vectors. When denoting it, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
 \paragraph{Matrix Multiplication}
 Multiplication of two matrices 
 $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that 
@@ -84,6 +103,7 @@ $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}
     c_{ij} = \sum_{k=1}^K a_{ik}b_{kj} 
     \label{matmult}
 \end{equation}
+The same properties in ~\ref{dotp} apply, which is also easy to prove.
 \paragraph{Definiteness of a Symmetric Matrix} 
 A symmetric matrix $M$ is positive definite if and only if for any vector $z$
 \begin{equation}
@@ -94,19 +114,13 @@ Similarly, $M$ is semi-positive definite if and only if for any vector $z$
     z^TMz \geq 0
 \end{equation}
 Similar definitions for negative and semi-negative definite matrices exist (just reversing the equality sign).
-\subsubsection{Equality Comparison for Minimum and Maximum Functions}
-Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum function.
-\begin{align}
-     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
-     \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
-     \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
-\end{align}
 \subsubsection{Probability Theory}
 \paragraph{Probability}
-Given an event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$. The below is an essential property that all probabilities in the event space will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
+Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
 \begin{align}
     \int_X p(X)dX = 1
 \end{align}
+$X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
 \paragraph{Joint Probability}
 The probability $p(x_i, y_j)$ denotes multiple events occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation
 \begin{align}
@@ -254,28 +268,20 @@ Figure~\ref{fig:cos_law_tri} shows a triangle with rules below
      &= a^2 + b^2 - 2ab\cos(\alpha +\beta)\\
      &= a^2 + b^2 - 2ab\cos \theta \label{cos_law}
 \end{align}
-\subsection{Relation Between Dot Product and Cosine}
-Assume
+\subsection{Relation Between Dot Product and Cosine} 
+Assuming that $a, b$ and $c$ are vectors and
 \begin{equation}
     c = a-b
-\end{equation}
-such that $a, b$ and $c$ are vectors. We define an operation (dot product) on vectors which has following properties
-
-\begin{itemize}
-    \item commutativity (i.e. $a^Tb = b^Ta$)
-    \item distributivity (i.e. $a^T(b+c) = a^Tb+a^Tc)$)
-    \item dot product of a vector with itself is equivalent to squared Euclidean norm (length) (i.e. $a^Ta = \norm{a}^2$)
-\end{itemize}
-and many other properties of the scalar multiplication we know of (In fact, the well known dot product formula~\ref{dotp} satisfies all of these properties).
-These properties in mind we find
+\end{equation} 
+With the properties in~\ref{dotp} mind
 \begin{align}
     c^2 &= (a-b)^T(a-b)\\
     &= a^Ta +b^Tb - 2a^Tb\\
 \end{align}
-Using~\ref{cos_law} (note that the values shown there are scalar lengths)
+Using~\ref{cos_law}
 \begin{align}
     a^Ta +b^Tb - 2a^Tb &= \norm{a}^2 + \norm{b}^2 - 2\norm{a}\norm{b}\cos \theta\\
-    a^Tb &= \norm{a}\norm{b}\cos \theta
+    a^Tb &= \norm{a}\norm{b}\cos \theta~\cite{nowell_math_2006}
 \end{align}
 Now for a given point $p$ and normal vector $a$, every point $x$ making $a$ and $(x-p)$ perpendicular to each other ($\theta = \frac{\pi}{2}$) 
 \begin{align}
@@ -317,7 +323,7 @@ We have shown for a point $x_c=Xc$
 \begin{equation}
     y(Xc)=f(X)c=\sum_i c_if(x_i)
 \end{equation}
-We will further assume for all $i$, $c_i$ is non-negative (i.e. $c_i \in [0,1]$)
+We will further assume for all $i$, $c_i \in [0,1]$
 \begin{align}
     \min_kx_{kj} &\leq x_{ij} \leq \max_kx_{kj}\\
     c_i\min_kx_{kj} &\leq c_ix_{ij} \leq c_i\max_kx_{kj}\\
@@ -351,7 +357,7 @@ Let $A$ be a diagonalizable symmetric square matrix. Let $P$ be a square matrix 
     &= \lambda_jv_i^Tv_j\\
     (\lambda_i-\lambda_j)v_i^Tv_j &= 0
 \end{align}
-Since $A$ is diagonalizable, $\lambda_i=\lambda_j$ if and only if $i=j$. Hence if $i \neq j$, $v_i^Tv_j = 0$ and $P$ is orthogonal, hence 
+Since $A$ is diagonalizable, $\lambda_i=\lambda_j$ if and only if $i=j$. Hence if $i \neq j$, $v_i^Tv_j = 0$ and $P$ is orthogonal~\cite{magidin_linear_2011}, hence 
 $PP^T = D$ such that 
 \begin{equation}
 D_{ij} = \begin{cases}
@@ -427,7 +433,7 @@ in a contour with multiplier $\bar{c}$. The eigenvector $v_i$ is a unit directio
 
 For any function, $f(x)$ its second order Tailor expansion approximates it in the neighbor of $x$.
 \begin{equation}
-    f(x+\Delta x) \sim f(x)+\Delta x^T\nabla f(x)+\Delta x^TH(x)\Delta x
+    f(x+\Delta x) \approx f(x)+\Delta x^T\nabla f(x)+\Delta x^TH(x)\Delta x
 \end{equation}
 where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
@@ -535,18 +541,19 @@ We will assume $q$ is known (see~\ref{catdist}).
 \begin{align}
     &= \arg_\theta \min \sum_j -(1\{y=j\})\log p(y=j|x,\theta)\\
     &= \arg_\theta \min \sum_j -\log p(y=j|x,\theta)^{1\{y=j\}}\\
-    \arg_\theta \max\big(\exp\big[-H(q(y|x), p(y|x,\theta))\big]\big)
-    &= \arg_\theta\max \sum_j \exp\left[\log p(y=j|x,\theta)^{1\{y=j\}}\right]\\
-    &= \arg_\theta\max \sum_j p(y=j|x,\theta)^{1\{y=j\}}\\
+    &= \arg_\theta \max \sum_j \log p(y=j|x,\theta)^{1\{y=j\}}\\
+    &= \arg_\theta \max\left[\log\prod_j p(y=j|x,\theta)^{1\{y=j\}}\right]\\
+    &= \arg_\theta \max\left[\exp\Big(\log\prod_j p(y=j|x,\theta)^{1\{y=j\}}\Big)\right]\\
+    &= \arg_\theta \max\prod_j p(y=j|x,\theta)^{1\{y=j\}}\\
     &= \arg_\theta\max p(y|x,\theta) \ \text{(see~\ref{catdist})}\\
     &= \hat{\theta}_{MLE}\label{mle_ce_res}
 \end{align}
 \subsection{Mean Squared Error}
 \subsubsection{General Derivation}
 \label{mse_derivation}
-We assume $p(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) \sim \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Mr. Easy made our life easier.
+We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) = \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Gupta made our life easier.
 \begin{equation}
-    p(x) \sim \mathcal{N}(x;\mu_p,\Sigma_p), q(x) \sim \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]
+    p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}
 \end{equation}
 Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
 \begin{align}
@@ -559,7 +566,7 @@ Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $
 People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
 \subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
 \label{mle_mse}
-Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) \sim \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
+Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
 \begin{align}
     \hat{\theta}_{MLE} 
     &= \arg_\theta \max p(y|x,\theta)\\
@@ -597,6 +604,13 @@ Here, we are proving that the expected value has the superposition property
     &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
     &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
     &= aE[X]+bE[Y]
+\end{align}
+recursively expanding, it is easy to see this equation applies to the general case
+\begin{align}
+    E\big[\sum_{i=1}^N a_iX_i\big] &= a_1E[X_1]+E\big[\sum_{i=2}^N a_iX_i\big]\\
+    &= a_1E[X_1]+a_2E[X_2]+E\big[\sum_{i=3}^N a_iX_i\big]\\
+    & ...\\
+    &= \sum_{i=1}^N a_iE[X_i]~\label{mean_superpos}
 \end{align}
 \subsection{Covariance of Multiple Variables}
 Here, we are deriving an equation similar to part~\ref{multi_mean_derivation}
@@ -700,8 +714,18 @@ Using the chain rule with a loss function gives
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
 \section{Generative Models}
-\subsection{Variational Autoencoder}
-
+\subsection{Variational Autoencoder (WIP)}
+\begin{align}
+KL(q_\phi(z|x) \parallel p_\theta(z|x))
+&=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
+&=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)p_\theta(x)}{p_\theta(z,x)}\right]\\
+&=E_{q_\phi(z|x)}\left[ \log p_\theta(x) + \log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
+&=E_{q_\phi(z|x)}\left[\log p_\theta(x)\right] + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
+&=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
+&=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
+&=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
+&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)
+\end{align}
 \subsection{Diffusion Models}
 \subsubsection{What is a Diffusion Model}
 
@@ -710,8 +734,8 @@ Diffusion models require two processes that adds noise to data for a number of s
 Let \textit{forward process} be defined as a Markov Chain (see~\ref{markov_chain_cond}):
 
 \begin{align}
-    q(x_{1:T}|x_0) &= \prod_{t=1}^T q(x_t|x_{t-1})\\
-    q(x_t|x_{t-1}) &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)
+    q(x_{1:T}|x_0) &= \prod_{t=1}^T q(x_t|x_{t-1})~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
+    q(x_t|x_{t-1}) &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)~\cite{ho_denoising_2020,weng_what_2021}
 \end{align}
 Using~\ref{reparam_trick} and substituting $\alpha = 1-\beta_t$ we have
 \begin{equation}
@@ -733,14 +757,10 @@ We should have an equation of the form
 \begin{equation}
     x_t = \mu + \sigma \cdot \epsilon_t
 \end{equation}
-We want to calculate $\Sigma_t$. The information in part~\ref{mean_loss} gives some clues on what to do next. Recursively expanding the general case using ~\ref{mean_superpos}, we find
-\begin{align}
-    \mu_{\sum_{i=1}^N a_i X_i} &= a_1\mu_{X_1} + \mu_{\sum_{i=2}^N a_i X_i}\\
-    &= a_1\mu_{X_1} + a_2\mu_{X_2} + \mu_{\sum_{i=3}^N a_i X_i}\\
-    & ...\\
-    &= \sum_{i=1}^N a_i \mu_{X_i}
-    \label{meansum}
-\end{align}
+We want to calculate $\Sigma_t$. The information in part~\ref{mean_loss} gives some clues on what to do next. From ~\ref{mean_superpos} we have
+\begin{equation}
+    \mu_{\sum_{i=1}^N a_i X_i} = \sum_{i=1}^N a_i \mu_{X_i}
+\end{equation}
 We also found in the same part
 \begin{equation}
     Var(\sum_{i=1}^{n} a_i X_i) = \sum_{i=1}^{n} a_i^2 Var(X_i) \quad (\text{Assuming $X$ is uncorrelated})
@@ -761,22 +781,18 @@ Note that similar elements cancel each other and we are left with $1-\prod_{i=1}
     q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)
 \end{align}
 \subsubsection{Reverse Process and the Loss Function}
-We found a closed form solution for the forward process function. However, reverse process will be learnt by an ML (machine learning) algorithm. The authors decided to use a type of CNN (Convolutional Neural Network), U-Net.
+We found a closed form solution for the forward process function. However, reverse process will be learnt by an ML (machine learning) algorithm. Ho et al. (2020) decided to use a type of CNN (Convolutional Neural Network), U-Net~\cite{ho_denoising_2020}.
 
 Let \textit{reverse process} be defined as another Markov Chain (backward in time, see~\ref{markov_chain_joint}):
 \begin{align}
-    p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)\\
-    p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))
+    p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
+    p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))~\cite{ho_denoising_2020, weng_what_2021}
 \end{align}
-We want to minimize $KL(q(x_0)\parallel p_\theta(x_0))$. The formulation in~\ref{ce_derivation} gives,
+We want to minimize $KL(q(x_0)\parallel p_\theta(x_0))$. The formulation in~\ref{ce_derivation} gives our loss function
 \begin{equation}
-    \arg_\theta \min KL(q(x_0)\parallel p_\theta(x_0)) = \arg_\theta \min H(q(x_0), p_\theta(x_0))
+    \arg_\theta \min KL(q(x_0)\parallel p_\theta(x_0)) = \arg_\theta \min H(q(x_0), p_\theta(x_0)) = \arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)]
 \end{equation}
-Bear in mind that $q$ is now the data distribution (generated by data) whereas $p$ is the model distribution (generated by model). Our loss function becomes
-\begin{equation}
-    \mathcal{L}_\theta(x_0)=H(q(x_0), p_\theta(x_0))= E_{q(x_0)}[-\log p_\theta(x_0)]
-\end{equation}
-which is intractable
+which is intractable, but one can find another loss function which is
 \begin{align}
 -\log p_\theta(x_0) 
 &\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\ \text{due to~\ref{kl_nonneg}}\\
@@ -785,22 +801,24 @@ which is intractable
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
 &\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\\
 E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\ \text{(Integrated both sides)}\\
-\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]
+\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]~\cite{weng_what_2021}
 \end{align}
-We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_what_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
 \begin{align}
 \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{0:T})}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t | x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)} \Big]\label{x0cond}\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t | x_0)}{q(x_{t-1} | x_0)} + \log\frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T | x_0)}{q(x_1 | x_0)} + \log \frac{q(x_1 | x_0)}{p_\theta(x_0 | x_1)}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T | x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} | x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 | x_1)\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T | x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 | x_1)}_{L_0}\Big]\\
-&= \mathcal{L'}(x_0)
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t |x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)} \Big]\label{x0cond}\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t |x_0)}{q(x_{t-1} |x_0)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
+&= \mathcal{L'}_\theta(x_0)
 \end{align}
-We eliminated $L_T$ term since it is constant with respect to parameters $\theta$. As a side note, the authors assume $p(x_T) \sim \mathcal{N}(0,1)$ and $\beta_T=1$ making $L_T \sim 0$.
+We eliminated $L_T$ term since it is constant with respect to parameters $\theta$~\cite{weng_what_2021}. 
+
+As a side note, the authors choose $p(x_T)=\mathcal{N}(0,1)$, and $\beta_t$ schedule so that $L_T \approx 0$ ($\beta_T \approx 1$)~\cite{ho_denoising_2020}. However, for stability they opt for small values of $\beta_T$~\cite{sohl-dickstein_deep_2015, ho_denoising_2020}.
 
 We conditioned on $x_0$ at~\ref{x0cond} since $q(x_{t-1}|x_t, x_0)$ is tractable and the proof is as follows
 \begin{align}
@@ -810,13 +828,13 @@ We conditioned on $x_0$ at~\ref{x0cond} since $q(x_{t-1}|x_t, x_0)$ is tractable
     &= q(x_t|x_{t-1})\frac{q(x_{t-1}|x_0)}{q(x_t|x_0)}\ \text{due to Markov property} \label{x0cond_re}\\
     &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)\frac{\mathcal{N}(x_{t-1};\sqrt{\bar{\alpha}_{t-1}}x_0,1 - \bar{\alpha}_{t-1})}{\mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)}
 \end{align}
-~\ref{x0cond_re} is apparent in~\ref{x0cond}. Doing the crazy calculations gives
+~\ref{x0cond_re} also appears in~\ref{x0cond}. Doing the crazy calculations gives
 \begin{align}
 q(x_{t-1}|x_t, x_0) 
 &= q(x_t|x_{t-1}, x_0) \frac{ q(x_{t-1}|x_0) }{ q(x_t|x_0) }\\
 &\propto \exp \Big(-\frac{1}{2} \big(\frac{(x_t - \sqrt{\alpha_t} x_{t-1})^2}{\beta_t} + \frac{(x_{t-1} - \sqrt{\bar{\alpha}_{t-1}} x_0)^2}{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
 &= \exp \Big(-\frac{1}{2} \big(\frac{x_t^2 - 2\sqrt{\alpha_t} x_t \color{blue}{x_{t-1}} \color{black}{+ \alpha_t} \color{red}{x_{t-1}^2} }{\beta_t} + \frac{ \color{red}{x_{t-1}^2} \color{black}{- 2 \sqrt{\bar{\alpha}_{t-1}} x_0} \color{blue}{x_{t-1}} \color{black}{+ \bar{\alpha}_{t-1} x_0^2}  }{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
-&= \exp\Big( -\frac{1}{2} \big( \color{red}{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})} x_{t-1}^2 - \color{blue}{(\frac{2\sqrt{\alpha_t}}{\beta_t} x_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0)} x_{t-1} \color{black}{ + C(x_t, x_0) \big)\Big)}
+&= \exp\Big( -\frac{1}{2} \big( \color{red}{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})} x_{t-1}^2 - \color{blue}{(\frac{2\sqrt{\alpha_t}}{\beta_t} x_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0)} x_{t-1} \color{black}{ + C(x_t, x_0) \big)\Big)}~\cite{weng_what_2021}
 \end{align}
 From~\ref{normal_specific}, the Normal distribution has the form 
 \begin{equation}
@@ -831,7 +849,7 @@ q(x_{t-1}|x_t, x_0) &= \mathcal{N}(x_{t-1}; \bar{\mu}_t(x_t, x_0), \bar{\beta}_t
 &= 1/(\frac{1 - \bar{\alpha}_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
 \bar{\mu}_t(x_t, x_0) &= (\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1} }}{1 - \bar{\alpha}_{t-1}} x_0) \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
-&= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0
+&= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0~\cite{weng_what_2021}
 \end{align}
 Remembering~\ref{reparam_xt}, we have
 \begin{equation}
@@ -845,21 +863,21 @@ Substituting gives
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(\alpha_t-\bar{\alpha}_t)+\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{\sqrt{1-\bar{\alpha}_t}(1-\alpha_t)}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}\epsilon_t\\
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\bar{\alpha}_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
-&= \frac{1}{\sqrt{\alpha_t}} \Big( x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)
+&= \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)~\cite{weng_what_2021}
 \end{align}
 Let us focus on $L_{t-1}$. 
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
 \end{align}
 If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} | x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
 \end{align}
-We cane parameterize $\mu_\theta$ similar to $\mu_t$ as below
+We can parameterize $\mu_\theta$ similar to $\mu_t$ as below
 \begin{align}
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)\right)^2\right]\\
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\big(\epsilon_t-\epsilon_\theta(x_t,t) \big)^2\right]\\
@@ -867,7 +885,7 @@ We cane parameterize $\mu_\theta$ similar to $\mu_t$ as below
 \end{align}
 Now let us focus on $L_0$.
 \begin{align}
-    \arg_\theta\min[-\log p_\theta(x_0 | x_1)] 
+    \arg_\theta\min[-\log p_\theta(x_0 |x_1)] 
     &= \arg_\theta\min[-\log \mathcal{N}(x_0; \mu_\theta(x_1, 1), \sigma_1)]\\
     &= \arg_\theta\min\left[-\log \left(\frac {1}{(\sigma_1\sqrt{2\pi})^k} \exp\Big[-{\frac {1}{2}}\Big(\frac {x_0-\mu_\theta(x_1, 1)}{\sigma_1}\Big)^2\Big]\right)\right]\\
     &= \arg_\theta\min\left[{\frac {1}{2\sigma_1^2}}\big(x_0-\mu_\theta(x_1, 1)\big)^2-\log \frac {1}{(\sigma_1\sqrt{2\pi})^k}\right]\\
@@ -881,7 +899,13 @@ Remember that $\bar{\alpha}_1 = \alpha_1$. Furthermore, because $\beta_1 = 1-\al
     &= \arg_\theta\min\Big[{\frac {1}{2\sigma_1^2}}\left(\frac{1}{\sqrt{\alpha_1}}(x_1 - \sqrt{1 - \alpha_1}\epsilon_1)-\frac{1}{\sqrt{\alpha_1}} \big(x_1 - \sqrt{1 - \alpha_1} \epsilon_\theta(x_1,1) \big)\Big)^2\right]\\
     &= \arg_\theta\min\left[\frac{1-\alpha_1}{2\sigma_1^2\alpha_1}\big(\epsilon_1-\epsilon_\theta(x_1,1) \big)^2\right]\\
     &= \arg_\theta\min\left[\frac{(1-\alpha_1)^2}{2\sigma_1^2\alpha_1(1 - \bar{\alpha}_1)}\big(\epsilon_1-\epsilon_\theta(x_1,1) \big)^2\right]\\
-    \mathcal{L'}(x_0) &= L_{t-1}+L_0\\
+    \mathcal{L'}_\theta(x_0) &= L_{t-1}+L_0\\
     &= \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{align}
+Ho et al. (2020), found that omitting the coefficient term as below gave better results~\cite{ho_denoising_2020}.
+\begin{equation}
+    \mathcal{L'}_\theta(x_0) = \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
+\end{equation}
+\bibliographystyle{IEEEtran}
+\bibliography{refs}
 \end{document}
