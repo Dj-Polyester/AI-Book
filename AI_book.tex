@@ -438,7 +438,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
 \subsubsection{Arbitrary Gaussian Function}
-Let $g(x) = he^{q(x)}$, with an arbitrary scalar $h$. 
+Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$. 
 \begin{equation}
     \nabla g(x) = \nabla q(x) g(x)
 \end{equation}
@@ -459,7 +459,7 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
     (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \bar{c}^2
 \end{align}
 Note that after this point, I could not come with a rigorous proof, but used a computer.
-If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
+If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
 \section{Probability Theory and Statistics Concepts Used In Learning}
 \subsection{Distinction Between Correlation and Dependence}
@@ -595,6 +595,10 @@ If we multiply multiple single variable Gaussians, we reach the formula, in~\ref
 Here, we are proving that the expected value has the superposition property
 \begin{align}
      E_{p(X,Y)}[X] 
+     &= \int_X\int_Y p(X,Y)X dX dY = E_{X,Y}[X]\\
+     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dY = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
+     &= \int_X p(X) X dX = E[X]\\
+     E_{p(X,Y)}[X] 
      &= \int_X\int_Y p(X,Y)X dX dY\\
      &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dY\\
      &= \int_X p(X) X dX\\
@@ -675,7 +679,45 @@ We realize that as number of samples increases, the mean of the sample approxima
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
+\subsection{Overfitting and Bias-Variance Tradeoff}
 
+\begin{equation}
+    \bar{f}(x) = E_{D \sim P^n} \left[ f_D(x) \right] = \int\limits_D f_D(x) p(D) dD
+\end{equation}
+
+\begin{equation}
+    \bar{y}(\mathbf{x}) = E_{y \vert \mathbf{x}} \left[Y\right] = \int\limits_y y \, p(y \vert \mathbf{x}) dy.
+\end{equation}
+
+\begin{align}
+	E_{\mathbf{x},y,D}\left[\left[f_D(\mathbf{x}) - y\right]^{2}\right] &= E_{\mathbf{x},y,D}\left[\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) + \left(\bar{f}(\mathbf{x}) - y\right)\right]^{2}\right] \nonumber \\
+    &= E_{\mathbf{x}, D}\left[(\bar{f}_{D}(\mathbf{x}) - \bar{f}(\mathbf{x}))^{2}\right] + E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - y\right)^{2}\right] + 2 \mathrm{\;} E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)\left(\bar{f}(\mathbf{x}) - y\right)\right]
+\end{align}
+\begin{align}
+	E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) \left(\bar{f}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}, y} \left[E_{D} \left[ f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right] \left(\bar{f}(\mathbf{x}) - y\right) \right] \\
+    &= E_{\mathbf{x}, y} \left[ \left( E_{D} \left[ f_D(\mathbf{x}) \right] - \bar{f}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - y \right)\right] \\
+    &= E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{f}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - y \right)\right] \\
+    &= E_{\mathbf{x}, y} \left[ 0 \right] \\
+    &= 0
+\end{align}
+\begin{equation}
+	E_{\mathbf{x}, y, D} \left[ \left( f_D(\mathbf{x}) - y \right)^{2} \right] = \underbrace{E_{\mathbf{x}, D} \left[ \left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x}) \right)^{2} \right]}_\mathrm{Variance} + E_{\mathbf{x}, y}\left[ \left( \bar{f}(\mathbf{x}) - y \right)^{2} \right]
+\end{equation}
+\begin{align}
+	E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - y \right)^{2}\right] &= E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) -\bar y(\mathbf{x}) )+(\bar y(\mathbf{x}) - y \right)^{2}\right]  \\
+  &=\underbrace{E_{\mathbf{x}, y} \left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Noise} + \underbrace{E_{\mathbf{x}} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + 2 \mathrm{\;} E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right]
+\end{align}
+\begin{align}
+	E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}}\left[E_{y \mid \mathbf{x}} \left[\bar{y}(\mathbf{x}) - y \right] \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x}) \right) \right] \\
+    &= E_{\mathbf{x}} \left[ E_{y \mid \mathbf{x}} \left[ \bar{y}(\mathbf{x}) - y\right] \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
+    &= E_{\mathbf{x}} \left[ \left( \bar{y}(\mathbf{x}) - E_{y \mid \mathbf{x}} \left [ y \right]\right) \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
+    &= E_{\mathbf{x}} \left[ \left( \bar{y}(\mathbf{x}) - \bar{y}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
+    &= E_{\mathbf{x}} \left[ 0 \right] \\
+    &= 0
+\end{align}
+\begin{equation}
+	\underbrace{E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Expected\;Test\;Error} = \underbrace{E_{\mathbf{x}, D}\left[\left(f_D(\mathbf{x}) - \bar{f_D}(\mathbf{x})\right)^{2}\right]}_\mathrm{Variance} + \underbrace{E_{\mathbf{x}}\left[\left(\bar{f_D}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{\mathbf{x}, y}\left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Noise}~\cite{cornell_2017} 
+\end{equation}
 \section{Gradients of Functions in Backpropagation}
 \subsection{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
