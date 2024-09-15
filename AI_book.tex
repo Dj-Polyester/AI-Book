@@ -173,6 +173,7 @@ Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
     \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
 \end{equation}
 \paragraph{Variance}
+\label{defvar}
 \begin{equation}
     \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
 \end{equation}
@@ -681,17 +682,21 @@ We realize that as number of samples increases, the mean of the sample approxima
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
 \subsection{Overfitting and Bias-Variance Tradeoff}
 
-\begin{equation}
-    \bar{f}(x) = E_{D \sim P^n} \left[ f_D(x) \right] = \int\limits_D f_D(x) p(D) dD
-\end{equation}
-
+Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
 \begin{equation}
     \bar{y}(\mathbf{x}) = E_{y \vert \mathbf{x}} \left[Y\right] = \int\limits_y y \, p(y \vert \mathbf{x}) dy.
 \end{equation}
+for all label values $y$ possible.
 
+\textit{Expected prediction} given $x$ is
+\begin{equation}
+    \bar{f}(x) = E_D \left[ f_D(x) \right] = \int\limits_D f_D(x) p(D) dD
+\end{equation}
+for all datasets $D$ possible.
 \begin{align}
-	E_{\mathbf{x},y,D}\left[\left[f_D(\mathbf{x}) - y\right]^{2}\right] &= E_{\mathbf{x},y,D}\left[\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) + \left(\bar{f}(\mathbf{x}) - y\right)\right]^{2}\right] \nonumber \\
-    &= E_{\mathbf{x}, D}\left[(\bar{f}_{D}(\mathbf{x}) - \bar{f}(\mathbf{x}))^{2}\right] + E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - y\right)^{2}\right] + 2 \mathrm{\;} E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)\left(\bar{f}(\mathbf{x}) - y\right)\right]
+    \mathcal{L} &= E_{\mathbf{x},y,D}\left[\left[f_D(\mathbf{x}) - y\right]^{2}\right]\\ 
+    &= E_{\mathbf{x},y,D}\left[\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) + \left(\bar{f}(\mathbf{x}) - y\right)\right]^{2}\right] \\
+    &= E_{\mathbf{x}, D}\left[(\bar{f}_{D}(\mathbf{x}) - \bar{f}(\mathbf{x}))^{2}\right] + E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - y\right)^{2}\right] + 2 E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)\left(\bar{f}(\mathbf{x}) - y\right)\right]
 \end{align}
 \begin{align}
 	E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) \left(\bar{f}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}, y} \left[E_{D} \left[ f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right] \left(\bar{f}(\mathbf{x}) - y\right) \right] \\
@@ -701,11 +706,11 @@ As $n$ is a constant relative to the parameters, we are still maximizing the lik
     &= 0
 \end{align}
 \begin{equation}
-	E_{\mathbf{x}, y, D} \left[ \left( f_D(\mathbf{x}) - y \right)^{2} \right] = \underbrace{E_{\mathbf{x}, D} \left[ \left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x}) \right)^{2} \right]}_\mathrm{Variance} + E_{\mathbf{x}, y}\left[ \left( \bar{f}(\mathbf{x}) - y \right)^{2} \right]
+	E_{\mathbf{x}, y, D} \left[ \left( f_D(\mathbf{x}) - y \right)^{2} \right] = \underbrace{E_{\mathbf{x}, D} \left[ \left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x}) \right)^{2} \right]}_{\text{Variance }(\sigma^2)} + E_{\mathbf{x}, y}\left[ \left( \bar{f}(\mathbf{x}) - y \right)^{2} \right]
 \end{equation}
 \begin{align}
 	E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - y \right)^{2}\right] &= E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) -\bar y(\mathbf{x}) )+(\bar y(\mathbf{x}) - y \right)^{2}\right]  \\
-  &=\underbrace{E_{\mathbf{x}, y} \left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Noise} + \underbrace{E_{\mathbf{x}} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + 2 \mathrm{\;} E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right]
+  &=\underbrace{E_{\mathbf{x}, y} \left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)} + \underbrace{E_{\mathbf{x}} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + 2 E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right]
 \end{align}
 \begin{align}
 	E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}}\left[E_{y \mid \mathbf{x}} \left[\bar{y}(\mathbf{x}) - y \right] \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x}) \right) \right] \\
@@ -716,8 +721,11 @@ As $n$ is a constant relative to the parameters, we are still maximizing the lik
     &= 0
 \end{align}
 \begin{equation}
-	\underbrace{E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Expected\;Test\;Error} = \underbrace{E_{\mathbf{x}, D}\left[\left(f_D(\mathbf{x}) - \bar{f_D}(\mathbf{x})\right)^{2}\right]}_\mathrm{Variance} + \underbrace{E_{\mathbf{x}}\left[\left(\bar{f_D}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{\mathbf{x}, y}\left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_\mathrm{Noise}~\cite{cornell_2017} 
+	\underbrace{E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{\mathbf{x}, D}\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{\mathbf{x}}\left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{\mathbf{x}, y}\left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017} 
 \end{equation}
+Variance $\sigma^2$ here is with respect to the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
+
+The bias is simply the squared difference between the predicted and true labels. We use expected labels here since the system (as in a real system) has noise, which is the variance term $\epsilon$ shown above. The noise is generally due to the measurement tools, which we have no impact on. However, we can change the other terms, using methods such as regularization.
 \section{Gradients of Functions in Backpropagation}
 \subsection{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
