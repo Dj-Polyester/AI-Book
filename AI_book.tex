@@ -470,7 +470,7 @@ sample of data in order to estimate the most probable regions of occurence, the 
 \subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
 \subsubsection{Conditional Mutual Independence}
 \label{cond_mutual_independence}
-Now assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. As a cliché example, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not.
+Now assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. For example in a classification task, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not. In a regression task, $X$ can be a tabular data row of a house whereas $Y$ is the price. 
 
 Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$. Using~\ref{cond_independence1} and~\ref{cond_independence2}
 \begin{align}
@@ -684,44 +684,45 @@ As $n$ is a constant relative to the parameters, we are still maximizing the lik
 
 Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
 \begin{equation}
-    \bar{y}(\mathbf{x}) = E_{y \vert \mathbf{x}} \left[Y\right] = \int\limits_y y \, p(y \vert \mathbf{x}) dy.
+    \bar{y}(x) = E_{y \vert x} \left[Y\right] = \int\limits_y y \, p(y \vert x) dy.
 \end{equation}
 for all label values $y$ possible.
 
-\textit{Expected prediction} given $x$ is
+For each dataset $D$, the optimal mapping $f_D$ predicts $f_D(x) = y^*$. \textit{Expected prediction} given $x$ is
 \begin{equation}
     \bar{f}(x) = E_D \left[ f_D(x) \right] = \int\limits_D f_D(x) p(D) dD
 \end{equation}
-for all datasets $D$ possible.
+for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume the necessary conditions, we can model the loss as an MSE 
 \begin{align}
-    \mathcal{L} &= E_{\mathbf{x},y,D}\left[\left[f_D(\mathbf{x}) - y\right]^{2}\right]\\ 
-    &= E_{\mathbf{x},y,D}\left[\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) + \left(\bar{f}(\mathbf{x}) - y\right)\right]^{2}\right] \\
-    &= E_{\mathbf{x}, D}\left[(\bar{f}_{D}(\mathbf{x}) - \bar{f}(\mathbf{x}))^{2}\right] + E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - y\right)^{2}\right] + 2 E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)\left(\bar{f}(\mathbf{x}) - y\right)\right]
+    \mathcal{L}_D(y^*,y) &= E_{y^*,y,D}\left[\left[y^* - y\right]^{2}\right]\\\\ 
+    &= E_{x,y,D}\left[\left[f_D(x) - y\right]^{2}\right]\\ 
+    &= E_{x,y,D}\left[\left[\left(f_D(x) - \bar{f}(x)\right) + \left(\bar{f}(x) - y\right)\right]^{2}\right] \\
+    &= E_{x, D}\left[(\bar{f}_{D}(x) - \bar{f}(x))^{2}\right] + E_{x, y} \left[\left(\bar{f}(x) - y\right)^{2}\right] + 2 E_{x, y, D} \left[\left(f_D(x) - \bar{f}(x)\right)\left(\bar{f}(x) - y\right)\right]
 \end{align}
 \begin{align}
-	E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right) \left(\bar{f}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}, y} \left[E_{D} \left[ f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right] \left(\bar{f}(\mathbf{x}) - y\right) \right] \\
-    &= E_{\mathbf{x}, y} \left[ \left( E_{D} \left[ f_D(\mathbf{x}) \right] - \bar{f}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - y \right)\right] \\
-    &= E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{f}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - y \right)\right] \\
-    &= E_{\mathbf{x}, y} \left[ 0 \right] \\
+	E_{x, y, D} \left[\left(f_D(x) - \bar{f}(x)\right) \left(\bar{f}(x) - y\right)\right] &= E_{x, y} \left[E_{D} \left[ f_D(x) - \bar{f}(x)\right] \left(\bar{f}(x) - y\right) \right] \\
+    &= E_{x, y} \left[ \left( E_{D} \left[ f_D(x) \right] - \bar{f}(x) \right) \left(\bar{f}(x) - y \right)\right] \\
+    &= E_{x, y} \left[ \left(\bar{f}(x) - \bar{f}(x) \right) \left(\bar{f}(x) - y \right)\right] \\
+    &= E_{x, y} \left[ 0 \right] \\
     &= 0
 \end{align}
 \begin{equation}
-	E_{\mathbf{x}, y, D} \left[ \left( f_D(\mathbf{x}) - y \right)^{2} \right] = \underbrace{E_{\mathbf{x}, D} \left[ \left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x}) \right)^{2} \right]}_{\text{Variance }(\sigma^2)} + E_{\mathbf{x}, y}\left[ \left( \bar{f}(\mathbf{x}) - y \right)^{2} \right]
+	E_{x, y, D} \left[ \left( f_D(x) - y \right)^{2} \right] = \underbrace{E_{x, D} \left[ \left(f_D(x) - \bar{f}(x) \right)^{2} \right]}_{\text{Variance }(\sigma^2)} + E_{x, y}\left[ \left( \bar{f}(x) - y \right)^{2} \right]
 \end{equation}
 \begin{align}
-	E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - y \right)^{2}\right] &= E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) -\bar y(\mathbf{x}) )+(\bar y(\mathbf{x}) - y \right)^{2}\right]  \\
-  &=\underbrace{E_{\mathbf{x}, y} \left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)} + \underbrace{E_{\mathbf{x}} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + 2 E_{\mathbf{x}, y} \left[ \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right]
+	E_{x, y} \left[ \left(\bar{f}(x) - y \right)^{2}\right] &= E_{x, y} \left[ \left(\bar{f}(x) -\bar y(x) )+(\bar y(x) - y \right)^{2}\right]  \\
+  &=\underbrace{E_{x, y} \left[\left(\bar{y}(x) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)} + \underbrace{E_{x} \left[\left(\bar{f}(x) - \bar{y}(x)\right)^{2}\right]}_\mathrm{Bias^2} + 2 E_{x, y} \left[ \left(\bar{f}(x) - \bar{y}(x)\right)\left(\bar{y}(x) - y\right)\right]
 \end{align}
 \begin{align}
-	E_{\mathbf{x}, y} \left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\left(\bar{y}(\mathbf{x}) - y\right)\right] &= E_{\mathbf{x}}\left[E_{y \mid \mathbf{x}} \left[\bar{y}(\mathbf{x}) - y \right] \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x}) \right) \right] \\
-    &= E_{\mathbf{x}} \left[ E_{y \mid \mathbf{x}} \left[ \bar{y}(\mathbf{x}) - y\right] \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
-    &= E_{\mathbf{x}} \left[ \left( \bar{y}(\mathbf{x}) - E_{y \mid \mathbf{x}} \left [ y \right]\right) \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
-    &= E_{\mathbf{x}} \left[ \left( \bar{y}(\mathbf{x}) - \bar{y}(\mathbf{x}) \right) \left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)\right] \\
-    &= E_{\mathbf{x}} \left[ 0 \right] \\
+	E_{x, y} \left[\left(\bar{f}(x) - \bar{y}(x)\right)\left(\bar{y}(x) - y\right)\right] &= E_{x}\left[E_{y \mid x} \left[\bar{y}(x) - y \right] \left(\bar{f}(x) - \bar{y}(x) \right) \right] \\
+    &= E_{x} \left[ E_{y \mid x} \left[ \bar{y}(x) - y\right] \left(\bar{f}(x) - \bar{y}(x)\right)\right] \\
+    &= E_{x} \left[ \left( \bar{y}(x) - E_{y \mid x} \left [ y \right]\right) \left(\bar{f}(x) - \bar{y}(x)\right)\right] \\
+    &= E_{x} \left[ \left( \bar{y}(x) - \bar{y}(x) \right) \left(\bar{f}(x) - \bar{y}(x)\right)\right] \\
+    &= E_{x} \left[ 0 \right] \\
     &= 0
 \end{align}
 \begin{equation}
-	\underbrace{E_{\mathbf{x}, y, D} \left[\left(f_D(\mathbf{x}) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{\mathbf{x}, D}\left[\left(f_D(\mathbf{x}) - \bar{f}(\mathbf{x})\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{\mathbf{x}}\left[\left(\bar{f}(\mathbf{x}) - \bar{y}(\mathbf{x})\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{\mathbf{x}, y}\left[\left(\bar{y}(\mathbf{x}) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017} 
+	\underbrace{E_{x, y, D} \left[\left(f_D(x) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{x, D}\left[\left(f_D(x) - \bar{f}(x)\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{x}\left[\left(\bar{f}(x) - \bar{y}(x)\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{x, y}\left[\left(\bar{y}(x) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017} 
 \end{equation}
 Variance $\sigma^2$ here is with respect to the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
 
