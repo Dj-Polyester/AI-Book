@@ -36,6 +36,7 @@ It is not mandatory, but recommended to have some familiarity with the concepts 
 
 Unless stated otherwise, these math notations apply. 
 \begin{itemize}
+    \item wrt, LHS, RHS stands for \textit{with respect to}, \textit{left hand side}, \textit{right hand side} respectively.
     \item The symbol $\approx$ is the approximation symbol, which is used to indicate that the left-hand-side approximates the right-hand-side (i.e. $2.1 \approx 2$).
     \item Depending on the context, $0$ and $1$ may indicate a vector or matrix only composed of these scalars.
     \item Vectors are column vectors by default.
@@ -470,7 +471,7 @@ sample of data in order to estimate the most probable regions of occurence, the 
 \subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
 \subsubsection{Conditional Mutual Independence}
 \label{cond_mutual_independence}
-Now assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. For example in a classification task, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not. In a regression task, $X$ can be a tabular data row of a house whereas $Y$ is the price. 
+Assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. For example in a classification task, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not. In a regression task, $X$ can be a tabular data row of a house whereas $Y$ is the price. $X$ is sampled from a prior $p(x)$.
 
 Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $x$ (1), and $x_i, y_i$ are conditionally independent given $x_j$ (2). You can think of the vector as the data and pairs $(x,y)$ as points such that the point $y_i$ is label of $x_i$. Using~\ref{cond_independence1} and~\ref{cond_independence2}
 \begin{align}
@@ -488,12 +489,12 @@ Markov property is defined for a stochastic process when the future only depends
 Using the equation~\ref{joint_cond_prob}, we can recursively expand any joint probability as follows
 \begin{align}
     p(x_{0:T}) &= p(x_0,x_1,...,x_T) \\
-    &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)\\
+    &= p(x_0)\prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)\\
     p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1},x_{t-2},...,x_0)
 \end{align}
 If we further assume the process involving $p$ has markov property, then
 \begin{align}
-    p(x_{0:T}) &= p_\theta(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
+    p(x_{0:T}) &= p(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
     p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
 \end{align}
 \subsection{Non-negativity of KL-Divergence}
@@ -549,6 +550,7 @@ We will assume $q$ is known (see~\ref{catdist}).
     &= \arg_\theta\max p(y|x,\theta) \ \text{(see~\ref{catdist})}\\
     &= \hat{\theta}_{MLE}\label{mle_ce_res}
 \end{align}
+We conclude that minimizing the corresponding loss is equivalent to finding the maximum likelihood of the output $Y$ wrt the input $X$ and the parameters $\theta$. 
 \subsection{Mean Squared Error}
 \subsubsection{General Derivation}
 \label{mse_derivation}
@@ -694,8 +696,7 @@ For each dataset $D$, the optimal mapping $f_D$ predicts $f_D(x) = y^*$. \textit
 \end{equation}
 for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume the necessary conditions, we can model the loss as an MSE 
 \begin{align}
-    \mathcal{L}_D(y^*,y) &= E_{y^*,y,D}\left[\left[y^* - y\right]^{2}\right]\\\\ 
-    &= E_{x,y,D}\left[\left[f_D(x) - y\right]^{2}\right]\\ 
+    \mathcal{L}_D(x,y) &= E_{x,y,D}\left[\left[f_D(x) - y\right]^{2}\right]\\ 
     &= E_{x,y,D}\left[\left[\left(f_D(x) - \bar{f}(x)\right) + \left(\bar{f}(x) - y\right)\right]^{2}\right] \\
     &= E_{x, D}\left[(\bar{f}_{D}(x) - \bar{f}(x))^{2}\right] + E_{x, y} \left[\left(\bar{f}(x) - y\right)^{2}\right] + 2 E_{x, y, D} \left[\left(f_D(x) - \bar{f}(x)\right)\left(\bar{f}(x) - y\right)\right]
 \end{align}
@@ -724,7 +725,7 @@ for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume 
 \begin{equation}
 	\underbrace{E_{x, y, D} \left[\left(f_D(x) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{x, D}\left[\left(f_D(x) - \bar{f}(x)\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{x}\left[\left(\bar{f}(x) - \bar{y}(x)\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{x, y}\left[\left(\bar{y}(x) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017} 
 \end{equation}
-Variance $\sigma^2$ here is with respect to the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
+Variance $\sigma^2$ here is wrt the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
 
 The bias is simply the squared difference between the predicted and true labels. We use expected labels here since the system (as in a real system) has noise, which is the variance term $\epsilon$ shown above. The noise is generally due to the measurement tools, which we have no impact on. However, we can change the other terms, using methods such as regularization.
 \section{Gradients of Functions in Backpropagation}
@@ -765,7 +766,17 @@ Using the chain rule with a loss function gives
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
 \section{Generative Models}
-\subsection{Variational Autoencoder (WIP)}
+\subsection{Variational Autoencoder}
+\subsubsection{The Loss Function and the ELBO}
+\label{vae_elbo}
+Autoencoders are trained so that $X=Y$. Putting $Y$ aside, using~\ref{cond_mutual_independence}, we can model autoencoders using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the likelihood below
+\begin{align}
+    \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
+    &= \arg_\theta\max\prod_i p_\theta(x_i)\\
+    &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
+    &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}
+\end{align}
+Let us call the latent variables, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian}, it is easy to calculate the posterior $p_\theta(z|x)$ if we know the evidence $p_\theta(x)$ and likelihood $p_\theta(z|x)$. We can model the likelihood as a neural network but the evidence is tricky.
 \begin{align}
 KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
@@ -775,8 +786,11 @@ KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
 &=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
-&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)
+&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)}_{\mathcal{L}_{\theta, \phi}(x)}\\
+-\mathcal{L}_{\theta, \phi}(x)+KL(q_\phi(z|x) \parallel p_\theta(z|x)) &= \log p_\theta(x)\\
+-\mathcal{L}_{\theta, \phi}(x) &\leq \log p_\theta(x) 
 \end{align}
+Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$.
 \subsection{Diffusion Models}
 \subsubsection{What is a Diffusion Model}
 
@@ -838,12 +852,7 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 \begin{align}
     p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
     p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))~\cite{ho_denoising_2020, weng_what_2021}
-\end{align}
-We want to minimize $KL(q(x_0)\parallel p_\theta(x_0))$. The formulation in~\ref{ce_derivation} gives our loss function
-\begin{equation}
-    \arg_\theta \min KL(q(x_0)\parallel p_\theta(x_0)) = \arg_\theta \min H(q(x_0), p_\theta(x_0)) = \arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)]
-\end{equation}
-which is intractable, but one can find another loss function which is
+\end{align} 
 \begin{align}
 -\log p_\theta(x_0) 
 &\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\ \text{due to~\ref{kl_nonneg}}\\
@@ -854,7 +863,7 @@ which is intractable, but one can find another loss function which is
 E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\ \text{(Integrated both sides)}\\
 \arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]~\cite{weng_what_2021}
 \end{align}
-One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_what_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_what_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
 \begin{align}
 \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{0:T})}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
@@ -867,7 +876,7 @@ One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
 &= \mathcal{L'}_\theta(x_0)
 \end{align}
-We eliminated $L_T$ term since it is constant with respect to parameters $\theta$~\cite{weng_what_2021}. 
+We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_what_2021}. 
 
 As a side note, the authors choose $p(x_T)=\mathcal{N}(0,1)$, and $\beta_t$ schedule so that $L_T \approx 0$ ($\beta_T \approx 1$)~\cite{ho_denoising_2020}. However, for stability they opt for small values of $\beta_T$~\cite{sohl-dickstein_deep_2015, ho_denoising_2020}.
 
