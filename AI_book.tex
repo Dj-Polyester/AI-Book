@@ -136,11 +136,11 @@ $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y
 \paragraph{Bayesian Formula} 
 \begin{align}
     p(A,B) &= p(B,A)\\
-    p(A|B)P(B) &= p(B|A)P(A)\\
-    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{P(A)}^\text{prior}}{\underbrace{P(B)}_\text{evidence}}\\
+    p(A|B)p(B) &= p(B|A)p(A)\\
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{p(B)}_\text{evidence}}\\
     p(B) &= \int_A p(A,B)dA\\
     &= \int_A p(B|A)p(A)dA\\
-    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{P(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
 \end{align}
 \paragraph{Independence}
 By definition, if
@@ -556,7 +556,7 @@ We conclude that minimizing the corresponding loss is equivalent to finding the 
 \label{mse_derivation}
 We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) = \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Gupta made our life easier.
 \begin{equation}
-    p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}
+    p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}\label{gupta_kl}
 \end{equation}
 Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
 \begin{align}
@@ -767,14 +767,21 @@ Using the chain rule with a loss function gives
 \end{align}
 \section{Generative Models}
 \subsection{Variational Autoencoder}
-Autoencoders are trained so that $X=Y$. Putting $Y$ aside, using~\ref{cond_mutual_independence}, we can model autoencoders using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the likelihood below
+Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
     \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
     &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
     &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}
 \end{align}
-Let us call the latent variables, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian}, it is easy to calculate the posterior $p_\theta(z|x)$ if we know the evidence $p_\theta(x)$ and likelihood $p_\theta(z|x)$. We can model the likelihood as a neural network but the evidence is tricky.
+Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian}, 
+\begin{align}
+    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
+    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p_\theta(z)dz}_\text{evidence}}
+\end{align}
+
+
+Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the Gaussian integral is very difficult to solve.
 \begin{align}
 KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
@@ -784,11 +791,16 @@ KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
 &=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
-&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)}_{\mathcal{L}_{\theta, \phi}(x)}\\
+&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)\\
+&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}\\
 -\mathcal{L}_{\theta, \phi}(x)+KL(q_\phi(z|x) \parallel p_\theta(z|x)) &= \log p_\theta(x)\\
--\mathcal{L}_{\theta, \phi}(x) &\leq \log p_\theta(x) \label{vae_elbo}
+-\mathcal{L}_{\theta, \phi}(x) &\leq \log p_\theta(x)\ \text{due to~\ref{kl_nonneg}} \label{vae_elbo}
 \end{align}
-Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$.
+Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$. 
+
+We assume gupta_kl
+
+
 \subsection{Diffusion Models}
 \subsubsection{What is a Diffusion Model}
 
@@ -853,7 +865,7 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 \end{align} 
 \begin{align}
 -\log p_\theta(x_0) 
-&\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\ \text{due to~\ref{kl_nonneg}}\\
+&\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
