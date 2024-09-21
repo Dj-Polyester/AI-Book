@@ -123,7 +123,7 @@ Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ deno
 \end{align}
 $X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
 \paragraph{Joint Probability}
-The probability $p(x_i, y_j)$ denotes multiple events occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation
+$p(x_i, y_j)$ denotes the probability of $X=x_i$ and $Y=y_j$ occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation showing the marginal probability $p(X)$
 \begin{align}
     \int_Y p(X,Y)dY = p(X)
 \end{align}
@@ -182,7 +182,7 @@ Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
 \begin{equation}
 H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
 \end{equation}
-\paragraph{Cross Entropy}
+\paragraph{Cross Entropy (CE)}
 \begin{equation}
 H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX   
 \end{equation}
@@ -217,9 +217,26 @@ The specific case for when the variance is constant (same for all features, i.e.
 For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
 \paragraph{Reparameterization Trick}
 \label{reparam_trick}
-Used in prominent network architectures such as the VAE (variational autoencoder) and the diffusion models, this technique facilitates calculations, such as the derivatives that are required in backpropagation operations. It is not hard to see a one-to-one and onto (bijective) mapping $x=\mu+\sigma \cdot \epsilon$ since looking at the formula below. Derivation is omitted since it is trivially simple.
+Let us assume $q(z)$ denotes a probability distribution. Given a one to one correspondence $z = g(\epsilon)$
+\begin{align}
+    \int_z q(z)dz &= 1\\
+    \int_\epsilon q(g(\epsilon))dg(\epsilon) &= 1\\
+    \int_\epsilon \underbrace{q(g(\epsilon))\frac{dg(\epsilon)}{d\epsilon}}_{p(\epsilon)}d\epsilon &= 1\\
+\end{align}
+$p(\epsilon)$ becomes another distribution. A similar substitution gives
 \begin{equation}
-    \mathcal{N}(x;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{x-\mu}{\sigma}\Big)
+    \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}
+\end{equation}
+
+Let us substitute $\epsilon = \frac{z-\mu}{\sigma}$ ($z=\mu+\sigma \cdot \epsilon$)
+\begin{align}
+    p(\epsilon) &= q(g(\epsilon))\frac{dg(\epsilon)}{d\epsilon}\\ 
+    p(\frac{z-\mu}{\sigma}) &= q\left(g\Big(\frac{z-\mu}{\sigma}\Big)\right)\frac{dg(\frac{z-\mu}{\sigma})}{d\epsilon}\\ 
+     &= q(z)\frac{dz}{d\epsilon}\\ 
+\end{align}
+It is not hard to see such a mapping $z=\mu+\sigma \cdot \epsilon$ looking at the relation below (This is a pretext for saying I could not find a way to mathematically prove :D).
+\begin{equation}
+    \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
 \end{equation}
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Cosine Law}
@@ -551,14 +568,14 @@ We will assume $q$ is known (see~\ref{catdist}).
     &= \hat{\theta}_{MLE}\label{mle_ce_res}
 \end{align}
 We conclude that minimizing the corresponding loss is equivalent to finding the maximum likelihood of the output $Y$ wrt the input $X$ and the parameters $\theta$. 
-\subsection{Mean Squared Error}
+\subsection{Mean Squared Error (MSE)}
 \subsubsection{General Derivation}
 \label{mse_derivation}
 We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) = \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Gupta made our life easier.
 \begin{equation}
     p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}\label{gupta_kl}
 \end{equation}
-Vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
+Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
 \begin{align}
     \hat{\theta} 
     &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
@@ -599,13 +616,8 @@ Here, we are proving that the expected value has the superposition property
 \begin{align}
      E_{p(X,Y)}[X] 
      &= \int_X\int_Y p(X,Y)X dX dY = E_{X,Y}[X]\\
-     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dY = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
+     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dX = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
      &= \int_X p(X) X dX = E[X]\\
-     E_{p(X,Y)}[X] 
-     &= \int_X\int_Y p(X,Y)X dX dY\\
-     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dY\\
-     &= \int_X p(X) X dX\\
-     &= E[X]\\
     E[aX+bY] 
     &= E_{p(X,Y)}[aX+bY]\\
     &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
@@ -620,11 +632,10 @@ recursively expanding, it is easy to see this equation applies to the general ca
     &= \sum_{i=1}^N a_iE[X_i]~\label{mean_superpos}
 \end{align}
 \subsection{Covariance of Multiple Variables}
-Here, we are deriving an equation similar to part~\ref{multi_mean_derivation}
 \begin{align}
     Cov(aX+bY,cZ+dT) 
     &= E[(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})]\\
-    &= E[(a(X-\mu_X)+b(Y-\mu_Y))(c(Z-\mu_Z)+d(T-\mu_T))]\\
+    &= E\big[\big(a(X-\mu_X)+b(Y-\mu_Y)\big)\big(c(Z-\mu_Z)+d(T-\mu_T)\big)\big]\\
     &= E[ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)]\\
     &= acE[(X-\mu_X)(Z-\mu_Z)]+adE[(X-\mu_X)(T-\mu_T)]+bcE[(Y-\mu_Y)(Z-\mu_Z)]+bdE[(Y-\mu_Y)(T-\mu_T)]\\
     &=acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)\label{cov_derivation_res}
@@ -677,11 +688,15 @@ Using~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant variance $\
     Std(\overline{X}) &= \sqrt{Var(\overline{X})}\\
     &= \frac{\sigma}{\sqrt{n}}
 \end{align}
-We realize that as number of samples increases, the mean of the sample approximates the true mean of the distribution better. That is why people usually use mean instead of sum. Hence new expression for the loss function becomes 
+We realize that as number of samples increases, the mean of the sample better approximates the true mean of the distribution better. Mathematically
+\begin{equation}
+    E[f(X)] \approx \frac{1}{N}\sum_i f(X_i)\ \text{such that $X_i \sim p(X)$}\label{mean_loss_res}
+\end{equation}
+Without loss of generality, we can prove this for any function $f$ in the same manner. This is why people usually use mean instead of sum. Hence new expression for the loss function becomes 
 \begin{equation}
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
-As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
+As $n$ is a constant relative to the parameters, we are still maximizing the likelihood. 
 \subsection{Overfitting and Bias-Variance Tradeoff}
 
 Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
@@ -766,22 +781,20 @@ Using the chain rule with a loss function gives
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
 \section{Generative Models}
-\subsection{Variational Autoencoder}
+\subsection{Variational Autoencoder (VAE)}
 Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
     \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
     &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
-    &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}
+    &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}~\cite{weng_vae_2018}
 \end{align}
 Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian}, 
 \begin{align}
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p_\theta(z)dz}_\text{evidence}}
 \end{align}
-
-
-Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the Gaussian integral is very difficult to solve.
+Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the Gaussian integral is very difficult to solve. But instead, let us approximate the posterior by minimizing KL-divergence
 \begin{align}
 KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
@@ -791,16 +804,29 @@ KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
 &=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
-&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}\log p_\theta(x|z)\\
-&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}\\
+&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}[\log p_\theta(x|z)]\\
+&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}~\cite{weng_vae_2018}\\
 -\mathcal{L}_{\theta, \phi}(x)+KL(q_\phi(z|x) \parallel p_\theta(z|x)) &= \log p_\theta(x)\\
 -\mathcal{L}_{\theta, \phi}(x) &\leq \log p_\theta(x)\ \text{due to~\ref{kl_nonneg}} \label{vae_elbo}
 \end{align}
-Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$. 
+Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$. We will derive KL-divergence and entropy terms separately.
 
-We assume gupta_kl
-
-
+We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_q(x),\sigma_q(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
+\begin{equation}
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_q(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_q(x)}{\sigma_0}\Big)^2-2\log\frac{\sigma_q(x)}{\sigma_0} - k\right]
+\end{equation}
+The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
+\begin{equation}
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_q(x)^2+\sigma_q(x)^2-2\log\sigma_q(x) - k\right]
+\end{equation}
+For the other term, they use the \textit{reparameterization trick} (see \ref{reparam_trick}) as $z = \mu_q(x)+\sigma_q(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
+\begin{equation}
+    \int_z q_\phi(z|x)\log p_\theta(x'|z)dz = \int_\epsilon p(\epsilon)\log p_\theta \big(x'|z(\epsilon) = \mu_q(x)+\sigma_q(x) \cdot \epsilon \big)d\epsilon
+\end{equation}
+Furthermore, they approximate the term, similar to the identity~\ref{mean_loss_res}
+\begin{equation}
+    \int_\epsilon p(\epsilon)\log p_\theta \big(x'|z(\epsilon) \big)d\epsilon \approx \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big)
+\end{equation}
 \subsection{Diffusion Models}
 \subsubsection{What is a Diffusion Model}
 
@@ -809,8 +835,8 @@ Diffusion models require two processes that adds noise to data for a number of s
 Let \textit{forward process} be defined as a Markov Chain (see~\ref{markov_chain_cond}):
 
 \begin{align}
-    q(x_{1:T}|x_0) &= \prod_{t=1}^T q(x_t|x_{t-1})~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
-    q(x_t|x_{t-1}) &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)~\cite{ho_denoising_2020,weng_what_2021}
+    q(x_{1:T}|x_0) &= \prod_{t=1}^T q(x_t|x_{t-1})~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
+    q(x_t|x_{t-1}) &= \mathcal{N}(x_t; \sqrt{1-\beta_t}x_{t-1}, \beta_t)~\cite{ho_denoising_2020,weng_diffusion_2021}
 \end{align}
 Using~\ref{reparam_trick} and substituting $\alpha = 1-\beta_t$ we have
 \begin{equation}
@@ -860,8 +886,8 @@ We found a closed form solution for the forward process function. However, rever
 
 Let \textit{reverse process} be defined as another Markov Chain (backward in time, see~\ref{markov_chain_joint}):
 \begin{align}
-    p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
-    p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))~\cite{ho_denoising_2020, weng_what_2021}
+    p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
+    p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))~\cite{ho_denoising_2020, weng_diffusion_2021}
 \end{align} 
 \begin{align}
 -\log p_\theta(x_0) 
@@ -871,9 +897,9 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
 &\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\\
 E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\ \text{(Integrated both sides)}\\
-\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]~\cite{weng_what_2021}
+\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]~\cite{weng_diffusion_2021}
 \end{align}
-Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_what_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_diffusion_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
 \begin{align}
 \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{0:T})}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
@@ -883,10 +909,10 @@ Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_what_2021}\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
 &= \mathcal{L'}_\theta(x_0)
 \end{align}
-We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_what_2021}. 
+We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}. 
 
 As a side note, the authors choose $p(x_T)=\mathcal{N}(0,1)$, and $\beta_t$ schedule so that $L_T \approx 0$ ($\beta_T \approx 1$)~\cite{ho_denoising_2020}. However, for stability they opt for small values of $\beta_T$~\cite{sohl-dickstein_deep_2015, ho_denoising_2020}.
 
@@ -904,7 +930,7 @@ q(x_{t-1}|x_t, x_0)
 &= q(x_t|x_{t-1}, x_0) \frac{ q(x_{t-1}|x_0) }{ q(x_t|x_0) }\\
 &\propto \exp \Big(-\frac{1}{2} \big(\frac{(x_t - \sqrt{\alpha_t} x_{t-1})^2}{\beta_t} + \frac{(x_{t-1} - \sqrt{\bar{\alpha}_{t-1}} x_0)^2}{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
 &= \exp \Big(-\frac{1}{2} \big(\frac{x_t^2 - 2\sqrt{\alpha_t} x_t \color{blue}{x_{t-1}} \color{black}{+ \alpha_t} \color{red}{x_{t-1}^2} }{\beta_t} + \frac{ \color{red}{x_{t-1}^2} \color{black}{- 2 \sqrt{\bar{\alpha}_{t-1}} x_0} \color{blue}{x_{t-1}} \color{black}{+ \bar{\alpha}_{t-1} x_0^2}  }{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
-&= \exp\Big( -\frac{1}{2} \big( \color{red}{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})} x_{t-1}^2 - \color{blue}{(\frac{2\sqrt{\alpha_t}}{\beta_t} x_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0)} x_{t-1} \color{black}{ + C(x_t, x_0) \big)\Big)}~\cite{weng_what_2021}
+&= \exp\Big( -\frac{1}{2} \big( \color{red}{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})} x_{t-1}^2 - \color{blue}{(\frac{2\sqrt{\alpha_t}}{\beta_t} x_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0)} x_{t-1} \color{black}{ + C(x_t, x_0) \big)\Big)}~\cite{weng_diffusion_2021}
 \end{align}
 From~\ref{normal_specific}, the Normal distribution has the form 
 \begin{equation}
@@ -919,7 +945,7 @@ q(x_{t-1}|x_t, x_0) &= \mathcal{N}(x_{t-1}; \bar{\mu}_t(x_t, x_0), \bar{\beta}_t
 &= 1/(\frac{1 - \bar{\alpha}_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
 \bar{\mu}_t(x_t, x_0) &= (\frac{\sqrt{\alpha_t}}{\beta_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1} }}{1 - \bar{\alpha}_{t-1}} x_0) \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
-&= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0~\cite{weng_what_2021}
+&= \frac{\sqrt{\alpha_t}(1 - \bar{\alpha}_{t-1})}{1 - \bar{\alpha}_t} x_t + \frac{\sqrt{\bar{\alpha}_{t-1}}\beta_t}{1 - \bar{\alpha}_t} x_0~\cite{weng_diffusion_2021}
 \end{align}
 Remembering~\ref{reparam_xt}, we have
 \begin{equation}
@@ -933,7 +959,7 @@ Substituting gives
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(\alpha_t-\bar{\alpha}_t)+\sqrt{\bar{\alpha}_{t-1}}(1-\alpha_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{\sqrt{1-\bar{\alpha}_t}(1-\alpha_t)}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}\epsilon_t\\
 &= \frac{\sqrt{\bar{\alpha}_{t-1}}(1-\bar{\alpha}_t)}{\sqrt{\bar{\alpha}_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
-&= \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)~\cite{weng_what_2021}
+&= \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)~\cite{weng_diffusion_2021}
 \end{align}
 Let us focus on $L_{t-1}$. 
 \begin{align}
