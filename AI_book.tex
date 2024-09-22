@@ -203,6 +203,7 @@ Can be thought of as the general distribution
     \end{cases}
 \end{equation}
 \paragraph{Multi-variate Normal Distribution}
+\label{normal_dist}
 The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
 \begin{equation}
     \mathcal{N}(x; \mu, \Sigma)=\frac {\exp \left(-{\frac {1}{2}}\left(x-\mu\right)^T\Sigma^{-1}\left(x-\mu\right)\right)}{\sqrt {(2\pi )^{k}|\Sigma|}}
@@ -210,7 +211,7 @@ The general equation below holds only when the covariance matrix $\Sigma$ is pos
 \end{equation}
 $|\Sigma|$ and $\det(\Sigma)$ are notations for the determinant of $\Sigma$. $I$ is the identity matrix, the matrix all 0s except the diagonal that is all 1s. It is multiplicative identity element of the matrices (i.e. $AI = IA = A$)
 
-The specific case for when the variance is constant (same for all features, i.e. $\Sigma = \sigma^2 I$)
+The specific case for when the covariance is diagonal (a variance vector) or variance is a constant (scalar and same for all features, i.e. $\Sigma = \sigma^2 I$)
 \begin{equation}
     \mathcal{N}(x; \mu, \sigma^2I)=\frac {1}{(\sigma\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I}=\frac {1}{(\sigma\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
 \end{equation}
@@ -219,25 +220,29 @@ For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^
 \label{reparam_trick}
 Let us assume $q(z)$ denotes a probability distribution. Given a one to one correspondence $z = g(\epsilon)$
 \begin{align}
-    \int_z q(z)dz &= 1\\
-    \int_\epsilon q(g(\epsilon))dg(\epsilon) &= 1\\
-    \int_\epsilon \underbrace{q(g(\epsilon))\frac{dg(\epsilon)}{d\epsilon}}_{p(\epsilon)}d\epsilon &= 1\\
+    \int_z q(z)\prod_i dz_i &= 1\\
+    \int_\epsilon q(g(\epsilon))\prod_i dg(\epsilon_i) &= 1\\
+    \int_\epsilon \underbrace{q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}}_{p(\epsilon)}\prod_i d\epsilon_i &= 1
 \end{align}
 $p(\epsilon)$ becomes another distribution. A similar substitution gives
 \begin{equation}
-    \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}
+    \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}\label{reparam_trick_eq1}
 \end{equation}
-
 Let us substitute $\epsilon = \frac{z-\mu}{\sigma}$ ($z=\mu+\sigma \cdot \epsilon$)
 \begin{align}
-    p(\epsilon) &= q(g(\epsilon))\frac{dg(\epsilon)}{d\epsilon}\\ 
-    p(\frac{z-\mu}{\sigma}) &= q\left(g\Big(\frac{z-\mu}{\sigma}\Big)\right)\frac{dg(\frac{z-\mu}{\sigma})}{d\epsilon}\\ 
-     &= q(z)\frac{dz}{d\epsilon}\\ 
+    p(\epsilon) 
+    &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\ 
+    &= q\left(g\Big(\frac{z-\mu}{\sigma}\Big)\right)\prod_i \frac{dg(\frac{z_i-\mu_i}{\sigma})}{d\epsilon_i}\\
+    &= q\big(g(\epsilon)\big)\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
+    &= q(z)\prod_i \frac{dz_i}{d\epsilon_i}\\
+    &= q(z)\prod_i \sigma_i\\
+    q(z) &= \frac{1}{\prod_i \sigma_i}p\Big(\frac{z-\mu}{\sigma}\Big)\label{reparam_trick_eq2}
 \end{align}
-It is not hard to see such a mapping $z=\mu+\sigma \cdot \epsilon$ looking at the relation below (This is a pretext for saying I could not find a way to mathematically prove :D).
+When $q(z)$ and $p(\epsilon)$ denote the diagonal normal~\ref{normal_specific} and standard normal distributions, the equation~\ref{reparam_trick_eq2} holds. Mathematically,
 \begin{equation}
-    \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\sigma^k}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
+    \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\prod_i \sigma_i}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
 \end{equation}
+The reader is free to check using the definitions in~\ref{normal_dist}.
 \section{Linear Algebra Used In Learning and Optimization}
 \subsection{Cosine Law}
 \begin{figure}[H]
@@ -813,19 +818,22 @@ Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term t
 
 We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_q(x),\sigma_q(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_q(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_q(x)}{\sigma_0}\Big)^2-2\log\frac{\sigma_q(x)}{\sigma_0} - k\right]
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_q(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_q(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{qi}(x)}{\prod_i\sigma_{0i}} - k\right]
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_q(x)^2+\sigma_q(x)^2-2\log\sigma_q(x) - k\right]
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_q(x)^2+\sigma_q(x)^2-2\log\prod_i\sigma_{qi}(x) - k\right]
 \end{equation}
-For the other term, they use the \textit{reparameterization trick} (see \ref{reparam_trick}) as $z = \mu_q(x)+\sigma_q(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
+The log probability term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_q(x)+\sigma_q(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
     \int_z q_\phi(z|x)\log p_\theta(x'|z)dz = \int_\epsilon p(\epsilon)\log p_\theta \big(x'|z(\epsilon) = \mu_q(x)+\sigma_q(x) \cdot \epsilon \big)d\epsilon
 \end{equation}
-Furthermore, they approximate the term, similar to the identity~\ref{mean_loss_res}
+Then they get rid of the coefficient by approximating the term, similar to the identity~\ref{mean_loss_res}
 \begin{equation}
     \int_\epsilon p(\epsilon)\log p_\theta \big(x'|z(\epsilon) \big)d\epsilon \approx \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big)
+\end{equation}
+\begin{equation}
+    \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{qi}(x)^2+\sigma_{qi}(x)^2-2\log\sigma_{qi}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big)
 \end{equation}
 \subsection{Diffusion Models}
 \subsubsection{What is a Diffusion Model}
