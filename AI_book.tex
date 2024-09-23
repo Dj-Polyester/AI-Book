@@ -826,30 +826,36 @@ KL(q_\phi(z|x) \parallel p_\theta(z|x))
 \end{align}
 Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize $\mathcal{L}_{\theta, \phi}(x)$. We will derive KL-divergence and entropy terms separately.
 
-We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_q(x),\sigma_q(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
+We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_q(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_q(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{qi}(x)}{\prod_i\sigma_{0i}} - k\right]
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_q(x)^2+\sigma_q(x)^2-2\log\prod_i\sigma_{qi}(x) - k\right]
+    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
 \end{equation}
-The log probability term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_q(x)+\sigma_q(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
+The log probability term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
-    \int_z q_\phi(z|x)\log p_\theta(x|z)dz = \int_\epsilon p(\epsilon)\log p_\theta \big(x|z(x, \epsilon) = \mu_q(x)+\sigma_q(x) \cdot \epsilon \big)d\epsilon
+    \int_z q_\phi(z|x)\log p_\theta(x|z)dz = \int_\epsilon p(\epsilon)\log p_\theta \big(x|z(x, \epsilon) = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon \big)d\epsilon
 \end{equation}
 Then they get rid of the coefficient by approximating the term, similar to the identity~\ref{mean_loss_res}
 \begin{equation}
     \int_\epsilon p(\epsilon)\log p_\theta \big(x|z(x, \epsilon) \big)d\epsilon \approx \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)\ \text{such that $\epsilon_i \sim p(\epsilon) = \mathcal{N}(0,1)$}
 \end{equation}
-The authors model $p_\theta \big(x'|z(x, \epsilon) \big)$ as Bernoulli or Gaussian. 
+The authors model $p_\theta \big(x|z(x, \epsilon) \big)$ as Bernoulli or Gaussian. In the Bernoulli case ($D_\theta(z)$ is the mathematical representation for the decoder)
 \begin{align}
-    \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big) &= \frac{1}{N}\sum_i \log\prod_j\left[p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)^{1\{x_j=1\}}p_\theta \big(x_j=0|z_i(x_j, \epsilon_i) \big)^{1\{x_j=0\}}\right]
+    \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big) 
+    &= \frac{1}{N}\sum_i \log \prod_j p_\theta \big(x_j|z_i(x, \epsilon_i) \big)\ \text{when $x_j$ are independent (see~\ref{cond_mutual_independence})}\\
+    &= \frac{1}{N}\sum_i \log\prod_j\left[p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)^{1\{x_j=1\}}p_\theta \big(x_j=0|z_i(x_j, \epsilon_i) \big)^{1\{x_j=0\}}\right]\\
+    &= \frac{1}{N}\sum_i \sum_j\Big[(1\{x_j=1\})\log p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)+(1\{x_j=0\})\log p_\theta \big(x_j=0|z_i(x_j, \epsilon_i)\big)\Big]\\
+    &= \frac{1}{N}\sum_i \sum_j\Big[x_j\log p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)+(1-x_j)\log p_\theta \big(x_j=0|z_i(x_j, \epsilon_i)\big)\Big]\\
+    &= \frac{1}{N}\sum_i \sum_j\Big[x_j\log D_\theta\big(z_i(x_j, \epsilon_i) \big)+(1-x_j)\log D_\theta\big(z_i(x_j, \epsilon_i)\big)\Big]
 \end{align}
+In the Gaussian case, they choose $p_\theta \big(x|z_i(x, \epsilon_i) \big) = \mathcal{N}\big(x;\mu_\theta(x), \sigma_\theta(x)^2\big)$ such that both $\mu_\theta(x), \sigma_\theta(x)^2$ are outputs of the decoder. This gives us an MSE.
 
-The total loss becomes
+The total loss is
 \begin{equation}
-    \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{qi}(x)^2+\sigma_{qi}(x)^2-2\log\sigma_{qi}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x'|z(x, \epsilon) \big)
+    \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{\phi i}(x)^2+\sigma_{\phi i}(x)^2-2\log\sigma_{\phi i}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)~\cite{kingma_auto-encoding_2022}
 \end{equation}
 \section{Diffusion Models}
 \subsection{What is a Diffusion Model}
