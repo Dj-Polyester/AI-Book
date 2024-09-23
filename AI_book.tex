@@ -1,4 +1,4 @@
-\documentclass{article}
+\documentclass{book}
 \usepackage{geometry}
 \geometry{margin=.5in}
 \usepackage{amsmath}
@@ -15,6 +15,9 @@
 %Includes "References" in the table of contents
 \usepackage[nottoc]{tocbibind}
 
+\setcounter{tocdepth}{4}
+\setcounter{secnumdepth}{4}
+
 \newcommand{\norm}[2][]{\left\lVert#2\right\rVert_{#1}}
 
 \title{AI Manifesto: a Non-TLDR Approach}
@@ -24,14 +27,15 @@
 \numberwithin{equation}{subsection}
 \begin{document}
 
+
 \maketitle
 \tableofcontents
-\section{Introduction}
-\subsection{Binding Information (TLDR)}
+\chapter{Introduction}
+\section{Binding Information (TLDR)}
 This book aims to give intuition for some ML (machine learning) concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. I am trying to teach the topic using mostly mathematical proofs, though I also provide examples and/or explanations. I hope this book will be helpful for people wanting a career in the field.
 
 I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
-\subsection{Conventions and Notations of the Book}
+\section{Conventions and Notations of the Book}
 It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory. 
 
 Unless stated otherwise, these math notations apply. 
@@ -49,9 +53,9 @@ Unless stated otherwise, these math notations apply.
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
-\subsection{Axioms and Theory}
-\subsubsection{Numbers and Linear Algebra}
-\paragraph{Scalars, Vectors and Matrices}
+\section{Axioms and Theory}
+\subsection{Numbers and Linear Algebra}
+\subsubsection{Scalars, Vectors and Matrices}
 \label{defn_svm}
 A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars. 
 A matrix 
@@ -69,14 +73,14 @@ is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars
 Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$). 
 
 For arrays (vectors and matrices), addition (and subtraction) operates element-wise whereas multiplication (and division) has a special variant (see~\ref{matmult}) beside the traditional element-wise multiplication.
-\paragraph{Equality Comparison for Minimum and Maximum Functions}
+\subsubsection{Equality Comparison for Minimum and Maximum Functions}
 Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum function.
 \begin{align}
     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
      \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
      \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
 \end{align}
-\paragraph{Dot Product}
+\subsubsection{Dot Product}
 \label{dotp}
 Dot product of two vectors $a\cdot b=\prescript{1\times N}{}{a^T}\prescript{N\times 1}{}{b}=\prescript{1 \times 1}{}{c}$ is defined such that $c$ is a scalar and
 \begin{equation}
@@ -89,7 +93,7 @@ with properties some of which is given below (assuming the dimensions fit of cou
     \item associativity (order of the operation), i.e. $(a^Tb)d^T = a^T(bd^T)$
 \end{itemize}
 Note the similarity of dot product with the traditional standard multiplication. Indeed, the formula~\ref{dotp_defn} satisfies these properties, which is easy to prove.
-\paragraph{P-Norm}
+\subsubsection{P-Norm}
 P-Norm of a vector $a$
 \begin{align}
     \norm[p]{a} &= (\sum_i a_i^p)^{\frac{1}{p}} &\\
@@ -97,7 +101,7 @@ P-Norm of a vector $a$
     \norm[2]{a} &= \norm[]{a} & \text{(Euclidean norm)} \label{euc_norm}
 \end{align}
 Notice that the squared Euclidean is the dot product of two equal vectors. When denoting it, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
-\paragraph{Matrix Multiplication}
+\subsubsection{Matrix Multiplication}
 Multiplication of two matrices 
 $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that 
 \begin{equation}
@@ -105,7 +109,7 @@ $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}
     \label{matmult}
 \end{equation}
 The same properties in ~\ref{dotp} apply, which is also easy to prove.
-\paragraph{Definiteness of a Symmetric Matrix} 
+\subsubsection{Definiteness of a Symmetric Matrix} 
 A symmetric matrix $M$ is positive definite if and only if for any vector $z$
 \begin{equation}
     z^TMz > 0
@@ -115,25 +119,25 @@ Similarly, $M$ is semi-positive definite if and only if for any vector $z$
     z^TMz \geq 0
 \end{equation}
 Similar definitions for negative and semi-negative definite matrices exist (just reversing the equality sign).
-\subsubsection{Probability Theory}
-\paragraph{Probability}
+\subsection{Probability Theory}
+\subsubsection{Probability}
 Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
 \begin{align}
     \int_X p(X)dX = 1
 \end{align}
 $X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
-\paragraph{Joint Probability}
+\subsubsection{Joint Probability}
 $p(x_i, y_j)$ denotes the probability of $X=x_i$ and $Y=y_j$ occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation showing the marginal probability $p(X)$
 \begin{align}
     \int_Y p(X,Y)dY = p(X)
 \end{align}
-\paragraph{Conditional Probability}
+\subsubsection{Conditional Probability}
 $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y=1|X=3)=1$ is certain. If we know the outcome is 3, the outcome is an odd number for sure. Below is an essential formulation
 \begin{align}
     p(X,Y) = p(X|Y)p(Y)
     \label{joint_cond_prob}
 \end{align}
-\paragraph{Bayesian Formula} 
+\subsubsection{Bayesian Formula} 
 \begin{align}
     p(A,B) &= p(B,A)\\
     p(A|B)p(B) &= p(B|A)p(A)\\
@@ -142,7 +146,7 @@ $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y
     &= \int_A p(B|A)p(A)dA\\
     \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
 \end{align}
-\paragraph{Independence}
+\subsubsection{Independence}
 By definition, if
 \begin{equation}
     p(A,B) = p(A)p(B) \label{independence1}
@@ -152,7 +156,7 @@ then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independ
     p(A|B) &= p(A)\\
     p(B|A) &= p(B)
 \end{align}
-\paragraph{Conditional Dependence}
+\subsubsection{Conditional Dependence}
 By definition, if
 \begin{equation}
     p(A|B,C) = p(A|C) \label{cond_independence1}
@@ -164,33 +168,33 @@ Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
     p(A|B,C)p(B|C) &= p(A,B|C)\\
     p(A|C)p(B|C) &= p(A,B|C) \label{cond_independence2}
 \end{align}
-\subsubsection{Statistics}
-\paragraph{Mean (Expected Value)}
+\subsection{Statistics}
+\subsubsection{Mean (Expected Value)}
 \begin{equation}
     \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
 \end{equation}
-\paragraph{Covariance}
+\subsubsection{Covariance}
 \begin{equation}
     \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
 \end{equation}
-\paragraph{Variance}
+\subsubsection{Variance}
 \label{defvar}
 \begin{equation}
     \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
 \end{equation}
-\paragraph{(Shannon's) Entropy}
+\subsubsection{(Shannon's) Entropy}
 \begin{equation}
 H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
 \end{equation}
-\paragraph{Cross Entropy (CE)}
+\subsubsection{Cross Entropy (CE)}
 \begin{equation}
 H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX   
 \end{equation}
-\paragraph{KL Divergence}
+\subsubsection{KL Divergence}
 \begin{equation}
 KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
 \end{equation}
-\paragraph{Categorical Distribution}
+\subsubsection{Categorical Distribution}
 Can be thought of as the general distribution
 \begin{equation}
     p(y) = \prod_j p(y=j)^{1\{y=j\}}
@@ -202,7 +206,7 @@ Can be thought of as the general distribution
     0 & \text{otherwise}
     \end{cases}
 \end{equation}
-\paragraph{Multi-variate Normal Distribution}
+\subsubsection{Multi-variate Normal Distribution}
 \label{normal_dist}
 The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
 \begin{equation}
@@ -213,10 +217,10 @@ $|\Sigma|$ and $\det(\Sigma)$ are notations for the determinant of $\Sigma$. $I$
 
 The specific case for when the covariance is diagonal (a variance vector) or variance is a constant (scalar and same for all features, i.e. $\Sigma = \sigma^2 I$)
 \begin{equation}
-    \mathcal{N}(x; \mu, \sigma^2I)=\frac {1}{(\sigma\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I}=\frac {1}{(\sigma\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
+    \mathcal{N}(x; \mu, \sigma^2I) = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I} = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
 \end{equation}
 For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
-\paragraph{Reparameterization Trick}
+\subsubsection{Reparameterization Trick}
 \label{reparam_trick}
 Let us assume $q(z)$ denotes a probability distribution. Given a one to one correspondence $z = g(\epsilon)$
 \begin{align}
@@ -243,8 +247,8 @@ When $q(z)$ and $p(\epsilon)$ denote the diagonal normal~\ref{normal_specific} a
     \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\prod_i \sigma_i}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
 \end{equation}
 The reader is free to check using the definitions in~\ref{normal_dist}.
-\section{Linear Algebra Used In Learning and Optimization}
-\subsection{Cosine Law}
+\chapter{Linear Algebra Used In Learning and Optimization}
+\section{Cosine Law}
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
@@ -292,7 +296,7 @@ Figure~\ref{fig:cos_law_tri} shows a triangle with rules below
      &= a^2 + b^2 - 2ab\cos(\alpha +\beta)\\
      &= a^2 + b^2 - 2ab\cos \theta \label{cos_law}
 \end{align}
-\subsection{Relation Between Dot Product and Cosine} 
+\section{Relation Between Dot Product and Cosine} 
 Assuming that $a, b$ and $c$ are vectors and
 \begin{equation}
     c = a-b
@@ -314,7 +318,7 @@ Now for a given point $p$ and normal vector $a$, every point $x$ making $a$ and 
     a^Tx+b &= 0
 \end{align}
 indeed spans a hyperplane. Notice $b = -a^Tp$ is a constant scalar. We have proven the hyperplane equation as well
-\subsection{Jensen's Inequality}
+\section{Jensen's Inequality}
 Continuing from our results in previous part, we extract the last feature of $x$ with its corresponding coefficient, to bring an axis of reference to our analysis
 \begin{align}
     a^Tx+b &= 0\\
@@ -362,13 +366,13 @@ We see that $x_c$ lies within a subregion of $\Omega$, hence by definition of co
         \geq  f(X)c & \text{if $f$ is concave}
     \end{cases}
 \end{equation}
-\subsection{Positive Semi-definiteness of a Matrix of the Form $X^TX$}
+\section{Positive Semi-definiteness of a Matrix of the Form $X^TX$}
 Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$, 
 \begin{equation}
 z^TAz = z^TX^TXz = (Xz)^T(Xz) \geq 0
 \end{equation}
 Since squared norm is non-negative, $A=X^TX$ is positive semi-definite.
-\subsection{Existence of a (Trivially Unique) Orthonormal Basis of Eigenvectors for a Symmetric Diagonalizable Matrix}
+\section{Existence of a (Trivially Unique) Orthonormal Basis of Eigenvectors for a Symmetric Diagonalizable Matrix}
 Let $A$ be a diagonalizable symmetric square matrix. Let $P$ be a square matrix such that it's $i$th column $v_i$ is the $i$th eigenvector of $A$. Let $\Lambda$ be the diagonal matrix whose $i$th diagonal $\lambda_i$ is the eigenvalue corresponding to $v_i$. According to definition of eigenvalues/eigenvectors.
 \begin{align}
     AP &= P\Lambda\\
@@ -394,7 +398,7 @@ We can have $P' = PD^{-\frac{1}{2}}$, and $\Lambda' = \Lambda D = D^{\frac{1}{2}
     A = P'\Lambda'P'^T 
 \end{equation}
 such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as $P$ and $\Lambda$ respectively. We have shown that any symmetric diagonalizable matrix has orthonormal basis of eigenvectors.
-\subsection{Relation Between Definiteness and Sign of the Eigenvectors}
+\section{Relation Between Definiteness and Sign of the Eigenvectors}
 \begin{align}
     z^TAz &= z^TP\Lambda P^Tz\\
     &= (P^Tz)^T\Lambda (P^Tz)\\
@@ -402,7 +406,7 @@ such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as 
     &= \sum_i z'_i^2 \lambda_i
 \end{align}
 The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices (we cannot say anything about indefinite matrices). 
-\subsection{Relation Between Invertability and Definiteness}
+\section{Relation Between Invertability and Definiteness}
 For any diagonalizable matrix $A$, 
 \begin{align}
     det(A) &= det(P) det(\Lambda) det(P^{-1})\\
@@ -411,8 +415,8 @@ For any diagonalizable matrix $A$,
     &= \prod_i \lambda_i
 \end{align}
 We see that the semi-definite matrices are not invertible since they have at least one zero eigenvalue. We have shown that semi-definite matrices are not invertible and definite matrices are invertible.
-\subsection{Definiteness of Hessian Matrix to Determine Curvature Near Critical Points}
-\subsubsection{Quadratic Function}
+\section{Definiteness of Hessian Matrix to Determine Curvature Near Critical Points}
+\subsection{Quadratic Function}
 Let $q(x)$ be a quadratic function with $\prescript{d \times d}{}{A}, \prescript{d \times 1}{}{x}, \prescript{d \times 1}{}{b}$ and a scalar $c$
 \begin{equation}
     q(x) = x^TAx+x^Tb+c
@@ -461,7 +465,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 \end{equation}
 where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
-\subsubsection{Arbitrary Gaussian Function}
+\subsection{Arbitrary Gaussian Function}
 Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$. 
 \begin{equation}
     \nabla g(x) = \nabla q(x) g(x)
@@ -485,13 +489,13 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
 Note that after this point, I could not come with a rigorous proof, but used a computer.
 If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
-\section{Probability Theory and Statistics Concepts Used In Learning}
-\subsection{Distinction Between Correlation and Dependence}
+\chapter{Probability Theory and Statistics Concepts Used In Learning}
+\section{Distinction Between Correlation and Dependence}
 \label{cor_dep}
 We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
 sample of data in order to estimate the most probable regions of occurence, the properties of the continuous distribution will also approximate the properties of the sample. If we squish the sample more, the data will be better approximated with a more squished Gaussian. Remember from the previous parts along the axis of compression, the eigenvalue corresponding to that axis will become larger. At some point it will be the largest eigenvalue and the data will be approximated by a hyperplane with the normal being its eigenvector (1D hyperplane is a line). We say, such data has a \textit{linear dependence}. However, dependence -relation between axes/dimensions/features in the data- is a more general concept and the covariance matrix only gives information about linear dependence. There can be infinitely many other types such as quadratic, cubic and so on. Correlation is a subset of dependence. When a number of random variables are independent of each other (i.e. mutual independence), they don't have any dependence whatsoever; hence they also become uncorrelated, but the reverse condition does not hold. In other words, independence implies uncorrelatedness but not vice-versa
-\subsection{Probabilistic Chain Rule Equations With Independent Random Variables}
-\subsubsection{Conditional Mutual Independence}
+\section{Probabilistic Chain Rule Equations With Independent Random Variables}
+\subsection{Conditional Mutual Independence}
 \label{cond_mutual_independence}
 Assume there exists an array of hidden and observed variables $X$ and $Y$ respectively. For example in a classification task, $X$ can be the raw pixel values of an image whereas $Y$ is whether the image is a cat or not. In a regression task, $X$ can be a tabular data row of a house whereas $Y$ is the price. $X$ is sampled from a prior $p(x)$.
 
@@ -500,10 +504,10 @@ Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $
     p(y|x) &= \prod_i p(y_i|x)\\
            &= \prod_i p(y_i|x_i)
 \end{align}
-If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is the foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
+If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is a foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
 
 People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
-\subsubsection{Markov Property and Markov Chain}
+\subsection{Markov Property and Markov Chain}
 Markov property is defined for a stochastic process when the future only depends on the present. Using the equation~\ref{cond_independence1} along this definition gives
 \begin{equation}
     p(x_t|x_{t-1},x_{t-2},...,x_0) = p(x_t|x_{t-1})
@@ -519,7 +523,80 @@ If we further assume the process involving $p$ has markov property, then
     p(x_{0:T}) &= p(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
     p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
 \end{align}
-\subsection{Non-negativity of KL-Divergence}
+\section{Expected Value of Multiple Variables}
+\label{multi_mean_derivation}
+Here, we are proving that the expected value has the superposition property
+\begin{align}
+     E_{p(X,Y)}[X] 
+     &= \int_X\int_Y p(X,Y)X dX dY = E_{X,Y}[X]\\
+     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dX = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
+     &= \int_X p(X) X dX = E[X]\\
+    E[aX+bY] 
+    &= E_{p(X,Y)}[aX+bY]\\
+    &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
+    &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
+    &= aE[X]+bE[Y]
+\end{align}
+recursively expanding, it is easy to see this equation applies to the general case
+\begin{align}
+    E\big[\sum_{i=1}^N a_iX_i\big] &= a_1E[X_1]+E\big[\sum_{i=2}^N a_iX_i\big]\\
+    &= a_1E[X_1]+a_2E[X_2]+E\big[\sum_{i=3}^N a_iX_i\big]\\
+    & ...\\
+    &= \sum_{i=1}^N a_iE[X_i]~\label{mean_superpos}
+\end{align}
+\section{Covariance of Multiple Variables}
+\begin{align}
+    Cov(aX+bY,cZ+dT) 
+    &= E[(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})]\\
+    &= E\big[\big(a(X-\mu_X)+b(Y-\mu_Y)\big)\big(c(Z-\mu_Z)+d(T-\mu_T)\big)\big]\\
+    &= E[ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)]\\
+    &= acE[(X-\mu_X)(Z-\mu_Z)]+adE[(X-\mu_X)(T-\mu_T)]+bcE[(Y-\mu_Y)(Z-\mu_Z)]+bdE[(Y-\mu_Y)(T-\mu_T)]\\
+    &=acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)\label{cov_derivation_res}
+\end{align}
+We will use mathematical induction to prove the general case. assuming the equation
+\begin{equation}
+    Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
+\end{equation}
+holds, it is trivial to see for 
+\begin{equation}
+    Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
+\end{equation}
+\begin{equation}
+    \begin{split}
+        =Cov(\sum_{i=1}^{m-1} a_i X_i,\sum_{i=1}^{n-1} b_i Y_i)+\underbrace{b_nCov(\sum_{i=1}^{m-1} a_i X_i,Y_n)}_{c_1}+
+        \underbrace{a_mCov(X_m,\sum_{i=1}^{n-1} b_i Y_i)}_{c_2}+a_m b_nCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+For $c_1$ and $c_2$, substituting the coefficients in~\ref{cov_derivation_res}, we can recursively expand the sum until its components as below.
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)+\underbrace{b_n\sum_{i=1}^{m-1} a_iCov(X_i, Y_n)}_{c_1}+\underbrace{a_m\sum_{j=1}^{n-1} b_j Cov(X_m, Y_j)}_{c_2}+a_m b_nCov(X_m,Y_n)
+    \end{split}
+\end{equation}
+\begin{equation}
+    \begin{split}
+         =\sum_{i=1}^{m} \sum_{j=1}^{n} a_i b_j Cov(X_i, Y_j)
+    \end{split}
+\end{equation}
+concluding the proof.
+\section{Variance of Multiple Variables}
+Using the fact that variance is just the \textit{self-covariance}
+\begin{align}
+    Var(\sum_{i=1}^{n} a_i X_i) &= Cov(\sum_{i=1}^{n} a_i X_i, \sum_{i=1}^{n} a_i X_i)\\
+    &= \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Cov(X_i, X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
+    &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}
+\end{align}
+\section{Loss Functions}
+\label{lossfun}
+In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$ (Note the input parameters $x, \theta$ and output $y$). The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $KL(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters become
+\begin{equation}
+    \hat{\theta} 
+    = \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]
+\end{equation}
+\subsection{KL-Divergence}
+\subsubsection{Non-negativity of KL-Divergence}
 \label{kl_nonneg}
 Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function 
 \begin{align}
@@ -531,7 +608,7 @@ Negative of any function switches its convexity property (i.e. reversing the bow
      &\geq 0
 \end{align}
 Bear in mind that this was true because our assumptions of having a vector of all positive entries and Manhattan norm of 1 aligns with the probability distribution (Integral is a type of sum).
-\subsection{Monotonicity of KL-Divergence}
+\subsubsection{Monotonicity of KL-Divergence}
 A function $f$ is \textit{monotonically decreasing} if
 \begin{equation}
     f(x) \leq f(y) \longleftrightarrow x \geq y
@@ -545,8 +622,6 @@ similarly, there is also increasing monotonicity which is irrelevant at this poi
 Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $KL(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $KL(q_1)=KL(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
 \subsection{Cross-Entropy}
 \subsubsection{General Derivation}
-\label{ce_derivation}
-In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$. The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $KL(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters
 \begin{align}
     \hat{\theta} 
     &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
@@ -604,7 +679,7 @@ Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N
 Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
 
 Notice that in~\ref{mle_ce}, we are approximating a probability distribution (minimizing KL-divergence) between $\hat{y} = p(y|x,\theta)$ and an underlying distribution $q(y|x)$ with labels $y$ (whose hot-encoding is the distribution itself). However, when substituting with the Gaussian, we see we are fitting a Gaussian by minimizing the distance of its mean to the datapoint $y$.  
-\subsection{Loss Function as a Sum of Elements in Supervised Tasks}
+\subsection{Loss Functions as a Sum of Elements in Supervised Tasks}
 For supervised tasks, we found a relationship between MLE and the loss functions $\mathcal{L}_\theta(\hat{y},y)$ in~\ref{mle_ce} and~\ref{mle_mse} for a single data point $(x,y)$. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then 
 \begin{align}
     \hat{\theta}_{MLE} 
@@ -615,71 +690,6 @@ For supervised tasks, we found a relationship between MLE and the loss functions
     &= \arg_\theta \min \sum_i \mathcal{L}_\theta(\hat{y_i},y_i)\label{loss_sum_res}
 \end{align}
 If we multiply multiple single variable Gaussians, we reach the formula, in~\ref{normal_specific}, having a diagonal covariance matrix. In this case, the features are uncorrelated ($Cov(x_i,x_j)=0$ if $i \neq j$), hence mutually independent, not contradicting our claim in~\ref{cor_dep}. In this case, we are also claiming $p(y|x,\theta)=\mathcal{N}(y; \mu_\theta(x),\sigma^2)$.
-\subsection{Expected Value of Multiple Variables}
-\label{multi_mean_derivation}
-Here, we are proving that the expected value has the superposition property
-\begin{align}
-     E_{p(X,Y)}[X] 
-     &= \int_X\int_Y p(X,Y)X dX dY = E_{X,Y}[X]\\
-     &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dX = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
-     &= \int_X p(X) X dX = E[X]\\
-    E[aX+bY] 
-    &= E_{p(X,Y)}[aX+bY]\\
-    &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
-    &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
-    &= aE[X]+bE[Y]
-\end{align}
-recursively expanding, it is easy to see this equation applies to the general case
-\begin{align}
-    E\big[\sum_{i=1}^N a_iX_i\big] &= a_1E[X_1]+E\big[\sum_{i=2}^N a_iX_i\big]\\
-    &= a_1E[X_1]+a_2E[X_2]+E\big[\sum_{i=3}^N a_iX_i\big]\\
-    & ...\\
-    &= \sum_{i=1}^N a_iE[X_i]~\label{mean_superpos}
-\end{align}
-\subsection{Covariance of Multiple Variables}
-\begin{align}
-    Cov(aX+bY,cZ+dT) 
-    &= E[(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})]\\
-    &= E\big[\big(a(X-\mu_X)+b(Y-\mu_Y)\big)\big(c(Z-\mu_Z)+d(T-\mu_T)\big)\big]\\
-    &= E[ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)]\\
-    &= acE[(X-\mu_X)(Z-\mu_Z)]+adE[(X-\mu_X)(T-\mu_T)]+bcE[(Y-\mu_Y)(Z-\mu_Z)]+bdE[(Y-\mu_Y)(T-\mu_T)]\\
-    &=acCov(X,Z)+adCov(X,T)+bcCov(Y,Z)+bdCov(Y,T)\label{cov_derivation_res}
-\end{align}
-We will use mathematical induction to prove the general case. assuming the equation
-\begin{equation}
-    Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
-\end{equation}
-holds, it is trivial to see for 
-\begin{equation}
-    Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
-\end{equation}
-\begin{equation}
-    \begin{split}
-        =Cov(\sum_{i=1}^{m-1} a_i X_i,\sum_{i=1}^{n-1} b_i Y_i)+\underbrace{b_nCov(\sum_{i=1}^{m-1} a_i X_i,Y_n)}_{c_1}+
-        \underbrace{a_mCov(X_m,\sum_{i=1}^{n-1} b_i Y_i)}_{c_2}+a_m b_nCov(X_m,Y_n)
-    \end{split}
-\end{equation}
-For $c_1$ and $c_2$, substituting the coefficients in~\ref{cov_derivation_res}, we can recursively expand the sum until its components as below.
-\begin{equation}
-    \begin{split}
-         =\sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)+\underbrace{b_n\sum_{i=1}^{m-1} a_iCov(X_i, Y_n)}_{c_1}+\underbrace{a_m\sum_{j=1}^{n-1} b_j Cov(X_m, Y_j)}_{c_2}+a_m b_nCov(X_m,Y_n)
-    \end{split}
-\end{equation}
-\begin{equation}
-    \begin{split}
-         =\sum_{i=1}^{m} \sum_{j=1}^{n} a_i b_j Cov(X_i, Y_j)
-    \end{split}
-\end{equation}
-concluding the proof.
-\subsection{Variance of Multiple Variables}
-Using the fact that variance is just the \textit{self-covariance}
-\begin{align}
-    Var(\sum_{i=1}^{n} a_i X_i) &= Cov(\sum_{i=1}^{n} a_i X_i, \sum_{i=1}^{n} a_i X_i)\\
-    &= \sum_{i=1}^{n} \sum_{j=1}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Cov(X_i, X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
-    &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}\\
-\end{align}
 \subsection{Preference of Mean over Summation for Loss Functions in Supervised Tasks}
 \label{mean_loss}
 Deriving~\ref{loss_sum_res} for a dataset, we see a pattern in which we try to minimize a sum.
@@ -702,7 +712,7 @@ Without loss of generality, we can prove this for any function $f$ in the same m
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood. 
-\subsection{Overfitting and Bias-Variance Tradeoff}
+\section{Overfitting and Bias-Variance Tradeoff}
 
 Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
 \begin{equation}
@@ -748,8 +758,8 @@ for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume 
 Variance $\sigma^2$ here is wrt the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
 
 The bias is simply the squared difference between the predicted and true labels. We use expected labels here since the system (as in a real system) has noise, which is the variance term $\epsilon$ shown above. The noise is generally due to the measurement tools, which we have no impact on. However, we can change the other terms, using methods such as regularization.
-\section{Gradients of Functions in Backpropagation}
-\subsection{FC (Fully Connected) Layers}
+\chapter{Gradients of Functions in Backpropagation}
+\section{FC (Fully Connected) Layers}
 An FC layer implements the function on a set of matrices
 \begin{equation}
     \prescript{N\times M}{}{Y} = \prescript{N\times D}{}{X}\prescript{D\times M}{}{W} + \prescript{N\times1}{}{1}\prescript{1\times M}{}{b}
@@ -785,8 +795,8 @@ Using the chain rule with a loss function gives
     &= \sum_{n=1}^N L_{y_{nm}}\\
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
-\section{Generative Models}
-\subsection{Variational Autoencoder (VAE)}
+\chapter{Generative Models}
+\section{Variational Autoencoder (VAE)}
 Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
     \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
@@ -832,14 +842,21 @@ Then they get rid of the coefficient by approximating the term, similar to the i
 \begin{equation}
     \int_\epsilon p(\epsilon)\log p_\theta \big(x'|z(\epsilon) \big)d\epsilon \approx \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big)
 \end{equation}
+The authors model $p_\theta \big(x'|z(\epsilon) \big)$ as Bernoulli or Gaussian. 
+\begin{align}
+    \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big) &= \frac{1}{N}\sum_i \log\left[p_\theta \big(x'= 1|z(\epsilon) \big)^{x'}p_\theta \big(x'= 0|z(\epsilon) \big)^{1-x'}\right]\\
+    &= \frac{1}{N}\sum_i \left[x'\log p_\theta \big(x'= 1|z(\epsilon) \big) + (1-x')\log p_\theta \big(x'= 0|z(\epsilon) \big)\right]
+\end{align}
+
+The total loss becomes
 \begin{equation}
     \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{qi}(x)^2+\sigma_{qi}(x)^2-2\log\sigma_{qi}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x'|z(\epsilon) \big)
 \end{equation}
-\subsection{Diffusion Models}
-\subsubsection{What is a Diffusion Model}
+\section{Diffusion Models}
+\subsection{What is a Diffusion Model}
 
 Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times. 
-\subsubsection{Forward Process}
+\subsection{Forward Process}
 Let \textit{forward process} be defined as a Markov Chain (see~\ref{markov_chain_cond}):
 
 \begin{align}
@@ -889,7 +906,7 @@ Note that similar elements cancel each other and we are left with $1-\prod_{i=1}
     x_t &= \sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t\label{reparam_xt}\\
     q(x_t|x_0) &= \mathcal{N}(x_t;\sqrt{\bar{\alpha}_t}x_0,1 - \bar{\alpha}_t)
 \end{align}
-\subsubsection{Reverse Process and the Loss Function}
+\subsection{Reverse Process and the Loss Function}
 We found a closed form solution for the forward process function. However, reverse process will be learnt by an ML (machine learning) algorithm. Ho et al. (2020) decided to use a type of CNN (Convolutional Neural Network), U-Net~\cite{ho_denoising_2020}.
 
 Let \textit{reverse process} be defined as another Markov Chain (backward in time, see~\ref{markov_chain_joint}):
@@ -918,7 +935,7 @@ Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
-&= \mathcal{L'}_\theta(x_0)
+&= \mathcal{L}_\theta(x_0)
 \end{align}
 We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}. 
 
@@ -1003,12 +1020,12 @@ Remember that $\bar{\alpha}_1 = \alpha_1$. Furthermore, because $\beta_1 = 1-\al
     &= \arg_\theta\min\Big[{\frac {1}{2\sigma_1^2}}\left(\frac{1}{\sqrt{\alpha_1}}(x_1 - \sqrt{1 - \alpha_1}\epsilon_1)-\frac{1}{\sqrt{\alpha_1}} \big(x_1 - \sqrt{1 - \alpha_1} \epsilon_\theta(x_1,1) \big)\Big)^2\right]\\
     &= \arg_\theta\min\left[\frac{1-\alpha_1}{2\sigma_1^2\alpha_1}\big(\epsilon_1-\epsilon_\theta(x_1,1) \big)^2\right]\\
     &= \arg_\theta\min\left[\frac{(1-\alpha_1)^2}{2\sigma_1^2\alpha_1(1 - \bar{\alpha}_1)}\big(\epsilon_1-\epsilon_\theta(x_1,1) \big)^2\right]\\
-    \mathcal{L'}_\theta(x_0) &= L_{t-1}+L_0\\
+    \mathcal{L}_\theta(x_0) &= L_{t-1}+L_0\\
     &= \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{align}
 Ho et al. (2020), found that omitting the coefficient term as below gave better results~\cite{ho_denoising_2020}.
 \begin{equation}
-    \mathcal{L'}_\theta(x_0) = \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
+    \mathcal{L}_\theta(x_0) = \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{equation}
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
