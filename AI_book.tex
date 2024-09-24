@@ -797,7 +797,7 @@ Using the chain rule with a loss function gives
 \end{align}
 \chapter{Generative Models}
 \section{Variational Autoencoder (VAE)}
-Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similarly to~\ref{cond_mutual_independence} that, we are maximizing the evidence
+Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
     \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
@@ -809,7 +809,7 @@ Let us call the latent variables of AE, output of the encoder (or input to the d
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p_\theta(z)dz}_\text{evidence}}
 \end{align}
-Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the Gaussian integral is very difficult to solve. But instead, let us approximate the posterior by minimizing KL-divergence
+Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the integral is difficult to solve. But instead, let us approximate the posterior by minimizing KL-divergence
 \begin{align}
 KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
@@ -995,7 +995,7 @@ Let us focus on $L_{t-1}$.
 \begin{align}
     \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
     &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
 \end{align}
 If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
@@ -1028,9 +1028,9 @@ Remember that $\bar{\alpha}_1 = \alpha_1$. Furthermore, because $\beta_1 = 1-\al
     \mathcal{L}_\theta(x_0) &= L_{t-1}+L_0\\
     &= \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{align}
-Ho et al. (2020), found that omitting the coefficient term as below gave better results~\cite{ho_denoising_2020}.
+Ho et al. (2020), found that omitting the coefficient term and sampling $t$ uniformly as below gave better results~\cite{ho_denoising_2020}.
 \begin{equation}
-    \mathcal{L}_\theta(x_0) = \arg_\theta\min \sum_{t=1}^TE_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
+    \mathcal{L}_\theta(x_0) = \arg_\theta\min \sum_{t \sim [1,T]}E_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{equation}
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
