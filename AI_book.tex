@@ -247,7 +247,7 @@ When $q(z)$ and $p(\epsilon)$ denote the diagonal normal~\ref{normal_specific} a
     \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\prod_i \sigma_i}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
 \end{equation}
 The reader is free to check using the definitions in~\ref{normal_dist}.
-\chapter{Linear Algebra Used In Learning and Optimization}
+\chapter{Linear Algebra Concepts Used In Learning and Optimization}
 \section{Cosine Law}
 \begin{figure}[H]
     \centering
@@ -758,12 +758,14 @@ for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume 
 Variance $\sigma^2$ here is wrt the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
 
 The bias is simply the squared difference between the predicted and true labels. We use expected labels here since the system (as in a real system) has noise, which is the variance term $\epsilon$ shown above. The noise is generally due to the measurement tools, which we have no impact on. However, we can change the other terms, using methods such as regularization.
-\chapter{Gradients of Functions in Backpropagation}
+\chapter{Neural Network Layers}
 \section{FC (Fully Connected) Layers}
-An FC layer implements the function on a set of matrices
+\subsection{Definition}
+An FC layer implements the function below on a set of matrices
 \begin{equation}
     \prescript{N\times M}{}{Y} = \prescript{N\times D}{}{X}\prescript{D\times M}{}{W} + \prescript{N\times1}{}{1}\prescript{1\times M}{}{b}
 \end{equation}
+\subsection{Gradient Derivation}
 Using the definition of matrix multiplication in~\ref{matmult}, we have
 \begin{equation}
 y_{nm} = \sum_{d=1}^D x_{nd} w_{dm}+b_m
@@ -842,7 +844,7 @@ Then they get rid of the coefficient by approximating the term, similar to the i
 \begin{equation}
     \int_\epsilon p(\epsilon)\log p_\theta \big(x|z(x, \epsilon) \big)d\epsilon \approx \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)\ \text{such that $\epsilon_i \sim p(\epsilon) = \mathcal{N}(0,1)$}
 \end{equation}
-The authors model $p_\theta \big(x|z(x, \epsilon) \big)$ as Bernoulli or Gaussian. In the Bernoulli case ($D_\theta(z)$ is the mathematical representation for the decoder)
+The authors model $p_\theta \big(x|z(x, \epsilon) \big)$ as Bernoulli or Gaussian depending of whether $x$ is discrete (binary) or continuous respectively. In the Bernoulli case ($D_\theta(z)$ is the mathematical representation for the decoder)
 \begin{align}
     \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big) 
     &= \frac{1}{N}\sum_i \log \prod_j p_\theta \big(x_j|z_i(x, \epsilon_i) \big)\ \text{when $x_j$ are independent (see~\ref{cond_mutual_independence})}\\
