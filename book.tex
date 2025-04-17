@@ -356,25 +356,24 @@ Note that after this point, I could not come with a rigorous proof, but used a c
 If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased.
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample.
 \chapter{Probability Theory and Statistics}
-\section{Probability Theory}
-\subsection{Probability}
+\section{Probability}
 Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
 \begin{align}
     \int_X p(X)dX = 1
 \end{align}
 $X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
-\subsection{Joint Probability}
+\section{Joint Probability}
 $p(x_i, y_j)$ denotes the probability of $X=x_i$ and $Y=y_j$ occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation showing the marginal probability $p(X)$
 \begin{align}
     \int_Y p(X,Y)dY = p(X)
 \end{align}
-\subsection{Conditional Probability}
+\section{Conditional Probability}
 $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y=1|X=3)=1$ is certain. If we know the outcome is 3, the outcome is an odd number for sure. Below is an essential formulation
 \begin{align}
     p(X,Y) = p(X|Y)p(Y)
     \label{joint_cond_prob}
 \end{align}
-\subsection{Bayesian Formula}
+\section{Bayesian Formula}
 \begin{align}
     p(A,B) &= p(B,A)\\
     p(A|B)p(B) &= p(B|A)p(A)\\
@@ -383,7 +382,7 @@ $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y
     &= \int_A p(B|A)p(A)dA\\
     \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
 \end{align}
-\subsection{Independence}
+\section{Independence}
 By definition, if
 \begin{equation}
     p(A,B) = p(A)p(B) \label{independence1}
@@ -393,7 +392,7 @@ then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independ
     p(A|B) &= p(A)\\
     p(B|A) &= p(B)
 \end{align}
-\subsection{Conditional Dependence}
+\section{Conditional Dependence}
 By definition, if
 \begin{equation}
     p(A|B,C) = p(A|C) \label{cond_independence1}
@@ -405,25 +404,24 @@ Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
     p(A|B,C)p(B|C) &= p(A,B|C)\\
     p(A|C)p(B|C) &= p(A,B|C) \label{cond_independence2}
 \end{align}
-\section{Statistics}
-\subsection{Mean (Expected Value)}
+\section{Mean (Expected Value)}
 \begin{equation}
     \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
 \end{equation}
-\subsection{Covariance}
+\section{Covariance}
 \begin{equation}
     \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
 \end{equation}
-\subsection{Variance}
+\section{Variance}
 \label{defvar}
 \begin{equation}
     \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
 \end{equation}
-\subsection{(Shannon's) Entropy}
+\section{(Shannon's) Entropy}
 \begin{equation}
 H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX
 \end{equation}
-\subsection{Categorical Distribution}
+\section{Categorical Distribution}
 Can be thought of as the general distribution
 \begin{equation}
     p(y) = \prod_j p(y=j)^{1\{y=j\}}
@@ -435,7 +433,7 @@ Can be thought of as the general distribution
     0 & \text{otherwise}
     \end{cases}
 \end{equation}
-\subsection{Multi-variate Normal Distribution}
+\section{Multi-variate Normal Distribution}
 \label{normal_dist}
 The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
 \begin{equation}
@@ -449,7 +447,7 @@ The specific case for when the covariance is diagonal (a variance vector) or var
     \mathcal{N}(x; \mu, \sigma^2I) = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I} = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
 \end{equation}
 For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
-\subsection{Reparameterization Trick}
+\section{Reparameterization Trick}
 \label{reparam_trick}
 Let us assume $q(z)$ denotes a probability distribution. Given $z = g(\epsilon)$
 \begin{align}
