@@ -220,7 +220,7 @@ The specific case for when the covariance is diagonal (a variance vector) or var
 For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
 \subsubsection{Reparameterization Trick}
 \label{reparam_trick}
-Let us assume $q(z)$ denotes a probability distribution. Given a one to one correspondence $z = g(\epsilon)$
+Let us assume $q(z)$ denotes a probability distribution. Given $z = g(\epsilon)$
 \begin{align}
     \int_z q(z)\prod_i dz_i &= 1\\
     \int_\epsilon q(g(\epsilon))\prod_i dg(\epsilon_i) &= 1\\
@@ -230,12 +230,10 @@ $p(\epsilon)$ becomes another distribution. A similar substitution for cross-ent
 \begin{equation}
     \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}\label{reparam_trick_eq1}
 \end{equation}
-Let us substitute $z=g(\epsilon)=\mu+\sigma \cdot \epsilon$
+Let us substitute $z=\mu+\sigma \cdot \epsilon$
 \begin{align}
     p(\epsilon)
     &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
-    &= q\left(g\Big(\frac{z-\mu}{\sigma}\Big)\right)\prod_i \frac{dg(\frac{z_i-\mu_i}{\sigma})}{d\epsilon_i}\\
-    &= q\big(g(\epsilon)\big)\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
     &= q(z)\prod_i \frac{dz_i}{d\epsilon_i}\\
     &= q(z)\prod_i \sigma_i\\
     q(z) &= \frac{1}{\prod_i \sigma_i}p\Big(\frac{z-\mu}{\sigma}\Big)\label{reparam_trick_eq2}
