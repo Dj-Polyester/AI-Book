@@ -34,9 +34,9 @@ This book aims to give intuition for some ML (machine learning) concepts that I 
 
 I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
 \section{Conventions and Notations of the Book}
-It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory. 
+It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory.
 
-Unless stated otherwise, these math notations apply. 
+Unless stated otherwise, these math notations apply.
 \begin{itemize}
     \item wrt, LHS, RHS stands for \textit{with respect to}, \textit{left hand side}, \textit{right hand side} respectively.
     \item The symbol $\approx$ is the approximation symbol, which is used to indicate that the left-hand-side approximates the right-hand-side (i.e. $2.1 \approx 2$).
@@ -55,8 +55,8 @@ Unless stated otherwise, these math notations apply.
 \subsection{Numbers and Linear Algebra}
 \subsubsection{Scalars, Vectors and Matrices}
 \label{defn_svm}
-A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars. 
-A matrix 
+A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars.
+A matrix
 $$
 M = \begin{bmatrix}
     v_1^T\\
@@ -66,9 +66,9 @@ M = \begin{bmatrix}
 \end{bmatrix}
 $$
 or $M = [v_1 v_2 ... v_m]^T$
-is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars. 
+is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars.
 
-Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$). 
+Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$).
 
 For arrays (vectors and matrices), addition (and subtraction) operates element-wise whereas multiplication (and division) has a special variant (see~\ref{matmult}) beside the traditional element-wise multiplication.
 \subsubsection{Equality Comparison for Minimum and Maximum Functions}
@@ -100,14 +100,14 @@ P-Norm of a vector $a$
 \end{align}
 Notice that the squared Euclidean is the dot product of two equal vectors. When denoting it, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
 \subsubsection{Matrix Multiplication}
-Multiplication of two matrices 
-$\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that 
+Multiplication of two matrices
+$\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that
 \begin{equation}
-    c_{ij} = \sum_{k=1}^K a_{ik}b_{kj} 
+    c_{ij} = \sum_{k=1}^K a_{ik}b_{kj}
     \label{matmult}
 \end{equation}
 The same properties in ~\ref{dotp} apply, which is also easy to prove.
-\subsubsection{Definiteness of a Symmetric Matrix} 
+\subsubsection{Definiteness of a Symmetric Matrix}
 A symmetric matrix $M$ is positive definite if and only if for any vector $z$
 \begin{equation}
     z^TMz > 0
@@ -135,7 +135,7 @@ $p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y
     p(X,Y) = p(X|Y)p(Y)
     \label{joint_cond_prob}
 \end{align}
-\subsubsection{Bayesian Formula} 
+\subsubsection{Bayesian Formula}
 \begin{align}
     p(A,B) &= p(B,A)\\
     p(A|B)p(B) &= p(B|A)p(A)\\
@@ -182,15 +182,15 @@ Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
 \end{equation}
 \subsubsection{(Shannon's) Entropy}
 \begin{equation}
-H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX 
+H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX
 \end{equation}
 \subsubsection{Cross Entropy (CE)}
 \begin{equation}
-H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX   
+H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX
 \end{equation}
 \subsubsection{KL Divergence}
 \begin{equation}
-KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX    
+KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX
 \end{equation}
 \subsubsection{Categorical Distribution}
 Can be thought of as the general distribution
@@ -226,14 +226,14 @@ Let us assume $q(z)$ denotes a probability distribution. Given a one to one corr
     \int_\epsilon q(g(\epsilon))\prod_i dg(\epsilon_i) &= 1\\
     \int_\epsilon \underbrace{q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}}_{p(\epsilon)}\prod_i d\epsilon_i &= 1
 \end{align}
-$p(\epsilon)$ becomes another distribution. A similar substitution gives
+$p(\epsilon)$ becomes another distribution. A similar substitution for cross-entropy gives
 \begin{equation}
     \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}\label{reparam_trick_eq1}
 \end{equation}
-Let us substitute $\epsilon = \frac{z-\mu}{\sigma}$ ($z=\mu+\sigma \cdot \epsilon$)
+Let us substitute $z=g(\epsilon)=\mu+\sigma \cdot \epsilon$
 \begin{align}
-    p(\epsilon) 
-    &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\ 
+    p(\epsilon)
+    &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
     &= q\left(g\Big(\frac{z-\mu}{\sigma}\Big)\right)\prod_i \frac{dg(\frac{z_i-\mu_i}{\sigma})}{d\epsilon_i}\\
     &= q\big(g(\epsilon)\big)\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
     &= q(z)\prod_i \frac{dz_i}{d\epsilon_i}\\
@@ -250,10 +250,10 @@ The reader is free to check using the definitions in~\ref{normal_dist}.
 \begin{figure}[H]
     \centering
     \begin{tikzpicture}
-        \coordinate[label=below:$A$] (a) at (7,0); 
-        \coordinate[label=below:$B$] (b) at (0,0); 
-        \coordinate[label=above:$C$] (c) at (2,3); 
-        \coordinate[label=below:$D$] (d) at (2,0); 
+        \coordinate[label=below:$A$] (a) at (7,0);
+        \coordinate[label=below:$B$] (b) at (0,0);
+        \coordinate[label=above:$C$] (c) at (2,3);
+        \coordinate[label=below:$D$] (d) at (2,0);
         \draw (b) -- (d) node[midway,anchor=north]{$a
         \sin\alpha$};
         \draw (d) -- (a) node[midway,anchor=north]{$b
@@ -273,7 +273,7 @@ Figure~\ref{fig:cos_law_tri} shows a triangle with rules below
 \begin{align}
     |BC| &= a \\
     |AC| &= b \\
-    |BD| &= a\sin\alpha \\   
+    |BD| &= a\sin\alpha \\
     |AD| &= b\sin\beta \\
     |CD| &= a\cos\alpha = b\cos\beta\\
     |AB| &= |BD|+|AD|\\
@@ -294,11 +294,11 @@ Figure~\ref{fig:cos_law_tri} shows a triangle with rules below
      &= a^2 + b^2 - 2ab\cos(\alpha +\beta)\\
      &= a^2 + b^2 - 2ab\cos \theta \label{cos_law}
 \end{align}
-\section{Relation Between Dot Product and Cosine} 
+\section{Relation Between Dot Product and Cosine}
 Assuming that $a, b$ and $c$ are vectors and
 \begin{equation}
     c = a-b
-\end{equation} 
+\end{equation}
 With the properties in~\ref{dotp} mind
 \begin{align}
     c^2 &= (a-b)^T(a-b)\\
@@ -309,7 +309,7 @@ Using~\ref{cos_law}
     a^Ta +b^Tb - 2a^Tb &= \norm{a}^2 + \norm{b}^2 - 2\norm{a}\norm{b}\cos \theta\\
     a^Tb &= \norm{a}\norm{b}\cos \theta~\cite{nowell_math_2006}
 \end{align}
-Now for a given point $p$ and normal vector $a$, every point $x$ making $a$ and $(x-p)$ perpendicular to each other ($\theta = \frac{\pi}{2}$) 
+Now for a given point $p$ and normal vector $a$, every point $x$ making $a$ and $(x-p)$ perpendicular to each other ($\theta = \frac{\pi}{2}$)
 \begin{align}
     a^T(x-p) &= 0\\
     a^Tx-a^Tp &= 0\\
@@ -322,7 +322,7 @@ Continuing from our results in previous part, we extract the last feature of $x$
     a^Tx+b &= 0\\
     a_{1:N-1}^Tx+a_Ny+b &= 0 \label{hyperplane_eq}
 \end{align}
-Then we bring up a hypersurface with 
+Then we bring up a hypersurface with
 \begin{equation}
     y=f(x) \label{hypersurf_eq}
 \end{equation}
@@ -332,7 +332,7 @@ X = \begin{bmatrix}
     x_0 & x_1 & ... & x_M
 \end{bmatrix}
 $$
-It is easy to see that $X$ satisfies both~\ref{hyperplane_eq} and~\ref{hypersurf_eq}. Let us multiply both sides with a vector of weights $c$ whose Manhattan norm is 1 (sum of its items adds up to 1). 
+It is easy to see that $X$ satisfies both~\ref{hyperplane_eq} and~\ref{hypersurf_eq}. Let us multiply both sides with a vector of weights $c$ whose Manhattan norm is 1 (sum of its items adds up to 1).
 \begin{align}
     a_{1:N-1}^TX+(a_Ny+b)1^T &= 0\\
     a_{1:N-1}^TXc+(a_Ny+b)1^Tc &= 0\\
@@ -345,7 +345,7 @@ Whenever only one element $c_i=1$ (and trivially others are zero of course), we 
     \sum_i a_{1:N-1}^Tx_ic_i+\sum_i a_Nf(x_i)c_i+\sum_i bc_i = 0\\
     a_{1:N-1}^T\sum_i x_ic_i+a_N\sum_i f(x_i)c_i+b = 0\\
 \end{align}
-We have shown for a point $x_c=Xc$ 
+We have shown for a point $x_c=Xc$
 \begin{equation}
     y(Xc)=f(X)c=\sum_i c_if(x_i)
 \end{equation}
@@ -356,16 +356,16 @@ We will further assume for all $i$, $c_i \in [0,1]$
     \sum_i c_i\min_kx_{kj} &\leq \sum_i c_ix_{ij} \leq \sum_i c_i\max_kx_{kj}\\
     \min_kx_{kj} &\leq \sum_i c_ix_{ij} \leq \max_kx_{kj}\\
 \end{align}
-We see that $x_c$ lies within a subregion of $\Omega$, hence by definition of convexity of surface, 
+We see that $x_c$ lies within a subregion of $\Omega$, hence by definition of convexity of surface,
 \begin{equation}
-    f(Xc) = 
+    f(Xc) =
     \begin{cases}
         \leq  f(X)c & \text{if $f$ is convex}\\
         \geq  f(X)c & \text{if $f$ is concave}
     \end{cases}
 \end{equation}
 \section{Positive Semi-definiteness of a Matrix of the Form $X^TX$}
-Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$, 
+Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$,
 \begin{equation}
 z^TAz = z^TX^TXz = (Xz)^T(Xz) \geq 0
 \end{equation}
@@ -383,8 +383,8 @@ Let $A$ be a diagonalizable symmetric square matrix. Let $P$ be a square matrix 
     &= \lambda_jv_i^Tv_j\\
     (\lambda_i-\lambda_j)v_i^Tv_j &= 0
 \end{align}
-Since $A$ is diagonalizable, $\lambda_i=\lambda_j$ if and only if $i=j$. Hence if $i \neq j$, $v_i^Tv_j = 0$ and $P$ is orthogonal~\cite{magidin_linear_2011}, hence 
-$PP^T = D$ such that 
+Since $A$ is diagonalizable, $\lambda_i=\lambda_j$ if and only if $i=j$. Hence if $i \neq j$, $v_i^Tv_j = 0$ and $P$ is orthogonal~\cite{magidin_linear_2011}, hence
+$PP^T = D$ such that
 \begin{equation}
 D_{ij} = \begin{cases}
     |v_i|^2 & i = j\\
@@ -393,7 +393,7 @@ D_{ij} = \begin{cases}
 \end{equation}
 We can have $P' = PD^{-\frac{1}{2}}$, and $\Lambda' = \Lambda D = D^{\frac{1}{2}} \Lambda D^{\frac{1}{2}}$. Then
 \begin{equation}
-    A = P'\Lambda'P'^T 
+    A = P'\Lambda'P'^T
 \end{equation}
 such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as $P$ and $\Lambda$ respectively. We have shown that any symmetric diagonalizable matrix has orthonormal basis of eigenvectors.
 \section{Relation Between Definiteness and Sign of the Eigenvectors}
@@ -403,9 +403,9 @@ such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as 
     &= \sum_i (P^Tz)_i^2 \lambda_i\\
     &= \sum_i z'_i^2 \lambda_i
 \end{align}
-The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices (we cannot say anything about indefinite matrices). 
+The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices (we cannot say anything about indefinite matrices).
 \section{Relation Between Invertability and Definiteness}
-For any diagonalizable matrix $A$, 
+For any diagonalizable matrix $A$,
 \begin{align}
     det(A) &= det(P) det(\Lambda) det(P^{-1})\\
     &= det(P) det(\Lambda) \frac{1}{det(P)}\\
@@ -429,7 +429,7 @@ The critical point $x^* = -\frac{1}{2}A^{-1}b$ where $\nabla q(x^*) = 0$.
     q(x^*+\Delta x) &= q(x^*) + \Delta x^TA\Delta x + 2\Delta x^TAx^* + \Delta x^Tb\\
     &= q(x^*) + \Delta x^TA\Delta x
 \end{align}
-We can deduce from previous results, 
+We can deduce from previous results,
 \begin{itemize}
     \item $\forall \Delta x [q(x^*) < q(x^*+\Delta x)]$ if $A$ is positive definite ($x^*$ is minimum, minimization problem)
     \item $\forall \Delta x [q(x^*) > q(x^*+\Delta x)]$ if $A$ is negative definite ($x^*$ is maximum, maximization problem)
@@ -464,11 +464,11 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
 \subsection{Arbitrary Gaussian Function}
-Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$. 
+Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$.
 \begin{equation}
     \nabla g(x) = \nabla q(x) g(x)
 \end{equation}
-We see that the critical points of $g(x)$ are the same as of $q(x)$. 
+We see that the critical points of $g(x)$ are the same as of $q(x)$.
 \begin{align}
     g(x^*+\Delta x) &= he^{q(x^*+\Delta x)}\\
      &= he^{q(x^*) + \Delta x^TA\Delta x}\\
@@ -485,8 +485,8 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
     (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \bar{c}^2
 \end{align}
 Note that after this point, I could not come with a rigorous proof, but used a computer.
-If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased. 
-This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. 
+If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased.
+This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample.
 \chapter{Probability Theory and Statistics Concepts Used In Learning}
 \section{Distinction Between Correlation and Dependence}
 \label{cor_dep}
@@ -502,7 +502,7 @@ Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $
     p(y|x) &= \prod_i p(y_i|x)\\
            &= \prod_i p(y_i|x_i)
 \end{align}
-If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is a foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$. 
+If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is a foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$.
 
 People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
 \subsection{Markov Property and Markov Chain}
@@ -525,11 +525,11 @@ If we further assume the process involving $p$ has markov property, then
 \label{multi_mean_derivation}
 Here, we are proving that the expected value has the superposition property
 \begin{align}
-     E_{p(X,Y)}[X] 
+     E_{p(X,Y)}[X]
      &= \int_X\int_Y p(X,Y)X dX dY = E_{X,Y}[X]\\
      &= \int_X\Big(\int_Y p(X,Y)dY\Big) X dX = E_{X}[E_{Y}[X]] = E_{X}[E_{Y}[1]X]\\
      &= \int_X p(X) X dX = E[X]\\
-    E[aX+bY] 
+    E[aX+bY]
     &= E_{p(X,Y)}[aX+bY]\\
     &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
     &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
@@ -544,7 +544,7 @@ recursively expanding, it is easy to see this equation applies to the general ca
 \end{align}
 \section{Covariance of Multiple Variables}
 \begin{align}
-    Cov(aX+bY,cZ+dT) 
+    Cov(aX+bY,cZ+dT)
     &= E[(aX+bY-\mu_{aX+bY})(cZ+dT-\mu_{cZ+dT})]\\
     &= E\big[\big(a(X-\mu_X)+b(Y-\mu_Y)\big)\big(c(Z-\mu_Z)+d(T-\mu_T)\big)\big]\\
     &= E[ac(X-\mu_X)(Z-\mu_Z)+ad(X-\mu_X)(T-\mu_T)+bc(Y-\mu_Y)(Z-\mu_Z)+bd(Y-\mu_Y)(T-\mu_T)]\\
@@ -555,7 +555,7 @@ We will use mathematical induction to prove the general case. assuming the equat
 \begin{equation}
     Cov(\sum_{i=1}^{m-1} a_i X_i, \sum_{i=1}^{n-1} b_i Y_i) = \sum_{i=1}^{m-1} \sum_{j=1}^{n-1} a_i b_j Cov(X_i, Y_j)
 \end{equation}
-holds, it is trivial to see for 
+holds, it is trivial to see for
 \begin{equation}
     Cov(\sum_{i=1}^{m} a_i X_i, \sum_{i=1}^{n} b_i Y_i) = Cov(\sum_{i=1}^{m-1} a_i X_i + a_m X_m, \sum_{i=1}^{n-1} b_i Y_i + b_n Y_n)
 \end{equation}
@@ -590,13 +590,13 @@ Using the fact that variance is just the \textit{self-covariance}
 \label{lossfun}
 In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$ (Note the input parameters $x, \theta$ and output $y$). The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $KL(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters become
 \begin{equation}
-    \hat{\theta} 
+    \hat{\theta}
     = \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]
 \end{equation}
 \subsection{KL-Divergence}
 \subsubsection{Non-negativity of KL-Divergence}
 \label{kl_nonneg}
-Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function 
+Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function
 \begin{align}
      \int_X p(X)\log\frac{p(X)}{q(X)} dX &= \int_X p(X)(-\log)\frac{q(X)}{p(X)} dX\\
      &\geq -\log \int_X p(X)\frac{q(X)}{p(X)} dX\\
@@ -611,7 +611,7 @@ A function $f$ is \textit{monotonically decreasing} if
 \begin{equation}
     f(x) \leq f(y) \longleftrightarrow x \geq y
 \end{equation}
-similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $KL(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$ 
+similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $KL(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$
 \begin{align}
     \frac{\delta}{\delta q_j}\int_i p_i\log\frac{p_i}{q_i} di &= \int_i p_i\frac{\delta}{\delta q_j}\log\frac{p_i}{q_i} di\\
     &= p_j\frac{-\frac{p_j}{q_j^2}}{\frac{p_j}{q_j}}\\
@@ -621,7 +621,7 @@ Let us keep $p$ constant for now and express KL-divergence as a function of $q$ 
 \subsection{Cross-Entropy}
 \subsubsection{General Derivation}
 \begin{align}
-    \hat{\theta} 
+    \hat{\theta}
     &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
     &= \arg_\theta \min[ KL(q(y|x) \parallel p(y|x,\theta)) + H(q(y|x))]\\
     &= \arg_\theta \min \left( E_{q(y|x)}\Big[\log\frac{q(y|x)}{p(y|x,\theta)}\Big] + E_{q(y|x)}\Big[-\log q(y|x)\Big]\right)\\
@@ -630,7 +630,7 @@ Let us keep $p$ constant for now and express KL-divergence as a function of $q$ 
 \end{align}
 \subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
 \label{mle_ce}
-Continuing from~\ref{ce_derivation_res}, 
+Continuing from~\ref{ce_derivation_res},
 \begin{equation}
     = \arg_\theta \min \sum_j -q(y=j|x)\log p(y=j|x,\theta)
 \end{equation}
@@ -645,7 +645,7 @@ We will assume $q$ is known (see~\ref{catdist}).
     &= \arg_\theta\max p(y|x,\theta) \ \text{(see~\ref{catdist})}\\
     &= \hat{\theta}_{MLE}\label{mle_ce_res}
 \end{align}
-We conclude that minimizing the corresponding loss is equivalent to finding the maximum likelihood of the output $Y$ wrt the input $X$ and the parameters $\theta$. 
+We conclude that minimizing the corresponding loss is equivalent to finding the maximum likelihood of the output $Y$ wrt the input $X$ and the parameters $\theta$.
 \subsection{Mean Squared Error (MSE)}
 \subsubsection{General Derivation}
 \label{mse_derivation}
@@ -655,7 +655,7 @@ We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) =
 \end{equation}
 Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
 \begin{align}
-    \hat{\theta} 
+    \hat{\theta}
     &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
     &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
     &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
@@ -664,9 +664,9 @@ Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same nu
 People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
 \subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
 \label{mle_mse}
-Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence, 
+Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence,
 \begin{align}
-    \hat{\theta}_{MLE} 
+    \hat{\theta}_{MLE}
     &= \arg_\theta \max p(y|x,\theta)\\
     &= \arg_\theta \max \frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\\
     -\log\hat{\theta}_{MLE} &= \arg_\theta\min\left[-\log\left(\frac{1}{(\sigma\sqrt{2\pi})^k}\exp\Big(-\frac{1}{2\sigma^2}(\mu_\theta(x)-y)^2\Big)\right)\right]\\
@@ -674,13 +674,13 @@ Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N
     &= \arg_\theta \min\frac{1}{2}(\mu_\theta(x)-y)^2\ \text{after eliminating the constants}
     \label{mse_derivation_res1}
 \end{align}
-Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways. 
+Remember that we have a freedom when removing the constants as long as they comply with ~\ref{minmaxcomp1} and~\ref{minmaxcomp2}. In this regard, we did not eliminate $\frac{1}{2}$ for convenience, as taking derivatives will remove it anyways.
 
-Notice that in~\ref{mle_ce}, we are approximating a probability distribution (minimizing KL-divergence) between $\hat{y} = p(y|x,\theta)$ and an underlying distribution $q(y|x)$ with labels $y$ (whose hot-encoding is the distribution itself). However, when substituting with the Gaussian, we see we are fitting a Gaussian by minimizing the distance of its mean to the datapoint $y$.  
+Notice that in~\ref{mle_ce}, we are approximating a probability distribution (minimizing KL-divergence) between $\hat{y} = p(y|x,\theta)$ and an underlying distribution $q(y|x)$ with labels $y$ (whose hot-encoding is the distribution itself). However, when substituting with the Gaussian, we see we are fitting a Gaussian by minimizing the distance of its mean to the datapoint $y$.
 \subsection{Loss Functions as a Sum of Elements in Supervised Tasks}
-For supervised tasks, we found a relationship between MLE and the loss functions $\mathcal{L}_\theta(\hat{y},y)$ in~\ref{mle_ce} and~\ref{mle_mse} for a single data point $(x,y)$. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then 
+For supervised tasks, we found a relationship between MLE and the loss functions $\mathcal{L}_\theta(\hat{y},y)$ in~\ref{mle_ce} and~\ref{mle_mse} for a single data point $(x,y)$. What about a dataset? We start with an assumption again that the variables $X$ and $Y$ are independent as given in~\ref{cond_mutual_independence}. Then
 \begin{align}
-    \hat{\theta}_{MLE} 
+    \hat{\theta}_{MLE}
     &= \arg_\theta \max p_{model}(y|x,\theta)\\
     &= \arg_\theta \max \prod_i p_{model}(y_i|x_i,\theta)\\
     -\log\hat{\theta}_{MLE}
@@ -705,11 +705,11 @@ We realize that as number of samples increases, the mean of the sample better ap
 \begin{equation}
     E[f(X)] \approx \frac{1}{N}\sum_i f(X_i)\ \text{such that $X_i \sim p(X)$}\label{mean_loss_res}
 \end{equation}
-Without loss of generality, we can prove this for any function $f$ in the same manner. This is why people usually use mean instead of sum. Hence new expression for the loss function becomes 
+Without loss of generality, we can prove this for any function $f$ in the same manner. This is why people usually use mean instead of sum. Hence new expression for the loss function becomes
 \begin{equation}
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
-As $n$ is a constant relative to the parameters, we are still maximizing the likelihood. 
+As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
 \section{Overfitting and Bias-Variance Tradeoff}
 
 Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
@@ -722,9 +722,9 @@ For each dataset $D$, the optimal mapping $f_D$ predicts $f_D(x) = y^*$. \textit
 \begin{equation}
     \bar{f}(x) = E_D \left[ f_D(x) \right] = \int\limits_D f_D(x) p(D) dD
 \end{equation}
-for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume the necessary conditions, we can model the loss as an MSE 
+for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume the necessary conditions, we can model the loss as an MSE
 \begin{align}
-    \mathcal{L}_D(x,y) &= E_{x,y,D}\left[\left[f_D(x) - y\right]^{2}\right]\\ 
+    \mathcal{L}_D(x,y) &= E_{x,y,D}\left[\left[f_D(x) - y\right]^{2}\right]\\
     &= E_{x,y,D}\left[\left[\left(f_D(x) - \bar{f}(x)\right) + \left(\bar{f}(x) - y\right)\right]^{2}\right] \\
     &= E_{x, D}\left[(\bar{f}_{D}(x) - \bar{f}(x))^{2}\right] + E_{x, y} \left[\left(\bar{f}(x) - y\right)^{2}\right] + 2 E_{x, y, D} \left[\left(f_D(x) - \bar{f}(x)\right)\left(\bar{f}(x) - y\right)\right]
 \end{align}
@@ -751,9 +751,9 @@ for all datasets $D$ possible. Remember from~\ref{mse_derivation}, if we assume 
     &= 0
 \end{align}
 \begin{equation}
-	\underbrace{E_{x, y, D} \left[\left(f_D(x) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{x, D}\left[\left(f_D(x) - \bar{f}(x)\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{x}\left[\left(\bar{f}(x) - \bar{y}(x)\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{x, y}\left[\left(\bar{y}(x) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017} 
+	\underbrace{E_{x, y, D} \left[\left(f_D(x) - y\right)^{2}\right]}_{\text{Expected Test Error }(\mathcal{L})} = \underbrace{E_{x, D}\left[\left(f_D(x) - \bar{f}(x)\right)^{2}\right]}_{\text{Variance }(\sigma^2)} + \underbrace{E_{x}\left[\left(\bar{f}(x) - \bar{y}(x)\right)^{2}\right]}_\mathrm{Bias^2} + \underbrace{E_{x, y}\left[\left(\bar{y}(x) - y\right)^{2}\right]}_{\text{Noise }(\epsilon)}~\cite{cornell_2017}
 \end{equation}
-Variance $\sigma^2$ here is wrt the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa. 
+Variance $\sigma^2$ here is wrt the datasets $D$. High variance means that the predictions vary a lot by different datasets and vice-versa.
 
 The bias is simply the squared difference between the predicted and true labels. We use expected labels here since the system (as in a real system) has noise, which is the variance term $\epsilon$ shown above. The noise is generally due to the measurement tools, which we have no impact on. However, we can change the other terms, using methods such as regularization.
 \chapter{Neural Network Layers}
@@ -768,7 +768,7 @@ Using the definition of matrix multiplication in~\ref{matmult}, we have
 \begin{equation}
 y_{nm} = \sum_{d=1}^D x_{nd} w_{dm}+b_m
 \end{equation}
-Looking at this definition, we can find partial derivatives 
+Looking at this definition, we can find partial derivatives
 \begin{align}
     \frac{\delta y_{nm}}{\delta x_{ij}} &= \begin{cases}
         w_{jm} & if\ n=i\\
@@ -799,12 +799,12 @@ Using the chain rule with a loss function gives
 \section{Variational Autoencoder (VAE)}
 Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\ 
+    \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
     &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
     &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}~\cite{weng_vae_2018}
 \end{align}
-Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian}, 
+Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian},
 \begin{align}
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p_\theta(z)dz}_\text{evidence}}
@@ -834,7 +834,7 @@ The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the
 \begin{equation}
     KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
 \end{equation}
-The log probability term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
+The cross-entropy term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
     \int_z q_\phi(z|x)\log p_\theta(x|z)dz = \int_\epsilon p(\epsilon)\log p_\theta \big(x|z(x, \epsilon) = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon \big)d\epsilon
 \end{equation}
@@ -844,7 +844,7 @@ Then they get rid of the coefficient by approximating the term, similar to the i
 \end{equation}
 The authors model $p_\theta \big(x|z(x, \epsilon) \big)$ as Bernoulli or Gaussian depending of whether $x$ is discrete (binary) or continuous respectively. In the Bernoulli case ($D_\theta(z)$ is the mathematical representation for the decoder)
 \begin{align}
-    \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big) 
+    \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)
     &= \frac{1}{N}\sum_i \log \prod_j p_\theta \big(x_j|z_i(x, \epsilon_i) \big)\ \text{when $x_j$ are independent (see~\ref{cond_mutual_independence})}\\
     &= \frac{1}{N}\sum_i \log\prod_j\left[p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)^{1\{x_j=1\}}p_\theta \big(x_j=0|z_i(x_j, \epsilon_i) \big)^{1\{x_j=0\}}\right]\\
     &= \frac{1}{N}\sum_i \sum_j\Big[(1\{x_j=1\})\log p_\theta \big(x_j=1|z_i(x_j, \epsilon_i) \big)+(1\{x_j=0\})\log p_\theta \big(x_j=0|z_i(x_j, \epsilon_i)\big)\Big]\\
@@ -860,7 +860,7 @@ The total loss is
 \section{Diffusion Models}
 \subsection{What is a Diffusion Model}
 
-Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times. 
+Diffusion models require two processes that adds noise to data for a number of steps $T$, (\textit{Sampling steps} parameter in \href{https://github.com/AUTOMATIC1111/stable-diffusion-webui}{AUTOMATIC1111/stable-diffusion-webui} and alike). The first one, \textit{forward (diffusion) process}, makes data noisier by adding Gaussian noise $T$ times, whereas the second, \textit{reverse process}, tries to recover the original image from the result by adding noise again $T$ times.
 \subsection{Forward Process}
 Let \textit{forward process} be defined as a Markov Chain (see~\ref{markov_chain_cond}):
 
@@ -883,8 +883,8 @@ Let us prove this argument using mathematical induction. When $t=1$, it is easy 
      &= \Big(\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}\Big)x_0+\sum_{\tau=1}^{t-1}\Big(\sqrt{\prod_{i=\tau+1}^{t}\alpha_i-\prod_{i=\tau}^{t}\alpha_i}\Big)\epsilon_\tau\\
      \sqrt{\alpha_t}x_{t-1}+\sqrt{1-\alpha_t}\epsilon_t&= \Big(\sqrt{\prod_{\tau=1}^{t}\alpha_\tau}\Big)x_0+\underbrace{\sum_{\tau=1}^{t-1}\Big(\sqrt{\prod_{i=\tau+1}^{t}\alpha_i-\prod_{i=\tau}^{t}\alpha_i}\Big)\epsilon_\tau+\sqrt{1-\alpha_t}\epsilon_t}_{\Sigma_t} = x_t
 \end{align}
-Therefore, by induction we have proven that equation~\ref{reparam_xt_ind2} is true. 
-We should have an equation of the form 
+Therefore, by induction we have proven that equation~\ref{reparam_xt_ind2} is true.
+We should have an equation of the form
 \begin{equation}
     x_t = \mu + \sigma \cdot \epsilon_t
 \end{equation}
@@ -901,7 +901,7 @@ Narrowing down for the normal distribution gives
 \begin{equation}
     X_i \sim \mathcal{N}(x_i; \mu_i, \sigma_i^2)\ and\ Y = \sum_{i=1}^{n}c_iX_i \longleftrightarrow Y \sim N(y; \sum_{i=1}^{n}c_i\mu_i,\sum_{i=1}^{n}c_i^2\sigma_i^2)
 \end{equation}
-$\epsilon_t$ is already given to be normally distributed. Substituting $X_i = \epsilon_i$ and the corresponding coefficients 
+$\epsilon_t$ is already given to be normally distributed. Substituting $X_i = \epsilon_i$ and the corresponding coefficients
 \begin{align}
     \sum_{\tau=1}^{t-1}(\prod_{i=\tau+1}^{t}\alpha_i-\prod_{i=\tau}^{t}\alpha_i)+(1-\alpha_t) &= \prod_{i=2}^{t}\alpha_i-\prod_{i=1}^{t}\alpha_i+\prod_{i=3}^{t}\alpha_i-\prod_{i=2}^{t}\alpha_i+...+\prod_{i=t-1}^{t}\alpha_i-\prod_{i=t-2}^{t}\alpha_i+\prod_{i=t}^{t}\alpha_i-\prod_{i=t-1}^{t}\alpha_i+(1-\alpha_t)\\
     &= \cancel{\prod_{i=2}^{t}\alpha_i}-\prod_{i=1}^{t}\alpha_i\cancel{+\prod_{i=3}^{t}\alpha_i}\cancel{-\prod_{i=2}^{t}\alpha_i}+...\cancel{+\prod_{i=t-1}^{t}\alpha_i}\cancel{-\prod_{i=t-2}^{t}\alpha_i}\cancel{+\alpha_t}\cancel{-\prod_{i=t-1}^{t}\alpha_i}+1\cancel{-\alpha_t}
@@ -918,9 +918,9 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 \begin{align}
     p_\theta(x_{0:T}) &= p(x_T)\prod_{t=1}^T p_\theta(x_{t-1}|x_t)~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
     p_\theta(x_{t-1}|x_t) &= \mathcal{N}(x_{t-1}; \mu_\theta(x_t, t), \Sigma_\theta(x_t,t))~\cite{ho_denoising_2020, weng_diffusion_2021}
-\end{align} 
+\end{align}
 \begin{align}
--\log p_\theta(x_0) 
+-\log p_\theta(x_0)
 &\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}\Big]\\
@@ -942,7 +942,7 @@ Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
 &= \mathcal{L}_\theta(x_0)
 \end{align}
-We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}. 
+We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}.
 
 As a side note, the authors choose $p(x_T)=\mathcal{N}(0,1)$, and $\beta_t$ schedule so that $L_T \approx 0$ ($\beta_T \approx 1$)~\cite{ho_denoising_2020}. However, for stability they opt for small values of $\beta_T$~\cite{sohl-dickstein_deep_2015, ho_denoising_2020}.
 
@@ -956,21 +956,21 @@ We conditioned on $x_0$ at~\ref{x0cond} since $q(x_{t-1}|x_t, x_0)$ is tractable
 \end{align}
 ~\ref{x0cond_re} also appears in~\ref{x0cond}. Doing the crazy calculations gives
 \begin{align}
-q(x_{t-1}|x_t, x_0) 
+q(x_{t-1}|x_t, x_0)
 &= q(x_t|x_{t-1}, x_0) \frac{ q(x_{t-1}|x_0) }{ q(x_t|x_0) }\\
 &\propto \exp \Big(-\frac{1}{2} \big(\frac{(x_t - \sqrt{\alpha_t} x_{t-1})^2}{\beta_t} + \frac{(x_{t-1} - \sqrt{\bar{\alpha}_{t-1}} x_0)^2}{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
 &= \exp \Big(-\frac{1}{2} \big(\frac{x_t^2 - 2\sqrt{\alpha_t} x_t \color{blue}{x_{t-1}} \color{black}{+ \alpha_t} \color{red}{x_{t-1}^2} }{\beta_t} + \frac{ \color{red}{x_{t-1}^2} \color{black}{- 2 \sqrt{\bar{\alpha}_{t-1}} x_0} \color{blue}{x_{t-1}} \color{black}{+ \bar{\alpha}_{t-1} x_0^2}  }{1-\bar{\alpha}_{t-1}} - \frac{(x_t - \sqrt{\bar{\alpha}_t} x_0)^2}{1-\bar{\alpha}_t} \big)\Big) \\
 &= \exp\Big( -\frac{1}{2} \big( \color{red}{(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})} x_{t-1}^2 - \color{blue}{(\frac{2\sqrt{\alpha_t}}{\beta_t} x_t + \frac{2\sqrt{\bar{\alpha}_{t-1}}}{1 - \bar{\alpha}_{t-1}} x_0)} x_{t-1} \color{black}{ + C(x_t, x_0) \big)\Big)}~\cite{weng_diffusion_2021}
 \end{align}
-From~\ref{normal_specific}, the Normal distribution has the form 
+From~\ref{normal_specific}, the Normal distribution has the form
 \begin{equation}
     \mathcal{N}(x; \mu, \sigma^2)\propto  \exp\left(-\frac {1}{2}\Big(\frac {1}{\sigma^2}x^2-\frac {2\mu}{\sigma^2} x+\frac {1}{\sigma^2}\mu^2\Big)\right)
 \end{equation}
 Substituting gives
 \begin{align}
 q(x_{t-1}|x_t, x_0) &= \mathcal{N}(x_{t-1}; \bar{\mu}_t(x_t, x_0), \bar{\beta}_t)\\
-\bar{\beta}_t 
-&= 1/(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})\\ 
+\bar{\beta}_t
+&= 1/(\frac{\alpha_t}{\beta_t} + \frac{1}{1 - \bar{\alpha}_{t-1}})\\
 &= 1/(\frac{\alpha_t - \bar{\alpha}_t + \beta_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= 1/(\frac{1 - \bar{\alpha}_t}{\beta_t(1 - \bar{\alpha}_{t-1})})\\
 &= \color{green}{\frac{1 - \bar{\alpha}_{t-1}}{1 - \bar{\alpha}_t}\beta_t} \\
@@ -991,15 +991,15 @@ Substituting gives
 &= \frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)~\cite{weng_diffusion_2021}
 \end{align}
-Let us focus on $L_{t-1}$. 
+Let us focus on $L_{t-1}$.
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
     &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
     &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
 \end{align}
 If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big] 
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
 \end{align}
@@ -1011,7 +1011,7 @@ We can parameterize $\mu_\theta$ similar to $\mu_t$ as below
 \end{align}
 Now let us focus on $L_0$.
 \begin{align}
-    \arg_\theta\min[-\log p_\theta(x_0 |x_1)] 
+    \arg_\theta\min[-\log p_\theta(x_0 |x_1)]
     &= \arg_\theta\min[-\log \mathcal{N}(x_0; \mu_\theta(x_1, 1), \sigma_1)]\\
     &= \arg_\theta\min\left[-\log \left(\frac {1}{(\sigma_1\sqrt{2\pi})^k} \exp\Big[-{\frac {1}{2}}\Big(\frac {x_0-\mu_\theta(x_1, 1)}{\sigma_1}\Big)^2\Big]\right)\right]\\
     &= \arg_\theta\min\left[{\frac {1}{2\sigma_1^2}}\big(x_0-\mu_\theta(x_1, 1)\big)^2-\log \frac {1}{(\sigma_1\sqrt{2\pi})^k}\right]\\
@@ -1033,27 +1033,27 @@ Ho et al. (2020), found that omitting the coefficient term and sampling $t$ unif
     \mathcal{L}_\theta(x_0) = \arg_\theta\min \sum_{t \sim [1,T]}E_{\epsilon_t, x_0}\left[\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{equation}
 \section{Large Language Models}
-Note that unlike other parts, I preferred to explain the concepts verbally in this part. Given papers mostly prioritize intution more than theory.   
+Note that unlike other parts, I preferred to explain the concepts verbally in this part. Given papers mostly prioritize intution more than theory.
 \subsection{Recursive Neural Networks}
-Assuming we have a sequence $x_{1:T} = x_1, x_2, ..., x_T$ a RNN (\textit{Recursive Neural Network}) layer computes 
+Assuming we have a sequence $x_{1:T} = x_1, x_2, ..., x_T$ a RNN (\textit{Recursive Neural Network}) layer computes
 \begin{align}
     h(x_t) &= f\big(\underbrace{h(x_{t-1})w_{(t-1)0} + x_{t-1}w_{(t-1)1} + b_{t-1}}_{g(x_{t-1})}\big)\\
 \end{align}
 Where $f$ is an activation function. It is easy to see that RNNs have the Markov property. Using the chain rule we have
 \begin{align}
-    \frac{\delta h(x_t)}{\delta h(x_{t-t_0})} 
+    \frac{\delta h(x_t)}{\delta h(x_{t-t_0})}
     &= \prod_{\tau=1}^{t_0}\frac{\delta h(x_{t-\tau+1})}{\delta h(x_{t-\tau})}\\
     &= \prod_{\tau=1}^{t_0}\frac{\delta h(x_{t-\tau+1})}{\delta g(x_{t-\tau})}\frac{\delta g(x_{t-\tau})}{\delta h(x_{t-\tau})}\\
     &= \prod_{\tau=1}^{t_0}f'\Big(g(x_{t-\tau})\Big)w_{(t-\tau)0}
 \end{align}
-For a stable activation flow, we need 
+For a stable activation flow, we need
 \begin{align}
     f'\Big(g(x_{t-\tau})\Big)w_{(t-\tau)0} &= \pm 1\\
     f\Big(g(x_{t-\tau})\Big) &= \pm \frac{g(x_{t-\tau})}{w_{(t-\tau)0}} + c
 \end{align}
 where $c$ is a constant w.r.t (with respect to) $g$. $f$ is a linear function w.r.t $g$, unlike $\tanh$ that is used with conventional RNNs. Deep network layers need to have nonlinear components as well. Therefore, Hochreiter et al. decided to use nonlinear activations in the input $g(x_{t-\tau})$ itself. Each nonlinear structure is called a \textit{gate}. This overall layer is called LSTM (long short-term memory) and could be stacked just like a standard RNN layer~\cite{hochreiter_long_1997}. Some works stack two inverted RNN layers in order to enable the network to see future tokens as well as the past ones, called BiRNN (bidirectional RNN).
 
-At the time, the NLP (natural language processing) community used a stack of RNN layers that grabs the contextual information out of the input (\textit{encoder}), and another stack of layers that processes this information for the output (\textit{decoder}) for tasks involving sequence transformation (e.g. translation or summarization). The current token is accepted at each layer, whereas the decoder layer output is used as the prediction for the next token. NNs (\textit{neural networks}) cannot work with string inputs. Therefore, they need to be converted into numbers (\textit{embedding}). Maybe the simplest method is to use a vector with length of vocabulary size having 1 only at the index of the target word (\textit{one-hot encoding}). These vectors are sparse (most of the entries are not used). Furthermore, the complexity grows with the vocabulary size. Instead, one can make these large sparse vectors to much smaller and denser. One may use heuristics to accomplish this. Two of these are that homonyms may have different meanings depending of the words surrounding them (1), and words can have semantic similarities independent of their spelling (2). \textit{word2vec} tackles (1) by training two types of NNs that predict the target word via its surroundings and vice-versa~\cite{mikolov_efficient_2013}. \textit{GloVe} on the other hand is proposed for (2), looking at the co-occurence probabilities of each pair $k, l$ as a measure of relevance ($P(k|l)$), incorporating them in a loss function to train learning models~\cite{pennington_glove_2014}.     
+At the time, the NLP (natural language processing) community used a stack of RNN layers that grabs the contextual information out of the input (\textit{encoder}), and another stack of layers that processes this information for the output (\textit{decoder}) for tasks involving sequence transformation (e.g. translation or summarization). The current token is accepted at each layer, whereas the decoder layer output is used as the prediction for the next token. NNs (\textit{neural networks}) cannot work with string inputs. Therefore, they need to be converted into numbers (\textit{embedding}). Maybe the simplest method is to use a vector with length of vocabulary size having 1 only at the index of the target word (\textit{one-hot encoding}). These vectors are sparse (most of the entries are not used). Furthermore, the complexity grows with the vocabulary size. Instead, one can make these large sparse vectors to much smaller and denser. One may use heuristics to accomplish this. Two of these are that homonyms may have different meanings depending of the words surrounding them (1), and words can have semantic similarities independent of their spelling (2). \textit{word2vec} tackles (1) by training two types of NNs that predict the target word via its surroundings and vice-versa~\cite{mikolov_efficient_2013}. \textit{GloVe} on the other hand is proposed for (2), looking at the co-occurence probabilities of each pair $k, l$ as a measure of relevance ($P(k|l)$), incorporating them in a loss function to train learning models~\cite{pennington_glove_2014}.
 
 Having different variants, \textit{(cross) attention} between vectors $a, b$ is (with a similarity matrix $S$)
 
@@ -1068,11 +1068,11 @@ Bahdanau et al. obtain candidate vectors at each layer of a gated BiRNN encoder 
 
 Lastly, it is important to mention two different training modes for RNNs. When training at the current step, we could feed the current label (correct output) to the network. This is called \textit{teacher forcing} as the name implies. When generating its own output, the network does not have the labels. Teacher forcing resembles spoon learning in an informal sense. There is an alternative called \textit{curriculum learning} that feeds the network its current prediction as the next token. This approach is slower yet achieves better results~\cite{lapan_deep_2020}.
 \subsection{Transformers}
-The transformers paper (Vaswani et al.) brought a new paradigm. The first transformer uses an architecture similar to the aforementioned encoder-decoder (\textit{seq2seq}) model. Transformer encoder and decoder blocks process the inputs in parallel unlike RNNs' which operates sequentially. In order to obtain a single output token, the last decoder layer is connected to a FFN (feed forward neural network). The parallelism enables a different attention mechanism at each layer, where the sentence would be compared to itself (self-attention). This allows for faster inference. The attention layers create context-aware embeddings with each entry being composed of words weighted by their similarity to other words. The produced similarity matrix also gives the co-occurrence of words. In this regard, transformers tackle both aforementioned embedding problems (1) and (2), hence a random embedding still gives a good performance. However, due to its parallel nature, the cross-attention in decoder layers may include future tokens as well. We are not interested in the future tokens that are not available yet, hence the parts corresponding to them are masked \cite{vaswani_attention_2023}. 
+The transformers paper (Vaswani et al.) brought a new paradigm. The first transformer uses an architecture similar to the aforementioned encoder-decoder (\textit{seq2seq}) model. Transformer encoder and decoder blocks process the inputs in parallel unlike RNNs' which operates sequentially. In order to obtain a single output token, the last decoder layer is connected to a FFN (feed forward neural network). The parallelism enables a different attention mechanism at each layer, where the sentence would be compared to itself (self-attention). This allows for faster inference. The attention layers create context-aware embeddings with each entry being composed of words weighted by their similarity to other words. The produced similarity matrix also gives the co-occurrence of words. In this regard, transformers tackle both aforementioned embedding problems (1) and (2), hence a random embedding still gives a good performance. However, due to its parallel nature, the cross-attention in decoder layers may include future tokens as well. We are not interested in the future tokens that are not available yet, hence the parts corresponding to them are masked \cite{vaswani_attention_2023}.
 
-The transformer boom brought different variants. BERT (Bidirectional Encoder Representations from Transformers, Devlin et al.) is the encoder part of the transformer. It is trained on two tasks. The first task is MLM (masked language modeling) where the network is trained to predict a number of masked tokens for each given sentence. In a typical transformer layer, the future tokens also see the past tokens. In the following layers the current token would indirectly link to itself and the similarity matrix entry corresponding to it would have the highest activation (which is reasonable as it is the same token). Masking the tokens prevents this phenomenon. There is also NSP (next sentence prediction) task where the network is trained to predict the next sentence as the name implies. The authors claim and show, the same \textit{pretrained} network excels at wide range of tasks "such as question answering and language inference" after only little more training, called \textit{fine-tuning}~\cite{devlin_bert_2019}. Due to requiring less compute-time, fine-tuning becomes a widely adopted method in the community. GPT (Generative Pretrained Transformer, Radford et al.) on the other hand, uses the decoder part of the transformer~\cite{radford_improving_2018}. Three branches (encoder only, decoder only and encoder-decoder) of transformers continue developing. 
+The transformer boom brought different variants. BERT (Bidirectional Encoder Representations from Transformers, Devlin et al.) is the encoder part of the transformer. It is trained on two tasks. The first task is MLM (masked language modeling) where the network is trained to predict a number of masked tokens for each given sentence. In a typical transformer layer, the future tokens also see the past tokens. In the following layers the current token would indirectly link to itself and the similarity matrix entry corresponding to it would have the highest activation (which is reasonable as it is the same token). Masking the tokens prevents this phenomenon. There is also NSP (next sentence prediction) task where the network is trained to predict the next sentence as the name implies. The authors claim and show, the same \textit{pretrained} network excels at wide range of tasks "such as question answering and language inference" after only little more training, called \textit{fine-tuning}~\cite{devlin_bert_2019}. Due to requiring less compute-time, fine-tuning becomes a widely adopted method in the community. GPT (Generative Pretrained Transformer, Radford et al.) on the other hand, uses the decoder part of the transformer~\cite{radford_improving_2018}. Three branches (encoder only, decoder only and encoder-decoder) of transformers continue developing.
 
-GPT-3 (Brown et al.) removes the fine-tuning step altogether, proposing \textit{manual few-shot prompting} with hard labels and frozen weights after pretraining~\cite{brown_language_2020}. Prompt engineering becomes another paradigm of research. Schickt and Schütze propose \textit{prompt tuning} modelling the problem as a sequence classification task. They fine-tune an ensemble of PLMs (pretrained language models) to predict the relevant masked part, alleviating the contextual information in the prompt given beside the query. Then the PLMs soft-label a larger prompt dataset, giving rise to automatic prompting~\cite{schick_exploiting_2021}. 
+GPT-3 (Brown et al.) removes the fine-tuning step altogether, proposing \textit{manual few-shot prompting} with hard labels and frozen weights after pretraining~\cite{brown_language_2020}. Prompt engineering becomes another paradigm of research. Schickt and Schütze propose \textit{prompt tuning} modelling the problem as a sequence classification task. They fine-tune an ensemble of PLMs (pretrained language models) to predict the relevant masked part, alleviating the contextual information in the prompt given beside the query. Then the PLMs soft-label a larger prompt dataset, giving rise to automatic prompting~\cite{schick_exploiting_2021}.
 \bibliographystyle{IEEEtran}
 \bibliography{refs}
 \end{document}
