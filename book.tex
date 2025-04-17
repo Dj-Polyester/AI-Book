@@ -29,13 +29,11 @@
 \maketitle
 \tableofcontents
 \chapter{Introduction}
-\section{Binding Information (TLDR)}
-This book aims to give intuition for some ML (machine learning) concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. I am trying to teach the topic using mostly mathematical proofs, though I also provide examples and/or explanations. I hope this book will be helpful for people wanting a career in the field.
+\section{Disclaimer (TLDR)}
+This book aims to give intuition for some ML (machine learning) concepts that I thought of significance. I started writing it simply because of the fact that I was bored of reading TLDR textbooks without understanding anything at all. That is why, I tried to give information as concise and as clear as possible. This compound thingy is solely my research and notetaking work piled up over years. I am trying to teach the topic using mostly mathematical proofs, though I also provide examples and/or explanations. As a side note, it is not mandatory but recommended to have some familiarity with (at least) the basic terms in the fields in the focus of this book.
 
-I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope you will come up with your own brilliant ideas utilizing this knowledge and sharing them for all. Public science and open source forever!
+I am not claiming to have 100\% accurate statements, though have I not seen any conflictions between my findings and the publications. I do not think any theory is perfect as well. They are good only because they just work in practice. Furthermore, I am not claiming this book to be a textbook material on its own. I only wanted to share (hopefully) helpful information for deep understanding of the objects using math, as every scientific finding has a mathematical background in my opinion. Nevertheless, you will see some beliefs of my own as I could not come up with a clear answer (encountering conflicting statements in publications to check thereafter), so I warped it with my thoughts (science huh). For example, the fact that dependence is a superset of correlation in part~\ref{cor_dep} is such a gibberish. However, every other piece starts to fit nicely on each other with this statement (mutual coherency for now). I hope this book will be helpful for people wishing a career in the field, and the readers could come up with their own brilliant ideas utilizing this knowledge and sharing for good. Public science and open source forever!
 \section{Conventions and Notations of the Book}
-It is not mandatory, but recommended to have some familiarity with the concepts (e.g. through courses) in linear algebra, calculus and probability theory.
-
 Unless stated otherwise, these math notations apply.
 \begin{itemize}
     \item wrt, LHS, RHS stands for \textit{with respect to}, \textit{left hand side}, \textit{right hand side} respectively.
@@ -51,9 +49,8 @@ Unless stated otherwise, these math notations apply.
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
-\section{Axioms and Theory}
-\subsection{Numbers and Linear Algebra}
-\subsubsection{Scalars, Vectors and Matrices}
+\chapter{Linear Algebra}
+\section{Scalars, Vectors and Matrices}
 \label{defn_svm}
 A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars.
 A matrix
@@ -71,14 +68,14 @@ is an, 1D (1-dimensional), array of vectors, 2D (2-dimensional) array of scalars
 Subscript $T$ is called the \textit{transpose}, which flips the array along its left-diagonal (a line from top-left to bottom-right) so that the rows become columns and vice-versa. Trivially transpose of the scalar is equal to itself. A square matrix (equal number of rows and columns), whose transpose is equal to itself is called \textit{symmetric} (i.e. $M^T=M$ or $m_{ij} = m_{ji}$ for all $i, j$).
 
 For arrays (vectors and matrices), addition (and subtraction) operates element-wise whereas multiplication (and division) has a special variant (see~\ref{matmult}) beside the traditional element-wise multiplication.
-\subsubsection{Equality Comparison for Minimum and Maximum Functions}
+\section{Equality Comparison for Minimum and Maximum Functions}
 Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{minmaxcomp1},~\ref{minmaxcomp2} and~\ref{minmaxcomp3} to the reader. Same approach applies to the maximum function.
 \begin{align}
     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
      \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
      \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
 \end{align}
-\subsubsection{Dot Product}
+\section{Dot Product}
 \label{dotp}
 Dot product of two vectors $a\cdot b=\prescript{1\times N}{}{a^T}\prescript{N\times 1}{}{b}=\prescript{1 \times 1}{}{c}$ is defined such that $c$ is a scalar and
 \begin{equation}
@@ -91,7 +88,7 @@ with properties some of which is given below (assuming the dimensions fit of cou
     \item associativity (order of the operation), i.e. $(a^Tb)d^T = a^T(bd^T)$
 \end{itemize}
 Note the similarity of dot product with the traditional standard multiplication. Indeed, the formula~\ref{dotp_defn} satisfies these properties, which is easy to prove.
-\subsubsection{P-Norm}
+\section{P-Norm}
 P-Norm of a vector $a$
 \begin{align}
     \norm[p]{a} &= (\sum_i a_i^p)^{\frac{1}{p}} &\\
@@ -99,7 +96,7 @@ P-Norm of a vector $a$
     \norm[2]{a} &= \norm[]{a} & \text{(Euclidean norm)} \label{euc_norm}
 \end{align}
 Notice that the squared Euclidean is the dot product of two equal vectors. When denoting it, we will omit the braces and use $a^Ta = \norm[2]{a}^2 = a^2$ since $a$ can be scalar or vector depending on the context.
-\subsubsection{Matrix Multiplication}
+\section{Matrix Multiplication}
 Multiplication of two matrices
 $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}$ is defined such that
 \begin{equation}
@@ -107,7 +104,7 @@ $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}
     \label{matmult}
 \end{equation}
 The same properties in ~\ref{dotp} apply, which is also easy to prove.
-\subsubsection{Definiteness of a Symmetric Matrix}
+\section{Definiteness of a Symmetric Matrix}
 A symmetric matrix $M$ is positive definite if and only if for any vector $z$
 \begin{equation}
     z^TMz > 0
@@ -117,133 +114,6 @@ Similarly, $M$ is semi-positive definite if and only if for any vector $z$
     z^TMz \geq 0
 \end{equation}
 Similar definitions for negative and semi-negative definite matrices exist (just reversing the equality sign).
-\subsection{Probability Theory}
-\subsubsection{Probability}
-Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
-\begin{align}
-    \int_X p(X)dX = 1
-\end{align}
-$X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
-\subsubsection{Joint Probability}
-$p(x_i, y_j)$ denotes the probability of $X=x_i$ and $Y=y_j$ occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation showing the marginal probability $p(X)$
-\begin{align}
-    \int_Y p(X,Y)dY = p(X)
-\end{align}
-\subsubsection{Conditional Probability}
-$p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y=1|X=3)=1$ is certain. If we know the outcome is 3, the outcome is an odd number for sure. Below is an essential formulation
-\begin{align}
-    p(X,Y) = p(X|Y)p(Y)
-    \label{joint_cond_prob}
-\end{align}
-\subsubsection{Bayesian Formula}
-\begin{align}
-    p(A,B) &= p(B,A)\\
-    p(A|B)p(B) &= p(B|A)p(A)\\
-    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{p(B)}_\text{evidence}}\\
-    p(B) &= \int_A p(A,B)dA\\
-    &= \int_A p(B|A)p(A)dA\\
-    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
-\end{align}
-\subsubsection{Independence}
-By definition, if
-\begin{equation}
-    p(A,B) = p(A)p(B) \label{independence1}
-\end{equation}
-then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independence1}
-\begin{align}
-    p(A|B) &= p(A)\\
-    p(B|A) &= p(B)
-\end{align}
-\subsubsection{Conditional Dependence}
-By definition, if
-\begin{equation}
-    p(A|B,C) = p(A|C) \label{cond_independence1}
-\end{equation}
-then $A$ and $B$ are conditionally independent given $C$.
-Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
-\begin{align}
-    p(A|B,C)p(B|C)p(C) &= p(A,B|C)p(C)\\
-    p(A|B,C)p(B|C) &= p(A,B|C)\\
-    p(A|C)p(B|C) &= p(A,B|C) \label{cond_independence2}
-\end{align}
-\subsection{Statistics}
-\subsubsection{Mean (Expected Value)}
-\begin{equation}
-    \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
-\end{equation}
-\subsubsection{Covariance}
-\begin{equation}
-    \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
-\end{equation}
-\subsubsection{Variance}
-\label{defvar}
-\begin{equation}
-    \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
-\end{equation}
-\subsubsection{(Shannon's) Entropy}
-\begin{equation}
-H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX
-\end{equation}
-\subsubsection{Cross Entropy (CE)}
-\begin{equation}
-H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX
-\end{equation}
-\subsubsection{KL Divergence}
-\begin{equation}
-KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX
-\end{equation}
-\subsubsection{Categorical Distribution}
-Can be thought of as the general distribution
-\begin{equation}
-    p(y) = \prod_j p(y=j)^{1\{y=j\}}
-    \label{catdist}
-\end{equation}
-\begin{equation}
-1\{expression\} = \begin{cases}
-    1 & \text{$expression$ evaluates to true}\\
-    0 & \text{otherwise}
-    \end{cases}
-\end{equation}
-\subsubsection{Multi-variate Normal Distribution}
-\label{normal_dist}
-The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
-\begin{equation}
-    \mathcal{N}(x; \mu, \Sigma)=\frac {\exp \left(-{\frac {1}{2}}\left(x-\mu\right)^T\Sigma^{-1}\left(x-\mu\right)\right)}{\sqrt {(2\pi )^{k}|\Sigma|}}
-    \label{normal_general}
-\end{equation}
-$|\Sigma|$ and $\det(\Sigma)$ are notations for the determinant of $\Sigma$. $I$ is the identity matrix, the matrix all 0s except the diagonal that is all 1s. It is multiplicative identity element of the matrices (i.e. $AI = IA = A$)
-
-The specific case for when the covariance is diagonal (a variance vector) or variance is a constant (scalar and same for all features, i.e. $\Sigma = \sigma^2 I$)
-\begin{equation}
-    \mathcal{N}(x; \mu, \sigma^2I) = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I} = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
-\end{equation}
-For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
-\subsubsection{Reparameterization Trick}
-\label{reparam_trick}
-Let us assume $q(z)$ denotes a probability distribution. Given $z = g(\epsilon)$
-\begin{align}
-    \int_z q(z)\prod_i dz_i &= 1\\
-    \int_\epsilon q(g(\epsilon))\prod_i dg(\epsilon_i) &= 1\\
-    \int_\epsilon \underbrace{q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}}_{p(\epsilon)}\prod_i d\epsilon_i &= 1
-\end{align}
-$p(\epsilon)$ becomes another distribution. A similar substitution for cross-entropy gives
-\begin{equation}
-    \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}\label{reparam_trick_eq1}
-\end{equation}
-Let us substitute $z=\mu+\sigma \cdot \epsilon$
-\begin{align}
-    p(\epsilon)
-    &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
-    &= q(z)\prod_i \frac{dz_i}{d\epsilon_i}\\
-    &= q(z)\prod_i \sigma_i\\
-    q(z) &= \frac{1}{\prod_i \sigma_i}p\Big(\frac{z-\mu}{\sigma}\Big)\label{reparam_trick_eq2}
-\end{align}
-When $q(z)$ and $p(\epsilon)$ denote the diagonal normal~\ref{normal_specific} and standard normal distributions, the equation~\ref{reparam_trick_eq2} holds. Mathematically,
-\begin{equation}
-    \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\prod_i \sigma_i}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
-\end{equation}
-The reader is free to check using the definitions in~\ref{normal_dist}.
-\chapter{Linear Algebra Concepts Used In Learning and Optimization}
 \section{Cosine Law}
 \begin{figure}[H]
     \centering
@@ -485,7 +355,133 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
 Note that after this point, I could not come with a rigorous proof, but used a computer.
 If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased.
 This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample.
-\chapter{Probability Theory and Statistics Concepts Used In Learning}
+\chapter{Probability Theory and Statistics}
+\section{Probability Theory}
+\subsection{Probability}
+Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
+\begin{align}
+    \int_X p(X)dX = 1
+\end{align}
+$X \sim p(X)$ denotes \textit{sampling} (in other words executing $\Omega_X$, i.e. throwing the dice).
+\subsection{Joint Probability}
+$p(x_i, y_j)$ denotes the probability of $X=x_i$ and $Y=y_j$ occuring at the same time. Comma can be thought of as an \textit{and} operator. Adding $Y$ as whether the outcome is odd (1) or not (0), $p(X=3,Y=0)=0$ is getting a 3 and an even outcome at the same time which is improbable. Getting a 3 and 5 at the same time is also improbable ($p(X=3,X=5)=0)$. Below is an essential formulation showing the marginal probability $p(X)$
+\begin{align}
+    \int_Y p(X,Y)dY = p(X)
+\end{align}
+\subsection{Conditional Probability}
+$p(x_i|y_j)$ denotes the probability of $X=x_i$ given $Y=y_j$. For example, $p(Y=1|X=3)=1$ is certain. If we know the outcome is 3, the outcome is an odd number for sure. Below is an essential formulation
+\begin{align}
+    p(X,Y) = p(X|Y)p(Y)
+    \label{joint_cond_prob}
+\end{align}
+\subsection{Bayesian Formula}
+\begin{align}
+    p(A,B) &= p(B,A)\\
+    p(A|B)p(B) &= p(B|A)p(A)\\
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{p(B)}_\text{evidence}}\\
+    p(B) &= \int_A p(A,B)dA\\
+    &= \int_A p(B|A)p(A)dA\\
+    \underbrace{p(A|B)}_{\text{posterior}} &= \frac{\overbrace{p(B|A)}^\text{likelihood}\overbrace{p(A)}^\text{prior}}{\underbrace{\int_A p(B|A)p(A)dA}_\text{evidence}}\label{bayesian}
+\end{align}
+\subsection{Independence}
+By definition, if
+\begin{equation}
+    p(A,B) = p(A)p(B) \label{independence1}
+\end{equation}
+then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independence1}
+\begin{align}
+    p(A|B) &= p(A)\\
+    p(B|A) &= p(B)
+\end{align}
+\subsection{Conditional Dependence}
+By definition, if
+\begin{equation}
+    p(A|B,C) = p(A|C) \label{cond_independence1}
+\end{equation}
+then $A$ and $B$ are conditionally independent given $C$.
+Given~\ref{joint_cond_prob} and ~\ref{cond_independence1}
+\begin{align}
+    p(A|B,C)p(B|C)p(C) &= p(A,B|C)p(C)\\
+    p(A|B,C)p(B|C) &= p(A,B|C)\\
+    p(A|C)p(B|C) &= p(A,B|C) \label{cond_independence2}
+\end{align}
+\section{Statistics}
+\subsection{Mean (Expected Value)}
+\begin{equation}
+    \mu_X = E[X] = E_{p(X)}[X] = \mu_X = \int_X p(X)X dX
+\end{equation}
+\subsection{Covariance}
+\begin{equation}
+    \sigma_{XY} = Cov(X,Y) = E_{p(X,Y)}[(X-\mu_X)(Y-\mu_Y)] = E[(X-\mu_X)(Y-\mu_Y)] = \int_X \int_Y p(X,Y)(X-\mu_X)(Y-\mu_Y) dX dY
+\end{equation}
+\subsection{Variance}
+\label{defvar}
+\begin{equation}
+    \sigma_X = Cov(X,X) = Var(X) = \int_X p(X)(X-\mu_X)^2 dX
+\end{equation}
+\subsection{(Shannon's) Entropy}
+\begin{equation}
+H(p(X)) = -E_{p(X)}[\log p(X)] = -E_{p(X)}[\log p(X)] = -\int_X p(X)\log p(X) dX
+\end{equation}
+\subsection{Cross Entropy (CE)}
+\begin{equation}
+H(p(X), q(X)) = -E_{p(X)}[\log q(X)] = -\int_X p(X)\log q(X) dX
+\end{equation}
+\subsection{KL Divergence}
+\begin{equation}
+KL(p(X) \parallel q(X)) = E_{p(X)}[\log\frac{p(X)}{q(X)}] = \int_X p(X)\log\frac{p(X)}{q(X)} dX
+\end{equation}
+\subsection{Categorical Distribution}
+Can be thought of as the general distribution
+\begin{equation}
+    p(y) = \prod_j p(y=j)^{1\{y=j\}}
+    \label{catdist}
+\end{equation}
+\begin{equation}
+1\{expression\} = \begin{cases}
+    1 & \text{$expression$ evaluates to true}\\
+    0 & \text{otherwise}
+    \end{cases}
+\end{equation}
+\subsection{Multi-variate Normal Distribution}
+\label{normal_dist}
+The general equation below holds only when the covariance matrix $\Sigma$ is positive definite, where $k$ is the number of features/variables in vectors $x$ and $\mu$. Note when $k=1$, $x$ and $\mu$ become scalar.
+\begin{equation}
+    \mathcal{N}(x; \mu, \Sigma)=\frac {\exp \left(-{\frac {1}{2}}\left(x-\mu\right)^T\Sigma^{-1}\left(x-\mu\right)\right)}{\sqrt {(2\pi )^{k}|\Sigma|}}
+    \label{normal_general}
+\end{equation}
+$|\Sigma|$ and $\det(\Sigma)$ are notations for the determinant of $\Sigma$. $I$ is the identity matrix, the matrix all 0s except the diagonal that is all 1s. It is multiplicative identity element of the matrices (i.e. $AI = IA = A$)
+
+The specific case for when the covariance is diagonal (a variance vector) or variance is a constant (scalar and same for all features, i.e. $\Sigma = \sigma^2 I$)
+\begin{equation}
+    \mathcal{N}(x; \mu, \sigma^2I) = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} e^{-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I} = \frac {1}{(\prod_i \sigma_i)(\sqrt{2\pi})^k} \exp\left(-{\frac {1}{2}}\left(\frac {x-\mu}{\sigma}\right)^2 I\right) \label{normal_specific}
+\end{equation}
+For~\ref{normal_specific}, we will use the notation $\mathcal{N}(x; \mu, \sigma^2) = \mathcal{N}(x; \mu, \sigma^2I)$, omitting the identity to simplify calculations. For standard normal distribution we also omit the variable term (i.e. $\mathcal{N}(0, 1)=\mathcal{N}(x; 0, I)$) and use special notation (i.e. $\mathcal{N}(x; 0, I)=\mathcal{\varphi}(x)$). Note that both~\ref{normal_general} and~\ref{normal_specific} are Gaussian functions, so the terms Normal and Gaussian are used interchangeably sometimes.
+\subsection{Reparameterization Trick}
+\label{reparam_trick}
+Let us assume $q(z)$ denotes a probability distribution. Given $z = g(\epsilon)$
+\begin{align}
+    \int_z q(z)\prod_i dz_i &= 1\\
+    \int_\epsilon q(g(\epsilon))\prod_i dg(\epsilon_i) &= 1\\
+    \int_\epsilon \underbrace{q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}}_{p(\epsilon)}\prod_i d\epsilon_i &= 1
+\end{align}
+$p(\epsilon)$ becomes another distribution. A similar substitution for cross-entropy gives
+\begin{equation}
+    \int_z q(z)f(z)dz = \int_\epsilon p(\epsilon)f(g(\epsilon))d\epsilon~\cite{kingma_auto-encoding_2022}\label{reparam_trick_eq1}
+\end{equation}
+Let us substitute $z=\mu+\sigma \cdot \epsilon$
+\begin{align}
+    p(\epsilon)
+    &= q(g(\epsilon))\prod_i \frac{dg(\epsilon_i)}{d\epsilon_i}\\
+    &= q(z)\prod_i \frac{dz_i}{d\epsilon_i}\\
+    &= q(z)\prod_i \sigma_i\\
+    q(z) &= \frac{1}{\prod_i \sigma_i}p\Big(\frac{z-\mu}{\sigma}\Big)\label{reparam_trick_eq2}
+\end{align}
+When $q(z)$ and $p(\epsilon)$ denote the diagonal normal~\ref{normal_specific} and standard normal distributions, the equation~\ref{reparam_trick_eq2} holds. Mathematically,
+\begin{equation}
+    \mathcal{N}(z;\mu, \sigma^2) = \frac{1}{\prod_i \sigma_i}\varphi\Big(\frac{z-\mu}{\sigma}\Big)
+\end{equation}
+The reader is free to check using the definitions in~\ref{normal_dist}.
 \section{Distinction Between Correlation and Dependence}
 \label{cor_dep}
 We have seen the relationship between eigenvectors/values and the covariance matrix. Assume that we fitted a continuous normal distribution to an elliptic
