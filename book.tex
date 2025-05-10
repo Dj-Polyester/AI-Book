@@ -123,7 +123,7 @@ On a cartesian space, assuming we have a set of basis vectors $B$, a linear tran
     &= B_L(x-x_t)+f_L(x_t)\\
 \end{align}
 We have shown that the linear operators doesn't break the line structure. In other words, parallel lines (lines with the same inclination $B$) stay parallel (with new inclination $B_L$). This is not so true for nonlinear operators.
-Nevertheless when $\Delta x$ is infinitesimally small, even any nonlinear operator $g$ can still act as a linear operator
+Nevertheless when $\Delta x$ is infinitesimally small (in the neighborhood of $x_t$), even any nonlinear operator $g$ can still act as a linear operator
 \begin{align}
     f_g(x) &= \underbrace{B_gdx}_{df_g(x)}+f_g(x_t)
 \end{align}
@@ -372,7 +372,7 @@ in a contour with multiplier $\bar{c}$. The eigenvector $v_i$ is a unit directio
 
 For any function, $f(x)$ its second order Tailor expansion approximates it in the neighbor of $x$.
 \begin{equation}
-    f(x+\Delta x) \approx f(x)+\Delta x^T\nabla f(x)+\Delta x^TH(x)\Delta x
+    f(x+\Delta x) \approx f(x)+dx^T\nabla f(x)+\frac{1}{2}dx^TH(x)dx
 \end{equation}
 Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
@@ -828,15 +828,15 @@ Using the chain rule with a loss function gives
 \section{Variational Autoencoder (VAE)}
 Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
-    \hat{\theta}_{MLE} &= \arg_\theta\max p_\theta(x)\\
+    \hat{\theta} &= \arg_\theta\max p_\theta(x) \label{max_prob}\\
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
     &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
     &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}~\cite{weng_vae_2018}
 \end{align}
 Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian},
 \begin{align}
-    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
-    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p_\theta(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p_\theta(z)dz}_\text{evidence}}
+    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
+    \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p(z)}^\text{prior}}{\underbrace{\int_z p_\theta(x|z)p(z)dz}_\text{evidence}}
 \end{align}
 Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the integral is difficult to solve. But instead, let us approximate the posterior by minimizing KL-divergence
 \begin{align}
@@ -846,10 +846,10 @@ D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log p_\theta(x) + \log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=E_{q_\phi(z|x)}\left[\log p_\theta(x)\right] + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
-&=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
-&=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
-&=\log p_\theta(x) + D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}[\log p_\theta(x|z)]\\
-&=\log p_\theta(x) + \underbrace{D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}~\cite{weng_vae_2018}\\
+&=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p(z)}\right]\\
+&=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p(z)} - \log p_\theta(x| z)\right]\\
+&=\log p_\theta(x) + D_{KL}(q_\phi(z|x) \parallel p(z)) - E_{z\sim q_\phi(z|x)}[\log p_\theta(x|z)]\\
+&=\log p_\theta(x) + \underbrace{D_{KL}(q_\phi(z|x) \parallel p(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}~\cite{weng_vae_2018}\\
 \arg_\phi\min D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x)) &= \arg_\phi\min \mathcal{L}_{\theta, \phi}(x)\\
 -\mathcal{L}_{\theta, \phi}(x)+D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 &= \log p_\theta(x)\\
@@ -858,13 +858,13 @@ D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 \end{align}
 Minimizing the loss $\mathcal{L}_{\theta, \phi}(x)$ w.r.t $\phi$ minimizes the KL-divergence. Maximizing LHS maximizes RHS, the true value we want to maximize. The LHS term then is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize the loss w.r.t $\theta$ to achieve this as well. We will derive KL-divergence and entropy terms separately.
 
-We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
+We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
 \begin{equation}
-    D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
 \end{equation}
 The cross-entropy term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
@@ -890,21 +890,37 @@ The total loss is
     \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{\phi i}(x)^2+\sigma_{\phi i}(x)^2-2\log\sigma_{\phi i}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)~\cite{kingma_auto-encoding_2022}
 \end{equation}
 \section{Langevin Dynamics}
-\section{Hamiltonian}
+\subsection{Hamiltonian}
 A Hamiltonian system is defined so that
 \begin{align}
-    p(q,p) &= \frac{1}{Z}e^{H(\rho, q)} = \frac{1}{Z}e^{K(\rho) + U(q)}\\
-    \frac{dq}{dt} &= \frac{\delta H}{\delta p}\\
-    \frac{d\rho}{dt} &= -\frac{\delta H}{\delta q}
-\end{align}
-\paragraph{Preservation of Hamiltonian}
-\begin{align}
-    \frac{dH}{dt} &= \frac{\delta H}{\delta q}\frac{dq}{dt} + \frac{\delta H}{\delta \rho}\frac{d\rho}{dt}\\
-    &= \frac{\delta H}{\delta q}\frac{\delta H}{\delta \rho} - \frac{\delta H}{\delta \rho}\frac{\delta H}{\delta q}\\
+    p(\rho, q) &= e^{-H(\rho, q)} = e^{-\big(K(\rho) + U(q)\big)}\\
+    \frac{dq}{dt} &= \frac{\delta H}{\delta \rho}\\
+    \frac{d\rho}{dt} &= -\frac{\delta H}{\delta q}\\
+    \frac{dq}{d\rho} &= \frac{\frac{dq}{dt}}{\frac{d\rho}{dt}}\\
+    &= \frac{\frac{\delta H}{\delta \rho}}{-\frac{\delta H}{\delta q}}\\
+    &= -\frac{dq}{d\rho}\\
     &= 0
 \end{align}
-\paragraph{Preservation of Volume}
-
+In physical terms, $H$ (Hamiltonian) is the total energy, $K$ is the kinetic energy and $U$ is the potential energy.
+\begin{align}
+    \frac{\delta H}{\delta \rho} &= \frac{\delta K}{\delta \rho} + \frac{\delta U}{\delta q} \frac{dq}{d\rho}\\
+    &= \frac{\delta K}{\delta \rho}\\
+    \frac{\delta H}{\delta \rho} &= \frac{\delta K}{\delta \rho} \frac{d\rho}{dq} + \frac{\delta U}{\delta q}\\
+    &= \frac{\delta U}{\delta q}
+\end{align}
+\subsubsection{Properties of Hamiltonian}
+Some of the important properties of the Hamiltonian will be described.
+\paragraph*{Conservation of Hamiltonian}
+\begin{align}
+    \frac{dH}{dt} &= \frac{\delta H}{\delta q}\frac{dq}{dt} + \frac{\delta H}{\delta \rho}\frac{d\rho}{dt}\\
+    &= \frac{\delta U}{\delta q}\frac{dq}{dt} + \frac{\delta K}{\delta \rho}\frac{d\rho}{dt}\\
+    &= \frac{\delta U}{\delta q}\frac{\delta K}{\delta \rho} - \frac{\delta K}{\delta \rho}\frac{\delta U}{\delta q}\\
+    &= 0
+\end{align}
+which is analogous to the law of conservation of energy in physics.
+\paragraph*{Conservation of Volume}
+Proven in the book~\cite{neal_mcmc_2011}.
+\subsubsection{Discretization Methods}
 \section{Diffusion Models}
 \subsection{What is a Diffusion Model}
 
