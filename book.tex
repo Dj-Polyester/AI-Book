@@ -49,7 +49,7 @@ Unless stated otherwise, these math notations apply.
     \item Subscript of an expected value symbol (i.e. $E_{p(X)}$) denotes the probability weight of the random variable given in its formula (i.e. $p(X)$).
     \item Aggregation operators such as $\min$ support indexing (i.e. $\min_kx_k = x_{\arg_k\min x_k}$)
 \end{itemize}
-\chapter{Linear Algebra}
+\chapter{Arithmetic and Linear Algebra}
 \section{Scalars, Vectors and Matrices}
 \label{defn_svm}
 A scalar $s$ is a real, or complex number. A vector $v = [s_1 s_2 ... s_n]^T$ is a 1D (1-dimensional) array of scalars.
@@ -74,6 +74,15 @@ Let $x \in \mathcal{R}$. Since it is easy, I leave the understanding of~\ref{min
     \arg_x\min(x+y) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R}$}\label{minmaxcomp1}\\
      \arg_x\min(yx) &= \arg_x\min(x)\ \text{for any $y \in \mathcal{R^+}$ ($y>0$)}\label{minmaxcomp2}\\
      \arg_x\min(yx) &= \arg_x\max(x)\ \text{for any $y \in \mathcal{R^-}$ ($y<0$)}\label{minmaxcomp3}
+\end{align}
+\section{Taylor Series}
+We start with an assumption for the derivation
+\begin{align}
+    f(x) &= \sum_{n=0}^\infty a_n (x-c)^n\\
+    f^{(k)}(x) &= \sum_{n=k}^\infty a_n \frac{n!}{(n-k)!}(x-c)^{n-k}\\
+    f^{(k)}(c) &= a_k k!\\
+    a_k &= \frac{f^{(k)}(c)}{k!}\\
+    f(x) &= \sum_{n=0}^\infty f^{(n)}(c)\frac{(x-c)^n}{n!}\\
 \end{align}
 \section{Dot Product}
 \label{dotp}
@@ -104,6 +113,42 @@ $\prescript{M\times K}{}{A}\prescript{K\times N}{}{B}=\prescript{M\times N}{}{C}
     \label{matmult}
 \end{equation}
 The same properties in ~\ref{dotp} apply, which is also easy to prove.
+\section{Jacobian and Hessian}
+\label{jacobian_hessian}
+On a cartesian space, assuming we have a set of basis vectors $B$, a linear transformation $L$ and a reference point (vector) $x_t$, any linear function can be defined as
+\begin{align}
+    f(x) &= \underbrace{B\underbrace{(x-x_t)}_{\Delta x}}_{\Delta f(x)} + f(x_t)\\
+    f_L(x) &= Lf(x)\\
+    &= LB(x-x_t)+Lf(x_t)\ \text{due to superposition property of linear operators}\\
+    &= B_L(x-x_t)+f_L(x_t)\\
+\end{align}
+We have shown that the linear operators doesn't break the line structure. In other words, parallel lines (lines with the same inclination $B$) stay parallel (with new inclination $B_L$). This is not so true for nonlinear operators.
+Nevertheless when $\Delta x$ is infinitesimally small, even any nonlinear operator $g$ can still act as a linear operator
+\begin{align}
+    f_g(x) &= \underbrace{B_gdx}_{df_g(x)}+f_g(x_t)
+\end{align}
+Note that the new basis $B_g$ is also a matrix. Then the definitions below can be given
+\begin{equation}
+    B_g = J(x) = \frac{df_g(x)}{dx} = \begin{bmatrix}
+        \frac{\delta f_{g_1}(x)}{\delta x_1} & \frac{\delta f_{g_1}(x)}{\delta x_2} & ... \\
+        \frac{\delta f_{g_2}(x)}{\delta x_1} & \frac{\delta f_{g_2}(x)}{\delta x_2} & ... \\
+        ...
+    \end{bmatrix}\ \text{is called the Jacobian matrix}\\
+\end{equation}
+In this case, $f$ was a vector. When it is a scalar, its gradient will be a vector and similarly
+\begin{equation}
+    H(x) = \nabla^2f_g(x) = \frac{d}{dx}\nabla f_g(x) = \begin{bmatrix}
+        \frac{\delta^2 f_g(x)}{\delta x_1^2} & \frac{\delta^2 f_g(x)}{\delta x_1 \delta x_2} & ... \\
+        \frac{\delta^2 f_g(x)}{\delta x_2 \delta x_1} & \frac{\delta^2 f_g(x)}{\delta x_2^2} & ... \\
+        ...
+    \end{bmatrix}\ \text{is called the Hessian matrix}\\
+\end{equation}
+By definition, the determinant of a matrix gives the volume of the parallelogram bounded by its row or column vectors. The volume scale of the transformation is thus $\frac{|B_g|}{|B|}$. For the same basis, the volume scale between two different transformations have $\frac{|B_{g_1}|}{|B_{g_2}|}$ which is easy to show. Using chain rule, we can express a single transformation using multiple transformations
+\begin{align}
+    B_{g_n} &= \frac{dx_{g_n}}{dx} = \frac{dx_{g_n}}{dx_{g_{n-1}}}...\frac{dx_{g_2}}{dx_{g_1}}\frac{dx_{g_1}}{dx}\\
+    |B_{g_n}| &= |\frac{dx_{g_n}}{dx}| = |\frac{dx_{g_n}}{dx_{g_{n-1}}}...\frac{dx_{g_2}}{dx_{g_1}}\frac{dx_{g_1}}{dx}|\\
+    &= |\frac{dx_{g_n}}{dx_{g_{n-1}}}|...|\frac{dx_{g_2}}{dx_{g_1}}||\frac{dx_{g_1}}{dx}|
+\end{align}
 \section{Definiteness of a Symmetric Matrix}
 A symmetric matrix $M$ is positive definite if and only if for any vector $z$
 \begin{equation}
@@ -329,7 +374,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 \begin{equation}
     f(x+\Delta x) \approx f(x)+\Delta x^T\nabla f(x)+\Delta x^TH(x)\Delta x
 \end{equation}
-where $H(x) = \nabla^2f(x)$ is Hessian of $f(x)$. Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
+Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
 
 \subsection{Arbitrary Gaussian Function}
 Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$.
@@ -515,7 +560,7 @@ Here, we are proving that the expected value has the superposition property
      &= \int_X p(X) X dX = E[X]\\
     E[aX+bY]
     &= E_{p(X,Y)}[aX+bY]\\
-    &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to linearity of the integral}\\
+    &= aE_{p(X,Y)}[X]+bE_{p(X,Y)}[Y]\ \text{due to superposition property of the integral}\\
     &= aE_{p(X)}[X]+bE_{p(Y)}[Y]\\
     &= aE[X]+bE[Y]
 \end{align}
@@ -572,10 +617,10 @@ Using the fact that variance is just the \textit{self-covariance}
 \end{align}
 \section{Loss Functions}
 \label{lossfun}
-In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$ (Note the input parameters $x, \theta$ and output $y$). The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $KL(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters become
+In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$ (Note the input parameters $x, \theta$ and output $y$). The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $D_{KL}(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters become
 \begin{equation}
     \hat{\theta}
-    = \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]
+    = \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]
 \end{equation}
 \subsection{KL-Divergence}
 \subsubsection{Non-negativity of KL-Divergence}
@@ -595,19 +640,19 @@ A function $f$ is \textit{monotonically decreasing} if
 \begin{equation}
     f(x) \leq f(y) \longleftrightarrow x \geq y
 \end{equation}
-similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $KL(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$
+similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $D_{KL}(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$
 \begin{align}
     \frac{\delta}{\delta q_j}\int_i p_i\log\frac{p_i}{q_i} di &= \int_i p_i\frac{\delta}{\delta q_j}\log\frac{p_i}{q_i} di\\
     &= p_j\frac{-\frac{p_j}{q_j^2}}{\frac{p_j}{q_j}}\\
     &= -\frac{p_j}{q_j} \label{klmonotonicity}
 \end{align}
-Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $KL(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $KL(q_1)=KL(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
+Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $D_{KL}(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $D_{KL}(q_1)=D_{KL}(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
 \subsection{Cross-Entropy}
 \subsubsection{General Derivation}
 \begin{align}
     \hat{\theta}
-    &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
-    &= \arg_\theta \min[ KL(q(y|x) \parallel p(y|x,\theta)) + H(q(y|x))]\\
+    &= \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]\\
+    &= \arg_\theta \min[ D_{KL}(q(y|x) \parallel p(y|x,\theta)) + H(q(y|x))]\\
     &= \arg_\theta \min \left( E_{q(y|x)}\Big[\log\frac{q(y|x)}{p(y|x,\theta)}\Big] + E_{q(y|x)}\Big[-\log q(y|x)\Big]\right)\\
     &= \arg_\theta \min \left( E_{q(y|x)}\Big[-\log p(y|x,\theta)\Big]\right)\label{ce_derivation_res}\\
     &= \arg_\theta \min H(q(y|x), p(y|x,\theta))
@@ -635,12 +680,12 @@ We conclude that minimizing the corresponding loss is equivalent to finding the 
 \label{mse_derivation}
 We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) = \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Gupta made our life easier.
 \begin{equation}
-    p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow KL(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}\label{gupta_kl}
+    p(x) = \mathcal{N}(x;\mu_p,\Sigma_p), q(x) = \mathcal{N}(x;\mu_q,\Sigma_q) \longleftrightarrow D_{KL}(p(x) \parallel q(x)) = \frac{1}{2}\left[(\mu_p-\mu_q)^T\Sigma_q^{-1}(\mu_p-\mu_q) + tr\left\{\Sigma_q^{-1}\Sigma_p\right\}+\log\frac{|\Sigma_q|}{|\Sigma_p|} - k\right]~\cite{gupta_kl_2020}\label{gupta_kl}
 \end{equation}
 Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same number $k$ of dimensions/features. Substituting gives
 \begin{align}
     \hat{\theta}
-    &= \arg_\theta \min[KL(q(y|x) \parallel p(y|x,\theta))]\\
+    &= \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]\\
     &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
     &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
 \end{align}
@@ -795,7 +840,7 @@ Let us call the latent variables of AE, output of the encoder (or input to the d
 \end{align}
 Posterior and evidence is intractable since the integral in the denominator is also intractable. Even with a simple case like Gaussians, the integral is difficult to solve. But instead, let us approximate the posterior by minimizing KL-divergence
 \begin{align}
-KL(q_\phi(z|x) \parallel p_\theta(z|x))
+D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)}{p_\theta(z|x)}\right]\\
 &=E_{q_\phi(z|x)}\left[ \log\frac{q_\phi(z|x)p_\theta(x)}{p_\theta(z,x)}\right]\\
 &=E_{q_\phi(z|x)}\left[ \log p_\theta(x) + \log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
@@ -803,10 +848,10 @@ KL(q_\phi(z|x) \parallel p_\theta(z|x))
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(z,x)}\right]\\
 &=\log p_\theta(x) + E_{q_\phi(z|x)}\left[\log\frac{q_\phi(z|x)}{p_\theta(x|z)p_\theta(z)}\right]\\
 &=\log p_\theta(x) + E_{z\sim q_\phi(z|x)}\left[\log \frac{q_\phi(z|x)}{p_\theta(z)} - \log p_\theta(x| z)\right]\\
-&=\log p_\theta(x) + KL(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}[\log p_\theta(x|z)]\\
-&=\log p_\theta(x) + \underbrace{KL(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}~\cite{weng_vae_2018}\\
-\arg_\phi\min KL(q_\phi(z|x) \parallel p_\theta(z|x)) &= \arg_\phi\min \mathcal{L}_{\theta, \phi}(x)\\
--\mathcal{L}_{\theta, \phi}(x)+KL(q_\phi(z|x) \parallel p_\theta(z|x))
+&=\log p_\theta(x) + D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) - E_{z\sim q_\phi(z|x)}[\log p_\theta(x|z)]\\
+&=\log p_\theta(x) + \underbrace{D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) + H(q_\phi(z|x), p_\theta(x|z))}_{\mathcal{L}_{\theta, \phi}(x)}~\cite{weng_vae_2018}\\
+\arg_\phi\min D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x)) &= \arg_\phi\min \mathcal{L}_{\theta, \phi}(x)\\
+-\mathcal{L}_{\theta, \phi}(x)+D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 &= \log p_\theta(x)\\
 -\mathcal{L}_{\theta, \phi}(x)
 &\leq \log p_\theta(x)\ \text{due to~\ref{kl_nonneg}} \label{vae_elbo}
@@ -815,11 +860,11 @@ Minimizing the loss $\mathcal{L}_{\theta, \phi}(x)$ w.r.t $\phi$ minimizes the K
 
 We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p_\theta(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    KL(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p_\theta(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
 \end{equation}
 The cross-entropy term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
@@ -844,6 +889,22 @@ The total loss is
 \begin{equation}
     \mathcal{L}_{\theta, \phi}(x) = \frac{1}{2}\sum_i\left[\mu_{\phi i}(x)^2+\sigma_{\phi i}(x)^2-2\log\sigma_{\phi i}(x) - 1\right] - \frac{1}{N}\sum_i \log p_\theta \big(x|z_i(x, \epsilon_i) \big)~\cite{kingma_auto-encoding_2022}
 \end{equation}
+\section{Langevin Dynamics}
+\section{Hamiltonian}
+A Hamiltonian system is defined so that
+\begin{align}
+    p(q,p) &= \frac{1}{Z}e^{H(\rho, q)} = \frac{1}{Z}e^{K(\rho) + U(q)}\\
+    \frac{dq}{dt} &= \frac{\delta H}{\delta p}\\
+    \frac{d\rho}{dt} &= -\frac{\delta H}{\delta q}
+\end{align}
+\paragraph{Preservation of Hamiltonian}
+\begin{align}
+    \frac{dH}{dt} &= \frac{\delta H}{\delta q}\frac{dq}{dt} + \frac{\delta H}{\delta \rho}\frac{d\rho}{dt}\\
+    &= \frac{\delta H}{\delta q}\frac{\delta H}{\delta \rho} - \frac{\delta H}{\delta \rho}\frac{\delta H}{\delta q}\\
+    &= 0
+\end{align}
+\paragraph{Preservation of Volume}
+
 \section{Diffusion Models}
 \subsection{What is a Diffusion Model}
 
@@ -908,7 +969,7 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 \end{align}
 \begin{align}
 -\log p_\theta(x_0)
-&\leq -\log p_\theta(x_0)+KL(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\\
+&\leq -\log p_\theta(x_0)+D_{KL}(q(x_{1:T}|x_0) \parallel p_\theta(x_{1:T}|x_0))\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
@@ -925,8 +986,8 @@ Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t |x_0)}{q(x_{t-1} |x_0)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big] \\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
 &= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{KL(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{D_{KL}(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
+&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
 &= \mathcal{L}_\theta(x_0)
 \end{align}
 We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}.
@@ -980,13 +1041,13 @@ Substituting gives
 \end{align}
 Let us focus on $L_{t-1}$.
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
+    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
 \end{align}
 If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T KL(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
+    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
     &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
 \end{align}
