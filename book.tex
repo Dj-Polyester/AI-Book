@@ -550,6 +550,24 @@ If we further assume the process involving $p$ has markov property, then
     p(x_{0:T}) &= p(x_0)\prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_joint}\\
     p(x_{1:T}|x_0) &= \prod_{t=1}^T p(x_t|x_{t-1}) \label{markov_chain_cond}
 \end{align}
+\section{Maximum A Posteriori and Maximum Likelihood}
+We aim to find an estimator (maximum a posteriori estimator) that maximize the posterior. The expression is derived from the Bayesian Formula (\ref{bayesian}).
+\begin{align}
+    \hat{\theta}_{MAP} &= \arg_\theta\max p(\theta | x,y)\\
+    &= \arg_\theta\max\frac{p(y|x,\theta)p(x|\theta)p(\theta)}{p(x,y)}\\
+    &= \arg_\theta\max\frac{p(y|x,\theta)p(x)p(\theta)}{p(x,y)}\ \text{assuming $x$ and $\theta$ are independent}\\
+    &= \arg_\theta\max \underbrace{p(y|x,\theta)}_{\text{likelihood}}\underbrace{p(\theta)}_{\text{prior}}\ \text{removing the terms without $\theta$}\\
+    -\log\hat{\theta}_{MAP} &= \arg_\theta\min \Big(-\log \big[p(y|x,\theta)p(\theta)\big]\Big)\\
+    &= \arg_\theta\min \big[-\log p(y|x,\theta)-\log p(\theta)\big]\\
+\end{align}
+When we set a uniform prior, the term becomes constant and cancels out, giving the maximum likelihood estimator (MLE)
+\begin{align}
+    \hat{\theta}_{MAP} &= \arg_\theta\max p(y|x,\theta)p(\theta)\\
+    &= \arg_\theta\max c p(y|x,\theta)\\
+    &= \arg_\theta\max p(y|x,\theta)\\
+    &= \hat{\theta}_{MLE}\\
+\end{align}
+The non-uniform prior term dictates further constraints on the MLE term, hence is called the \textit{regularization} term. For L2-regularization, it is the standard normal distribution, giving more importance to smaller parameters.
 \section{Expected Value of Multiple Variables}
 \label{multi_mean_derivation}
 Here, we are proving that the expected value has the superposition property
@@ -893,21 +911,11 @@ The total loss is
 \subsection{Hamiltonian}
 A Hamiltonian system is defined so that
 \begin{align}
-    p(\rho, q) &= e^{-H(\rho, q)} = e^{-\big(K(\rho) + U(q)\big)}\\
+    H(\rho, q) &= K(\rho) + U(q) \geq 0\\
     \frac{dq}{dt} &= \frac{\delta H}{\delta \rho}\\
     \frac{d\rho}{dt} &= -\frac{\delta H}{\delta q}\\
-    \frac{dq}{d\rho} &= \frac{\frac{dq}{dt}}{\frac{d\rho}{dt}}\\
-    &= \frac{\frac{\delta H}{\delta \rho}}{-\frac{\delta H}{\delta q}}\\
-    &= -\frac{dq}{d\rho}\\
-    &= 0
 \end{align}
 In physical terms, $H$ (Hamiltonian) is the total energy, $K$ is the kinetic energy and $U$ is the potential energy.
-\begin{align}
-    \frac{\delta H}{\delta \rho} &= \frac{\delta K}{\delta \rho} + \frac{\delta U}{\delta q} \frac{dq}{d\rho}\\
-    &= \frac{\delta K}{\delta \rho}\\
-    \frac{\delta H}{\delta \rho} &= \frac{\delta K}{\delta \rho} \frac{d\rho}{dq} + \frac{\delta U}{\delta q}\\
-    &= \frac{\delta U}{\delta q}
-\end{align}
 \subsubsection{Properties of Hamiltonian}
 Some of the important properties of the Hamiltonian will be described.
 \paragraph*{Conservation of Hamiltonian}
@@ -920,6 +928,10 @@ Some of the important properties of the Hamiltonian will be described.
 which is analogous to the law of conservation of energy in physics.
 \paragraph*{Conservation of Volume}
 Proven in the book~\cite{neal_mcmc_2011}.
+\subsubsection{Probability and Canonical Representation}
+\begin{align}
+    p(\rho, q) &= e^{-H(\rho, q)}
+\end{align}
 \subsubsection{Discretization Methods}
 \section{Diffusion Models}
 \subsection{What is a Diffusion Model}
@@ -1115,7 +1127,7 @@ For a stable activation flow, we need
     f'\Big(g(x_{t-\tau})\Big)w_{(t-\tau)0} &= \pm 1\\
     f\Big(g(x_{t-\tau})\Big) &= \pm \frac{g(x_{t-\tau})}{w_{(t-\tau)0}} + c
 \end{align}
-where $c$ is a constant w.r.t (with respect to) $g$. $f$ is a linear function w.r.t $g$, unlike $\tanh$ that is used with conventional RNNs. Deep network layers need to have nonlinear components as well. Therefore, Hochreiter et al. decided to use nonlinear activations in the input $g(x_{t-\tau})$ itself. Each nonlinear structure is called a \textit{gate}. This overall layer is called LSTM (long short-term memory) and could be stacked just like a standard RNN layer~\cite{hochreiter_long_1997}. Some works stack two inverted RNN layers in order to enable the network to see future tokens as well as the past ones, called BiRNN (bidirectional RNN).
+where $c$ is a constant wrt $g$. $f$ is a linear function w.r.t $g$, unlike $\tanh$ that is used with conventional RNNs. Deep network layers need to have nonlinear components as well. Therefore, Hochreiter et al. decided to use nonlinear activations in the input $g(x_{t-\tau})$ itself. Each nonlinear structure is called a \textit{gate}. This overall layer is called LSTM (long short-term memory) and could be stacked just like a standard RNN layer~\cite{hochreiter_long_1997}. Some works stack two inverted RNN layers in order to enable the network to see future tokens as well as the past ones, called BiRNN (bidirectional RNN).
 
 At the time, the NLP (natural language processing) community used a stack of RNN layers that grabs the contextual information out of the input (\textit{encoder}), and another stack of layers that processes this information for the output (\textit{decoder}) for tasks involving sequence transformation (e.g. translation or summarization). The current token is accepted at each layer, whereas the decoder layer output is used as the prediction for the next token. NNs (\textit{neural networks}) cannot work with string inputs. Therefore, they need to be converted into numbers (\textit{embedding}). Maybe the simplest method is to use a vector with length of vocabulary size having 1 only at the index of the target word (\textit{one-hot encoding}). These vectors are sparse (most of the entries are not used). Furthermore, the complexity grows with the vocabulary size. Instead, one can make these large sparse vectors to much smaller and denser. One may use heuristics to accomplish this. Two of these are that homonyms may have different meanings depending of the words surrounding them (1), and words can have semantic similarities independent of their spelling (2). \textit{word2vec} tackles (1) by training two types of NNs that predict the target word via its surroundings and vice-versa~\cite{mikolov_efficient_2013}. \textit{GloVe} on the other hand is proposed for (2), looking at the co-occurence probabilities of each pair $k, l$ as a measure of relevance ($P(k|l)$), incorporating them in a loss function to train learning models~\cite{pennington_glove_2014}.
 
