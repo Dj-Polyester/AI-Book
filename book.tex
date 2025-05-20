@@ -317,7 +317,7 @@ such that $P'$ is orthonormal. We are going to reference $P'$ and $\Lambda'$ as 
     &= \sum_i (P^Tz)_i^2 \lambda_i\\
     &= \sum_i z'_i^2 \lambda_i
 \end{align}
-The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices (we cannot say anything about indefinite matrices).
+The term is actually sum of eigenvalues weighted by values of $z'$, which has the same norm as $z$ due to the fact that $P$ is orthonormal. For all $z$ (hence $z'$), the weighted sum is non-negative if and only if $A$ is semi-positive definite. Non-negativity in this case is guaranteed when all eigenvectors are non-negative. This approach also works for other types of definite matrices.
 \section{Relation Between Invertability and Definiteness}
 For any diagonalizable matrix $A$,
 \begin{align}
@@ -326,7 +326,7 @@ For any diagonalizable matrix $A$,
     &= det(\Lambda)\\
     &= \prod_i \lambda_i
 \end{align}
-We see that the semi-definite matrices are not invertible since they have at least one zero eigenvalue. We have shown that semi-definite matrices are not invertible and definite matrices are invertible.
+If the matrix has at least one zero eigenvalue, it should be non-invertible.
 \section{Definiteness of Hessian Matrix to Determine Curvature Near Critical Points}
 \subsection{Quadratic Function}
 Let $q(x)$ be a quadratic function with $\prescript{d \times d}{}{A}, \prescript{d \times 1}{}{x}, \prescript{d \times 1}{}{b}$ and a scalar $c$
@@ -338,9 +338,10 @@ of the form where $A$ is symmetric.
     \nabla q(x) &= (A+A^T)x+b\\
      &= 2Ax+b
 \end{align}
-The critical point $x^* = -\frac{1}{2}A^{-1}b$ where $\nabla q(x^*) = 0$.
+At the critical point $\nabla q(x^*) = 2Ax^*+b = 0$. Please note that we cannot use $x^* = -\frac{1}{2}A^{-1}b$ for non-invertible matrices.
 \begin{align}
     q(x^*+\Delta x) &= q(x^*) + \Delta x^TA\Delta x + 2\Delta x^TAx^* + \Delta x^Tb\\
+    &= q(x^*) + \Delta x^TA\Delta x + \Delta x^T(2Ax^* + b)\\
     &= q(x^*) + \Delta x^TA\Delta x
 \end{align}
 We can deduce from previous results,
@@ -349,7 +350,7 @@ We can deduce from previous results,
     \item $\forall \Delta x [q(x^*) > q(x^*+\Delta x)]$ if $A$ is negative definite ($x^*$ is maximum, maximization problem)
     \label{posneg}
 \end{itemize}
-If $A$ is indefinite, then depending on $\Delta x$, $q(x^*)$ can be less or greater than $q(x^*+\Delta x)$, which means $x^*$ is a saddle point. Since semi-definite matrices are not invertible we cannot use $x^* = -\frac{1}{2}A^{-1}b$. If $A$ is semi-definite, for some $x$, we have $q(x) = x^Tb+c$ (a hyperplane with a $d+1$-dimensional normal having scalars of $b$ and having $1$ in the dimension of a reference axis, i.e. inclined-plane). If $b$ is zero, then we have infinitely many critical points (a hyperplane with a normal along the reference axis, i.e. ground-plane).
+If $A$ is indefinite, then depending on $\Delta x$, $q(x^*)$ can be less or greater than $q(x^*+\Delta x)$, which means $x^*$ is a saddle point. If $A$ is semi-definite, for some $x$, we have $q(x) = x^Tb+c$ (a hyperplane with a $d+1$-dimensional normal having scalars of $b$ and having $-1$ in the dimension of a reference axis with a bias $c$, i.e. inclined-plane). If $b$ is zero, then we have multiple critical points (a hyperplane with a normal along the reference axis, i.e. ground-plane), otherwise no critical points ().
 
 Let $d$ be an arbitrary vector.
 \begin{align}
@@ -363,9 +364,9 @@ Let $d$ be an arbitrary vector.
     &= 4d^T\Lambda^2 d\\
     &= \sum_i 4d_i^2  \lambda_i^2\\
     &= \bar{c}^2 \quad \text{For an arbitary scalar $\bar{c}$}\\
-    \sum_i \frac{d_i^2}{\frac{\bar{c}^2}{4\lambda_i^2}} &= 1
+    \sum_{i,\lambda_i \neq 0} \frac{d_i^2}{\frac{\bar{c}^2}{4\lambda_i^2}} &= 1
 \end{align}
-We have shown that contours (curves where gradient magnitudes/norms are equal) are ellipsoids.
+The axes with zero eigenvectors provide degree of freedom. Therefore, they can be ignored during optimization. We have shown that contours (curves where gradient magnitudes/norms are equal) are ellipsoids.
 \begin{equation}
     \nabla q(x^* + \frac{\bar{c}}{2\lambda_i}v_i) = \bar{c}v_i
 \end{equation}
@@ -375,7 +376,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 \begin{equation}
     f(x+\Delta x) \approx f(x)+dx^T\nabla f(x)+\frac{1}{2}dx^TH(x)dx
 \end{equation}
-Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, this time we have a plateau, as plateau is a plane near $x$ (ground or inclined).
+Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, we may have plateau, as plateau is plane in the neighborhood of $x$ (ground or inclined).
 
 \subsection{Arbitrary Gaussian Function}
 Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$.
