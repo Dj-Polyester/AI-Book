@@ -11,7 +11,8 @@
 \usepackage{hyperref}
 %Drawing
 \usepackage{tikz}
-\usetikzlibrary{angles, quotes}
+\usepackage{float}
+\usetikzlibrary{angles, quotes, positioning}
 %Includes "References" in the table of contents
 \usepackage[nottoc]{tocbibind}
 
@@ -757,6 +758,8 @@ Without loss of generality, we can prove this for any function $f$ in the same m
     \hat{\theta}_{MLE} = \frac{1}{n}\arg_\theta \min \sum_{i=1}^n \mathcal{L}_\theta(\hat{y_i},y_i)
 \end{equation}
 As $n$ is a constant relative to the parameters, we are still maximizing the likelihood.
+\subsection{Fisher Divergence}
+
 \section{Overfitting and Bias-Variance Tradeoff}
 
 Assume the variable input, label pairs ($X$,$Y$) in~\ref{cond_mutual_independence} is sampled from a dataset $D$. We model the machine learning algorithm as a mapping $f$ that approximates a system $F(x)=y$. Due to an inherent noise in $F$, $F$ may output different labels $y$ for a given $x$. Then, \textit{expected label} given $x$ is
@@ -842,11 +845,135 @@ Using the chain rule with a loss function gives
     &= \sum_{n=1}^N L_{y_{nm}}\\
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
+\chapter{Reinforcement Learning}
+RL agent acts on a tuple $(s_t,r_t)$ at time step $t$ where $s_t$ is the current state and $r_t$ is the reward resulting from $s_t$. Each action $a_t$ taken by the agent results in another tuple at time step $t+1$. It is easy to see that this has the Markov property.
+
+For any initial state $s_t$, the cumulative reward is defined as
+\begin{align}
+    g_t &= \lim_{N\rightarrow\infty}\sum_{\tau=0}^N \gamma^\tau r_{t+\tau}\\
+    \sum_{\tau=0}^N \gamma^\tau r_{\min} &\leq\sum_{\tau=0}^N \gamma^\tau r_{t+\tau}\leq\sum_{\tau=0}^N \gamma^\tau r_{\max}\\
+    \frac{\gamma^{N+1}-1}{\gamma-1}r_{\min} &\leq\sum_{\tau=0}^N \gamma^\tau r_{t+\tau}\leq\frac{\gamma^{N+1}-1}{\gamma-1}r_{\max}\\
+    \lim_{N\rightarrow\infty}\frac{\gamma^{N+1}-1}{\gamma-1}r_{\min} &\leq\lim_{N\rightarrow\infty}\sum_{\tau=0}^N \gamma^\tau r_{t+\tau}\leq\lim_{N\rightarrow\infty}\frac{\gamma^{N+1}-1}{\gamma-1}r_{\max}\\
+    \frac{r_{\min}}{1-\gamma} &\leq g_t\leq\frac{r_{\max}}{1-\gamma}\ \scriptstyle{\text{if $0 \leq \gamma < 1$}}
+\end{align}
+As long as the rewards are bounded and $0 \leq \gamma < 1$, the cumulative reward will always be bounded as well, which is preferred. Getting diminishing returns as a result prevents the agent to go for infinite loops for infinite gain, encouraging to finish as soon as possible.
+\section{Bellman Equation}
+\begin{align}
+    V(s_t)
+    &= \sum_{g_t}p\big(g_t|s_t\big)g_t\\
+    &= E\big(g_t|s_t\big)\\
+    &= E\big(r_{t}+\gamma g_{t+1}|s_t\big)\\
+    &= E(r_t|s_t)+\gamma E\big(g_{t+1}|s_t\big)\\
+    &= \sum_{r_t}p\big(r_t|s_t\big)r_t+\gamma \sum_{g_{t+1}}p\big(g_{t+1}|s_t\big)g_{t+1}\\
+    &= \sum_{r_t,a_t,s_{t+1}}p\big(r_t,a_t,s_{t+1}|s_t\big)r_t+\gamma \sum_{g_{t+1}}\sum_{r_t,a_t,s_{t+1}}p\big(g_{t+1}|r_t,a_t,s_{t+1},s_t\big)p\big(r_t,a_t,s_{t+1}|s_t\big)g_{t+1}\\
+    &= \sum_{r_t,a_t,s_{t+1}}p\big(r_t,a_t,s_{t+1}|s_t\big)\left[r_t+\gamma \sum_{g_{t+1}}p\big(g_{t+1}|r_t,a_t,s_{t+1},s_t\big)g_{t+1}\right]\\
+    &= \sum_{r_t,a_t,s_{t+1}}p\big(r_t,a_t,s_{t+1}|s_t\big)\left[r_t+\gamma \sum_{g_{t+1}}p\big(g_{t+1}|s_{t+1}\big)g_{t+1}\right]\\
+    &= \sum_{r_t,a_t,s_{t+1}}p\big(a_t|s_t\big)p\big(r_t,s_{t+1}|a_t,s_t\big)\big[r_t+\gamma V(s_{t+1})\big]\\
+    &= \sum_{a_t}p\big(a_t|s_t\big)\sum_{r_t,s_{t+1}}p\big(r_t,s_{t+1}|a_t,s_t\big)\big[r_t+\gamma V(s_{t+1})\big]\\
+    &= \sum_{a_t}\pi\big(a_t|s_t\big)Q(a_t, s_t)\\
+    V(s_t) &= E_\pi\big[Q(a_t, s_t)\big]\label{valueexp}\\
+    Q(a_t, s_t) &= E_{p(r_t,s_{t+1}|a_t,s_t)}\big[r_t+\gamma V(s_{t+1})\big]
+\end{align}
+$V, Q, \pi$ are called \textit{value function}, \textit{Q-function} and \textit{policy} respectively.
+\section{Value Based Methods}
+\textit{Value based methods} assume a fixed policy (i.e. choosing the maximum value). In the expression~\ref{valueexp}, when we fix the policy such that the possibility of the maximum value is 1 we have
+\begin{align}
+    V^*(s_t) &= \max_{a_t}\big[Q(a_t, s_t)\big]\\
+    Q(a_t, s_t) &= E_{p(r_t,s_{t+1}|a_t,s_t)}\big[r_t+\gamma V^*(s_{t+1})\big]
+\end{align}
+
+Alternatively, we could visualize this phenomenon as a graph in figures~\ref{fig:rl_graph} and~\ref{fig:rl_tree}. The agent maximizes the reward by traversing the tree in figure~\ref{fig:rl_tree}. For real life scenarios, construction of the tree could be infeasible. Therefore, people generally prefer using sampling methods such as Monte Carlo.
+
+% Graph figure
+\begin{figure}[H]
+\centering
+\begin{tikzpicture}[->, >=stealth, shorten >=1pt, auto, node distance=3cm, thick, main node/.style={circle, draw, font=\sffamily\Large\bfseries}]
+
+  % Define nodes
+  \node[main node] (s0) {$s_0, r_0$};
+  \node[main node] (s1) [right of=s0] {$s_1, r_1$};
+  \node[main node] (s2) [below of=s0] {$s_2, r_2$};
+  \node[main node] (s3) [below of=s1] {$s_3, r_3$};
+  \node[main node] (s4) [left of=s0] {$s_4, r_4$};
+
+  % Define edges with labels (including new s1->s2 edge)
+  \path[->]
+    (s0) edge node[above] {$a_0$} (s1)
+    (s1) edge node[right] {$a_1$} (s3)
+    (s2) edge node[left] {$a_2$} (s0)
+    (s3) edge[loop right] node[right] {$a_0$} (s3)
+    (s0) edge[bend left] node[left] {$a_1$} (s2)
+    (s1) edge[bend right] node[above] {$a_2$} (s0)
+    (s1) edge node[sloped, above] {$a_3$} (s2)
+    (s0) edge node[above] {$a_2$} (s4);
+\end{tikzpicture}
+\caption{A sample graph of a state space}
+\label{fig:rl_graph}
+\end{figure}
+
+% Tree figure
+\begin{figure}[H]
+\centering
+\resizebox{.5\textwidth}{!}{\begin{tikzpicture}[->, >=stealth, shorten >=1pt, auto, node distance=2cm, thick,
+    main node/.style={circle, draw, align=center, font=\small}]
+
+  % Nodes (arranged top-to-bottom)
+  \node[main node] (s0) {$V^*(s_0), r_0$};
+
+  % Level 1
+  \node[main node] (s1) [below left=2cm and 3cm of s0] {$V^*(s_1), r_1$};
+  \node[main node] (s2) [below=2cm of s0] {$V^*(s_2), r_2$};
+  \node[main node] (s4) [below right=2cm and 3cm of s0] {$V^*(s_4), r_4$};
+
+  % Level 2 (from s1)
+  \node[main node] (s3) [below left=of s1] {$V^*(s_3), r_3$};
+  \node[main node] (s0a) [below=of s1] {$V^*(s_0), r_0$};
+  \node[main node] (s2a) [below right=of s1] {$V^*(s_2), r_2$}; % New node
+
+  % Level 2 (from s2)
+  \node[main node] (s0b) [below=of s2] {$V^*(s_0), r_0$};
+
+  % Edges with labels (including new path)
+  \path[->]
+    (s0) edge node[midway, left] {$a_0$} (s1)
+    (s0) edge node[midway, left] {$a_1$} (s2)
+    (s0) edge node[midway, left] {$a_2$} (s4)
+    (s1) edge node[midway, left] {$a_1$} (s3)
+    (s1) edge node[midway, right] {$a_2$} (s0a)
+    (s1) edge node[midway, right] {$a_3$} (s2a) % New edge
+    (s2) edge node[midway, right] {$a_2$} (s0b);
+\end{tikzpicture}}
+\caption{Tree of all paths in the graph in figure~\ref{fig:rl_graph} with length less than or equal to 2}
+\label{fig:rl_tree}
+\end{figure}
+\section{Policy Gradient Methods}
+There is another branch of methods called \textit{policy gradient methods} that uses gradient to adapt a model to a dynamic policy \cite{lapan_deep_2020}. The accumulated reward independent of a state could be expressed as below
+\begin{align}
+    J(\theta)
+&= \sum_{s \in \mathcal{S}} d^\pi(s) V^\pi(s) \\
+&= \sum_{s \in \mathcal{S}} d^\pi(s) \sum_{a \in \mathcal{A}} \pi_\theta(a \vert s) Q^\pi(s, a)\\
+&= \sum_{s \in \mathcal{S}} d^\pi(s)\sum_{a \in \mathcal{A}} \pi_\theta(a \vert s) \sum_{s'} P(s' \vert s,a) \nabla_\theta V^\pi(s')
+\end{align}
+Analytically calculating the gradient is tricky. Only policy is parameterized; however, the value terms include the policy as well. Following the derivation in Lilian Weng's blog gives (please refer to the blog for full derivation).
+\begin{align}
+\nabla_\theta J(\theta)
+&= \nabla_\theta \sum_{s \in \mathcal{S}} d^\pi(s) \sum_{a \in \mathcal{A}} Q^\pi(s, a) \pi_\theta(a \vert s) \\
+&\propto \sum_{s \in \mathcal{S}} d^\pi(s) \sum_{a \in \mathcal{A}} Q^\pi(s, a) \nabla_\theta \pi_\theta(a \vert s) \\
+&= \sum_{s \in \mathcal{S}} d^\pi(s) \sum_{a \in \mathcal{A}} \pi_\theta(a \vert s) Q^\pi(s, a) \frac{\nabla_\theta \pi_\theta(a \vert s)}{\pi_\theta(a \vert s)} \\
+&= \mathbb{E}_\pi \big[Q^\pi(s, a) \nabla_\theta \ln \pi_\theta(a \vert s)\big]\ \scriptstyle{\text{because } (\ln x)' = 1/x} \label{policy_grad}
+\end{align}
+One policy gradient method (maybe the simplest) is \textit{REINFORCE}, given as below.
+\begin{enumerate}
+    \item Predict the reward $G_t$
+    \item Perform a gradient update $\theta \leftarrow \theta + \alpha \gamma^t G_t \nabla_\theta \ln \pi_\theta(A_t \vert S_t)$\ \cite{weng_policy_2018}
+\end{enumerate}
+During the mean loss calculation, sample mean of the accumulated gradients are calculated. This gives an approximation for~\ref{policy_grad}, in a Monte Carlo manner. As the predicted reward values may have high variance they lead to unstable optimization. For smoother gradient updates, the coefficient term is generally normalized with a \textit{baseline} as $Q(a,s)-b(s)$. For a baseline, the mean $V(s) = E_a[Q(a,s)]$ could be used. the SCST (\textit{self-critical sequence training}) paper uses the optimal value $V^*(s) = \max_a[Q(a,s)]$ \cite{rennie_self-critical_2017}. It is possible to use a NN to approximate the rewards as well, which is done with methods such as \textit{actor-critic}.
 \chapter{Generative Models}
 \section{Variational Autoencoder (VAE)}
 Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{cond_mutual_independence} that, we are maximizing the evidence
 \begin{align}
-    \hat{\theta} &= \arg_\theta\max p_\theta(x) \label{max_prob}\\
+    \hat{\theta} &= \arg_\theta\max p(x|\theta) \label{max_prob}\\
+    &= \arg_\theta\max p_\theta(x) \label{max_prob}\\
     &= \arg_\theta\max\prod_i p_\theta(x_i)\\
     &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
     &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}~\cite{weng_vae_2018}
