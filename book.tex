@@ -376,7 +376,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 \begin{equation}
     f(x+\Delta x) \approx f(x)+dx^T\nabla f(x)+\frac{1}{2}dx^TH(x)dx
 \end{equation}
-Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, we may have plateau, as plateau is plane in the neighborhood of $x$ (ground or inclined).
+Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, we have a plateau, as plateau is plane in the neighborhood of $x$ (ground or inclined), which may deteriorate the performance.
 
 \subsection{Arbitrary Gaussian Function}
 Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$.
