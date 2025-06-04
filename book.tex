@@ -277,6 +277,7 @@ We see that $x_c$ lies within a subregion of $\Omega$, hence by definition of co
         \leq  f(X)c & \text{if $f$ is convex}\\
         \geq  f(X)c & \text{if $f$ is concave}
     \end{cases}
+    \label{c_sum_1}
 \end{equation}
 \section{Positive Semi-definiteness of a Matrix of the Form $X^TX$}
 Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$,
@@ -437,7 +438,7 @@ By definition, if
 then $A$ and $B$ are independent. Given~\ref{joint_cond_prob} and ~\ref{independence1}
 \begin{align}
     p(A|B) &= p(A)\\
-    p(B|A) &= p(B)
+    p(B|A) &= p(B) \label{independence2}
 \end{align}
 \section{Conditional Dependence}
 By definition, if
@@ -562,7 +563,7 @@ We aim to find an estimator (maximum a posteriori estimator) that maximize the p
     -\log\hat{\theta}_{MAP} &= \arg_\theta\min \Big(-\log \big[p(y|x,\theta)p(\theta)\big]\Big)\\
     &= \arg_\theta\min \big[-\log p(y|x,\theta)-\log p(\theta)\big]\\
 \end{align}
-When we set a uniform prior, the term becomes constant and cancels out, giving the maximum likelihood estimator (MLE)
+When we set a uniform prior, the prior term becomes constant and cancels out, giving the maximum likelihood estimator (MLE)
 \begin{align}
     \hat{\theta}_{MAP} &= \arg_\theta\max p(y|x,\theta)p(\theta)\\
     &= \arg_\theta\max c p(y|x,\theta)\\
@@ -635,6 +636,16 @@ Using the fact that variance is just the \textit{self-covariance}
     &= \sum_{i=1}^{n} a_i^2 Var(X_i) + \sum_{i=1}^{n} \sum_{j \neq i}^{n} a_i a_j Cov(X_i, X_j)\\
     &= \sum_{i=1}^{n} a_i^2 Var(X_i)\ \text{(assuming $X$ is uncorrelated)}\label{var_derivation_res}
 \end{align}
+\section{Relationship Between Independence and Derivative}
+We begin with the argument that if two random variables are independent, then they can neither be stochastically nor deterministically expressed in terms of each other. If they cannot be deterministically expressed then
+\begin{equation}
+    \frac{dx_i}{dx_j} = 0
+\end{equation}
+And vice versa. Using chain rule.
+\begin{align}
+    \frac{dp(x_i)}{dp(x_j)} &= \frac{\frac{dp(x_i)}{dx_i}}{\frac{dp(x_j)}{dx_j}}\frac{dx_i}{dx_j}\\
+    &= 0 \label{prob_independence}
+\end{align}
 \section{Loss Functions}
 \label{lossfun}
 In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at the ~\ref{bayesian}, we can find the posterior if the likelihood and the prior are \textit{tractable} (their closed form can be found), which is not generally the case. Therefore, people tend to learn another distribution $p(y|x,\theta)$ with parameters $\theta$ (Note the input parameters $x, \theta$ and output $y$). The ideal distribution $p(y|x,\theta)$ should be equal to $q(y|x)$, which is equivalent to saying that the difference $D_{KL}(q(y|x)\parallel p(y|x,\theta))$ should be zero. Then the optimum parameters become
@@ -647,28 +658,33 @@ In ML problems, we want to find the underlying distribution $q(y|x)$. Looking at
 \label{kl_nonneg}
 Negative of any function switches its convexity property (i.e. reversing the bowl on the table). Using the definition of KL-Divergence, the Jensen's inequality and the fact that logarithm is a concave function
 \begin{align}
-     \int_X p(X)\log\frac{p(X)}{q(X)} dX &= \int_X p(X)(-\log)\frac{q(X)}{p(X)} dX\\
-     &\geq -\log \int_X p(X)\frac{q(X)}{p(X)} dX\\
-     &\geq -\log \int_X q(X) dX\\
-     &\geq -\log \int_X q(X) dX\\
+     \int_X q(X)\log\frac{q(X)}{p(X)} dX &= \int_X q(X)(-\log)\frac{p(X)}{q(X)} dX\\
+     &\geq -\log \int_X q(X)\frac{p(X)}{q(X)} dX\\
+     &\geq -\log \int_X p(X) dX\\
+     &\geq -\log \int_X p(X) dX \label{p_sum_1}\\
      &\geq -\log 1 \\
      &\geq 0
 \end{align}
-Bear in mind that this was true because our assumptions of having a vector of all positive entries and Manhattan norm of 1 aligns with the probability distribution (Integral is a type of sum).
+When $p$ and $q$ are probability distributions then their manhattan norms become 1 (integral is continuous sum, and see~\ref{p_sum_1} and~\ref{c_sum_1}). With these assumptions, KL-divergence attains a global minimum at zero.
 \subsubsection{Monotonicity of KL-Divergence}
 A function $f$ is \textit{monotonically decreasing} if
 \begin{equation}
     f(x) \leq f(y) \longleftrightarrow x \geq y
 \end{equation}
-similarly, there is also increasing monotonicity which is irrelevant at this point. We will show for any probability distributions $p(x)$ and $q(x)$, $D_{KL}(p(x)\parallel q(x))$ is monotonically decreasing in every direction. We can take derivatives and look at the behavior of the function for that. For simplicity, we use continuous indexing such that $p(x_i)=p_i$
+similarly, there is also increasing monotonicity and the monotonicity is also defined
+\begin{equation}
+    f(x) = f(y) \longleftrightarrow x = y\ \text{or}\ f(x) \neq f(y) \longleftrightarrow x \neq y
+\end{equation}
+To simplify notation, we use continuous indexing with $p_i=p(x_i)$ and omit the parameters as $p=p(x)$. Note that $p$ is parametric with $\theta$ whereas $q$ is not, hence we look at the change of $p$, the gradient.
 \begin{align}
-    \frac{\delta}{\delta q_j}\int_i p_i\log\frac{p_i}{q_i} di &= \int_i p_i\frac{\delta}{\delta q_j}\log\frac{p_i}{q_i} di\\
-    &= p_j\frac{-\frac{p_j}{q_j^2}}{\frac{p_j}{q_j}}\\
-    &= -\frac{p_j}{q_j} \label{klmonotonicity}
+    \frac{\delta}{\delta p_j}D_{KL}(q \parallel p) &= \frac{\delta}{\delta p_j}\int_i q_i\log\frac{q_i}{p_i} di\\
+    &= \int_i q_i\frac{\delta}{\delta p_j}\log\frac{q_i}{p_i} di\\
+    &= q_j\frac{-\frac{q_j}{p_j^2}}{\frac{q_j}{p_j}}\ \text{due to~\ref{prob_independence}}\\
+    &= -\frac{q_j}{p_j} \label{klmonotonicity}
 \end{align}
-Let us keep $p$ constant for now and express KL-divergence as a function of $q$ (i.e. $D_{KL}(q)$). Because $p$ has to sum up to 1, in at least one dimension $k$,~\ref{klmonotonicity} is always negative (but not zero), so KL-divergence is strictly decreasing in that dimension. Then KL-divergence is strictly decreasing in every dimension. In this regard having two points $q_1$ and $q_2$, $D_{KL}(q_1)=D_{KL}(q_2)$ if and only if $q_1=q_2$, hence the only $q$ that will reach the minimum of zero is $q=p$.
+Let us keep $q$ constant and express KL-divergence as a function of $p$. Probability values are non-negative. When KL-divergence is differentiable (nonzero $p_j$) the derivatives are non-positive. Therefore it is monotonically decreasing, hence monotonic. In this regard, its global minimum is also unique (which is only possible when $p=q$). Please note that this is possible when $p$ and $q$ are probability distributions (visually in a unit right triangle in a positive quadrant of a 2D coordinate system).
 \subsection{Cross-Entropy}
-\subsubsection{General Derivation}
+\subsubsection{Relationship With KL-Divergence}
 \begin{align}
     \hat{\theta}
     &= \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]\\
@@ -677,7 +693,7 @@ Let us keep $p$ constant for now and express KL-divergence as a function of $q$ 
     &= \arg_\theta \min \left( E_{q(y|x)}\Big[-\log p(y|x,\theta)\Big]\right)\label{ce_derivation_res}\\
     &= \arg_\theta \min H(q(y|x), p(y|x,\theta))
 \end{align}
-\subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
+\subsubsection{Relationship With Maximum Likelihood Estimator (MLE)}
 \label{mle_ce}
 Continuing from~\ref{ce_derivation_res},
 \begin{equation}
@@ -696,7 +712,7 @@ We will assume $q$ is known (see~\ref{catdist}).
 \end{align}
 We conclude that minimizing the corresponding loss is equivalent to finding the maximum likelihood of the output $Y$ wrt the input $X$ and the parameters $\theta$.
 \subsection{Mean Squared Error (MSE)}
-\subsubsection{General Derivation}
+\subsubsection{Relationship With KL-Divergence}
 \label{mse_derivation}
 We assume $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$ and $q(y|x) = \mathcal{N}(y; \mu(x),\beta)$. We will obtain the result using KL-divergence. Deriving the equation below, Gupta made our life easier.
 \begin{equation}
@@ -707,10 +723,8 @@ Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same nu
     \hat{\theta}
     &= \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]\\
     &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
-    &= \arg_\theta \min\frac{1}{2\sigma^2}\big(\mu-\mu_\theta(x)\big)^2\label{mse_derivation_res2}
+    &= \arg_\theta \min\big(\mu-\mu_\theta(x)\big)^2\ \text{since the variance cannot be negative}\label{mse_derivation_res2}
 \end{align}
-
-People may experiment with different constants $\frac{1}{2\sigma^2}$ and see whichever is the top performing as long as~\ref{minmaxcomp1} and~\ref{minmaxcomp2} are satisfied (it does for all due to the square as variance cannot be negative).
 \subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
 \label{mle_mse}
 Continuing from~\ref{mle_ce_res} with the assumption $p(y|x,\theta) = \mathcal{N}(y; \mu_\theta(x),\sigma^2)$; hence,
