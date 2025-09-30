@@ -699,7 +699,7 @@ Continuing from~\ref{ce_derivation_res},
 \begin{equation}
     = \arg_\theta \min \sum_j -q(y=j|x)\log p(y=j|x,\theta)
 \end{equation}
-We will assume $q$ is known (see~\ref{catdist}).
+We will assume $q$ is deterministic (see~\ref{catdist}).
 \begin{align}
     &= \arg_\theta \min \sum_j -(1\{y=j\})\log p(y=j|x,\theta)\\
     &= \arg_\theta \min \sum_j -\log p(y=j|x,\theta)^{1\{y=j\}}\\
@@ -764,7 +764,7 @@ Using~\ref{var_derivation_res}, for a sample $X_{1:n}$ with constant variance $\
     Std(\overline{X}) &= \sqrt{Var(\overline{X})}\\
     &= \frac{\sigma}{\sqrt{n}}
 \end{align}
-We realize that as number of samples increases, the mean of the sample better approximates the true mean of the distribution better. Mathematically
+We realize that as number of samples increases, the mean of the sample approximates the true mean of the distribution better. Mathematically
 \begin{equation}
     E[f(X)] \approx \frac{1}{N}\sum_i f(X_i)\ \text{such that $X_i \sim p(X)$}\label{mean_loss_res}
 \end{equation}
