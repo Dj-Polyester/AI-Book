@@ -1146,6 +1146,7 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 &\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]
 \end{align}
 Note that similar to~\ref{vae_elbo}, integrating both sides via $q(x)$ gives the cross entropy value on RHS. Minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_diffusion_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+
 \scalebox{0.9}{
 \begin{varwidth}{\textwidth}
 \begin{align}
@@ -1156,8 +1157,8 @@ Note that similar to~\ref{vae_elbo}, integrating both sides via $q(x)$ gives the
 &= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t |x_0)}{q(x_{t-1} |x_0)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big] \\
 &= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
 &= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
-&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)}\Big] + E_{q(x_{1:T}|x_0)}\Big[\sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big] - E_{q(x_{1:T}|x_0)}\big[\log p_\theta(x_0 |x_1)\big] \\
-&= \arg_\theta \min E_{q(x_T|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)}\Big] + \sum_{t=2}^T E_{q(x_t, x_{t-1}|x_0)}\Big[\log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big] - E_{q(x_1|x_0)}\big[\log p_\theta(x_0 |x_1)\big] \\
+&= \arg_\theta \min \left[E_{q(x_{1:T}|x_0)}\Big(\log\frac{q(x_T |x_0)}{p(x_T)}\Big) + E_{q(x_{1:T}|x_0)}\Big(\sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big) - E_{q(x_{1:T}|x_0)}\big(\log p_\theta(x_0 |x_1)\big)\right] \\
+&= \arg_\theta \min \left[E_{q(x_T|x_0)}\Big(\log\frac{q(x_T |x_0)}{p(x_T)}\Big) + \sum_{t=2}^T E_{q(x_t, x_{t-1}|x_0)}\Big(\log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big) - E_{q(x_1|x_0)}\big(\log p_\theta(x_0 |x_1)\big)\right] \\
 &= \arg_\theta \min \Big[\underbrace{D_{KL}(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T E_{q(x_t|x_0)}\Big(D_{KL}\big(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t)\big)\Big)}_{L_{t-1}} \underbrace{+H(q(x_1|x_0), q_\theta(x_0|x_1))}_{L_0}\Big]\\
 &= \arg_\theta \min \Big[\underbrace{\sum_{t=2}^T E_{q(x_t|x_0)}\Big(D_{KL}\big(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t)\big)\Big)}_{L_{t-1}} \underbrace{+H(q(x_1|x_0), q_\theta(x_0|x_1))}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
 &= \mathcal{L}_\theta(x_0)
