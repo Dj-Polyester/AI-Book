@@ -1024,7 +1024,7 @@ We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\sum_i\Big(\mu_{\phi i}^2 + \sigma^2_{\phi i}+\log\sigma_{0i}^2\Big) - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\sum_i\Big(\mu_{\phi i}^2 + \sigma^2_{\phi i}-\log\sigma_{\phi i}^2\Big) - k\right]
 \end{equation}
 The cross-entropy term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
