@@ -1147,7 +1147,7 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 \end{align}
 Note that similar to~\ref{vae_elbo}, integrating both sides via $q(x)$ gives the cross entropy value on RHS. Minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_diffusion_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
 
-\scalebox{0.9}{
+\scalebox{0.8}{
 \begin{varwidth}{\textwidth}
 \begin{align}
 \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
