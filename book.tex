@@ -12,6 +12,8 @@
 %Drawing
 \usepackage{tikz}
 \usepackage{float}
+%Resizing
+\usepackage{varwidth}
 \usetikzlibrary{angles, quotes, positioning}
 %Includes "References" in the table of contents
 \usepackage[nottoc]{tocbibind}
@@ -722,7 +724,9 @@ Where vectors $x_i, y_i, \mu_i=\mu(x_i)$ and $\mu_\theta(x_i)$ share the same nu
 \begin{align}
     \hat{\theta}
     &= \arg_\theta \min[D_{KL}(q(y|x) \parallel p(y|x,\theta))]\\
-    &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \frac{\beta}{\sigma^2}+k\log\frac{\sigma^2}{\beta} - k\right]\\
+    &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \sum_i\frac{\beta_i}{\sigma_i^2}+\log\frac{\prod_i\sigma_i^2}{\prod_i \beta_i} - k\right]\\
+    &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \sum_i\frac{\beta_i}{\sigma_i^2}+\sum_i\log\frac{\sigma_i^2}{\beta_i} - k\right]\\
+    &= \arg_\theta \min\frac{1}{2}\left[\frac{1}{\sigma^2}\big(\mu-\mu_\theta(x)\big)^2 + \sum_i\Big(\frac{\beta_i}{\sigma_i^2}+\log\frac{\sigma_i^2}{\beta_i}\Big) - k\right] \label{gupta_kl_diag}\\
     &= \arg_\theta \min\big(\mu-\mu_\theta(x)\big)^2\ \text{since the variance cannot be negative}\label{mse_derivation_res2}
 \end{align}
 \subsubsection{Relationship With Maximum Likelihood Estimator (MLE) for Supervised Tasks}
@@ -985,14 +989,10 @@ One policy gradient method (maybe the simplest) is \textit{REINFORCE}, given as 
 During the mean loss calculation, sample mean of the accumulated gradients are calculated. This gives an approximation for~\ref{policy_grad}, in a Monte Carlo manner. As the predicted reward values may have high variance they lead to unstable optimization. For smoother gradient updates, the coefficient term is generally normalized with a \textit{baseline} as $Q(a,s)-b(s)$. For a baseline, the mean $V(s) = E_a[Q(a,s)]$ could be used. the SCST (\textit{self-critical sequence training}) paper uses the optimal value $V^*(s) = \max_a[Q(a,s)]$ \cite{rennie_self-critical_2017}. It is possible to use a NN to approximate the rewards as well, which is done with methods such as \textit{actor-critic}. 
 \chapter{Generative Models}
 \section{Variational Autoencoder (VAE)}
-Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{cond_mutual_independence} that, we are maximizing the evidence
-\begin{align}
-    \hat{\theta} &= \arg_\theta\max p(x|\theta) \label{max_prob}\\
-    &= \arg_\theta\max p_\theta(x) \label{max_prob}\\
-    &= \arg_\theta\max\prod_i p_\theta(x_i)\\
-    &= -\arg_\theta\min\sum_i \log p_\theta(x_i)\\
-    &= \arg_\theta\min\big[-\log p_\theta(x)\big]\ \text{for all $x$}~\cite{weng_vae_2018}
-\end{align}
+Autoencoders (AE) are trained with the constraint that input approximates output as closely as possible ($X=Y$). We can model AEs using probabilities similar to~\ref{ce_derivation_res} that, we are maximizing the cross entropy
+\begin{equation}
+    \arg_\theta \min H(q(x), p(x|\theta)) = \arg_\theta \min \left( E_{q(x)}\Big[-\log p(x|\theta)\Big]\right)
+\end{equation}
 Let us call the latent variables of AE, output of the encoder (or input to the decoder) $Z$. Looking at the Bayesian formula in~\ref{bayesian},
 \begin{align}
     \underbrace{p_\theta(z|x)}_{\text{posterior}} &= \frac{\overbrace{p_\theta(x|z)}^\text{likelihood}\overbrace{p(z)}^\text{prior}}{\underbrace{p_\theta(x)}_\text{evidence}}\\
@@ -1016,15 +1016,15 @@ D_{KL}(q_\phi(z|x) \parallel p_\theta(z|x))
 -\mathcal{L}_{\theta, \phi}(x)
 &\leq \log p_\theta(x)\ \text{due to~\ref{kl_nonneg}} \label{vae_elbo}
 \end{align}
-Minimizing the loss $\mathcal{L}_{\theta, \phi}(x)$ w.r.t $\phi$ minimizes the KL-divergence. Minimizing the loss w.r.t $\theta$ maximizes LHS which in turn maximizes RHS, the true value we want to maximize. The LHS term is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize the loss w.r.t $\theta$ to achieve this as well. We will derive KL-divergence and entropy terms separately.
+Integrating both sides via $q(x)$ gives the cross entropy value on RHS. Minimizing the loss $\mathcal{L}_{\theta, \phi}(x)$ w.r.t $\phi$ minimizes the KL-divergence. Minimizing the loss w.r.t $\theta$ maximizes LHS which in turn maximizes RHS, the true value we want to maximize. The LHS term is a lower bound for the evidence RHS, so called \textit{evidence lower bound} (ELBO). We want to minimize the loss w.r.t $\theta$ to achieve this as well. We will derive KL-divergence and entropy terms separately.
 
-We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl}
+We first make the assumptions $q_\phi(z|x)=\mathcal{N}(z;\mu_\phi(x),\sigma_\phi(x)^2), p(z)=\mathcal{N}(z;\mu_0,\sigma_0^2)$. Using~\ref{gupta_kl_diag}
 \begin{equation}
-    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\Big(\frac{\mu_\phi(x)-\mu_0}{\sigma_0}\Big)^2+\Big(\frac{\sigma_\phi(x)}{\sigma_0}\Big)^2-2\log\frac{\prod_i\sigma_{\phi i}(x)}{\prod_i\sigma_{0i}} - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\frac{1}{\sigma_0^2}\big(\mu_\phi-\mu_0\big)^2 + \sum_i\Big(\frac{\sigma^2_{\phi i}}{\sigma^2_{0i}}+\log\frac{\sigma_{0i}^2}{\sigma^2_{\phi i}}\Big) - k\right]
 \end{equation}
 The authors substitute $\mu_0=0,\sigma_0=1$, then the prior is normalized to the standard normal distribution.
 \begin{equation}
-    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\mu_\phi(x)^2+\sigma_\phi(x)^2-2\log\prod_i\sigma_{\phi i}(x) - k\right]
+    D_{KL}(q_\phi(z|x) \parallel p(z)) = \frac{1}{2}\left[\sum_i\Big(\mu_{\phi i}^2 + \sigma^2_{\phi i}+\log\sigma_{0i}^2\Big) - k\right]
 \end{equation}
 The cross-entropy term is not differentiable since there is a sampling process in the forward pass. To alleviate, the authors first use the \textit{reparameterization trick} (see \ref{reparam_trick_eq1}) as $z = \mu_\phi(x)+\sigma_\phi(x) \cdot \epsilon$ where $\epsilon \sim \mathcal{N}(0,1)$.
 \begin{equation}
@@ -1143,23 +1143,28 @@ Let \textit{reverse process} be defined as another Markov Chain (backward in tim
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{1:T}|x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})/p_\theta(x_0)}\Big]\\
 &\leq -\log p_\theta(x_0)+E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]+\log p_\theta(x_0)\\
-&\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\\
-E_{q(x_0)}[-\log p_\theta(x_0)] &\leq E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]\ \text{(Integrated both sides)}\\
-\arg_\theta \min E_{q(x_0)}[-\log p_\theta(x_0)] &\leq \arg_\theta \min E_{q(x_{0:T})}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]~\cite{weng_diffusion_2021}
+&\leq E_{q(x_{1:T}|x_0)}\Big[\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big]
 \end{align}
-Note that similar to~\ref{vae_elbo}, minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_diffusion_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+Note that similar to~\ref{vae_elbo}, integrating both sides via $q(x)$ gives the cross entropy value on RHS. Minus RHS is a lower bound for the evidence (hence ELBO). One can also reach the same result using Jensen's equality~\cite{sohl-dickstein_deep_2015,weng_diffusion_2021}. The derivation is left to the reader. We found another loss function which is an upper bound; hence, minimizing this function will minimize the original. This function is tractable as shown below
+\scalebox{0.9}{
+\begin{varwidth}{\textwidth}
 \begin{align}
-\arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{0:T})}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t |x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)} \Big]\label{x0cond}\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t |x_0)}{q(x_{t-1} |x_0)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{D_{KL}(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]\\
-&= \arg_\theta \min E_{q(x_{0:T})}\Big[\underbrace{\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))}_{L_{t-1}} \underbrace{- \log p_\theta(x_0 |x_1)}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
+\arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_{1:T}|x_0)}{p_\theta(x_{0:T})}\Big] &= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ \log\frac{\prod_{t=1}^T q(x_t|x_{t-1})}{ p(x_T) \prod_{t=1}^T p_\theta(x_{t-1} |x_t) }\Big] \\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ -\log p(x_T) + \sum_{t=1}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)}\Big] \\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_t|x_{t-1})}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ -\log p(x_T) + \sum_{t=2}^T \log ( \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\cdot \frac{q(x_t |x_0)}{q(x_{t-1}|x_0)} ) + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)} \Big]\label{x0cond}\\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[ -\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \sum_{t=2}^T \log \frac{q(x_t |x_0)}{q(x_{t-1} |x_0)} + \log\frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big] \\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[-\log p(x_T) + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} + \log\frac{q(x_T |x_0)}{q(x_1 |x_0)} + \log \frac{q(x_1 |x_0)}{p_\theta(x_0 |x_1)}\Big]\\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)} + \sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)} - \log p_\theta(x_0 |x_1)\Big] \\
+&= \arg_\theta \min E_{q(x_{1:T}|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)}\Big] + E_{q(x_{1:T}|x_0)}\Big[\sum_{t=2}^T \log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big] - E_{q(x_{1:T}|x_0)}\big[\log p_\theta(x_0 |x_1)\big] \\
+&= \arg_\theta \min E_{q(x_T|x_0)}\Big[\log\frac{q(x_T |x_0)}{p(x_T)}\Big] + \sum_{t=2}^T E_{q(x_t, x_{t-1}|x_0)}\Big[\log \frac{q(x_{t-1} |x_t, x_0)}{p_\theta(x_{t-1} |x_t)}\Big] - E_{q(x_1|x_0)}\big[\log p_\theta(x_0 |x_1)\big] \\
+&= \arg_\theta \min \Big[\underbrace{D_{KL}(q(x_T |x_0) \parallel p(x_T))}_{L_T} + \underbrace{\sum_{t=2}^T E_{q(x_t|x_0)}\Big(D_{KL}\big(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t)\big)\Big)}_{L_{t-1}} \underbrace{+H(q(x_1|x_0), q_\theta(x_0|x_1))}_{L_0}\Big]\\
+&= \arg_\theta \min \Big[\underbrace{\sum_{t=2}^T E_{q(x_t|x_0)}\Big(D_{KL}\big(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t)\big)\Big)}_{L_{t-1}} \underbrace{+H(q(x_1|x_0), q_\theta(x_0|x_1))}_{L_0}\Big]~\cite{sohl-dickstein_deep_2015,ho_denoising_2020,weng_diffusion_2021}\\
 &= \mathcal{L}_\theta(x_0)
 \end{align}
+\end{varwidth}
+}
+
 We eliminated $L_T$ term since it is constant wrt parameters $\theta$~\cite{weng_diffusion_2021}.
 
 As a side note, the authors choose $p(x_T)=\mathcal{N}(0,1)$, and $\beta_t$ schedule so that $L_T \approx 0$ ($\beta_T \approx 1$)~\cite{ho_denoising_2020}. However, for stability they opt for small values of $\beta_T$~\cite{sohl-dickstein_deep_2015, ho_denoising_2020}.
@@ -1209,23 +1214,17 @@ Substituting gives
 &= \frac{1-\bar{\alpha}_t}{\sqrt{\alpha_t}(1-\bar{\alpha}_t)}x_t+\frac{1-\alpha_t}{\sqrt{\alpha_t}\sqrt{1-\bar{\alpha}_t}}\epsilon_t\\
 &= \frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)~\cite{weng_diffusion_2021}
 \end{align}
-Let us focus on $L_{t-1}$.
+Let us focus on $L_{t-1}$. If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
 \begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_{0:T})}\Big[D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]\\
-    &= \arg_\theta\min \sum_{t=2}^T E_{q(x_0,x_{t-1},x_t)}\Big[D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
-\end{align}
-If we use a constant variance $\Sigma_\theta = \sigma_t^2$, we can use the \textit{easy} derivation leading to~\ref{mse_derivation_res2}, finding
-\begin{align}
-    \arg_\theta\min E_{q(x_{0:T})}\Big[\sum_{t=2}^T D_{KL}(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t))\Big]
-    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
-    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
+    \arg_\theta\min\Big[\sum_{t=2}^T E_{q(x_t|x_0)}\Big(D_{KL}\big(q(x_{t-1} |x_t, x_0) \parallel p_\theta(x_{t-1} |x_t)\big)\Big)\Big]
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t}\left[\frac{1}{2\sigma_t^2}(\bar{\mu}_t-\mu_\theta)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\mu_\theta(x_t,t)\right)^2\right]
 \end{align}
 We can parameterize $\mu_\theta$ similar to $\mu_t$ as below
 \begin{align}
-    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)\right)^2\right]\\
-    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_t}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\big(\epsilon_t-\epsilon_\theta(x_t,t) \big)^2\right]\\
-    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t, x_0}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t}\left[\frac{1}{2\sigma_t^2}\left(\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_t \Big)-\frac{1}{\sqrt{\alpha_t}} \Big(x_t - \frac{1 - \alpha_t}{\sqrt{1 - \bar{\alpha}_t}} \epsilon_\theta(x_t,t) \Big)\right)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\big(\epsilon_t-\epsilon_\theta(x_t,t) \big)^2\right]\\
+    &= \arg_\theta\min \sum_{t=2}^TE_{\epsilon_t}\left[\frac{(1-\alpha_t)^2}{2\sigma_t^2\alpha_t(1 - \bar{\alpha}_t)}\Big(\epsilon_t-\epsilon_\theta(\sqrt{\bar{\alpha}_t}x_0 + \sqrt{1 - \bar{\alpha}_t}\epsilon_t,t) \Big)^2\right]
 \end{align}
 Now let us focus on $L_0$.
 \begin{align}
