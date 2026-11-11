@@ -245,9 +245,9 @@ We can choose a set of points in $\Omega_s$ so that
         x_0 & x_1 & ... & x_M   
     \end{bmatrix}
 \end{equation}
-where $x_i$ are column vectors. We introduce another vector $c$ whose Manhattan Norm is 1. Then
+where $x_i$ are column vectors. We introduce another vector $c$ whose Manhattan Norm is 1 with non-negative entries ($c_i \in [0, 1]$). Then
 \begin{align}
-    \min_k x_{kj} \leq x_{ij} \sum_i c_i \leq \max_k x_{kj}\\
+    \min_k x_{kj} \leq x_{ij} \leq \max_k x_{kj}\\
     \sum_i c_i \min_k x_{kj} \leq \sum_i c_i x_{ij} \leq \sum_i c_i \max_k x_{kj}\\
     \min_k x_{kj} \leq \sum_i c_i x_{ij} \leq \max_k x_{kj}\\
     \min_k x_{kj} \leq x_c \leq \max_k x_{kj}
@@ -255,8 +255,8 @@ where $x_i$ are column vectors. We introduce another vector $c$ whose Manhattan 
 Thus the new point $x_c$ is still within $\Omega$ and \ref{jensen1} holds.
 \begin{align}
     f(X_sc) &\leq g(X_sc)\\
-    f(X_sc) &\leq g(X_s)c \quad \text{due to superposition property of linear operators}\\
-    f(X_sc) &\leq f(X_s)c \quad \text{since $f(X_s) = g(X_s)$} \label{jensen2}
+    &\leq g(X_s)c \quad \text{due to superposition property of linear operators}\\
+    &\leq f(X_s)c \quad \text{since $f(X_s) = g(X_s)$} \label{jensen2}
 \end{align}
 For any $X_s$ in $\Omega$ we can find such $g$ and show that \ref{jensen2} holds hence we can generalize the result removing the subscript $s$. Similar results can be reached for concave functions. Hence
 \begin{equation}
