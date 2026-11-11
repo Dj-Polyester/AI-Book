@@ -233,53 +233,37 @@ Now for a given point $p$ and normal vector $a$, every point $x$ making $a$ and 
 \end{align}
 indeed spans a hyperplane. Notice $b = -a^Tp$ is a constant scalar. We have proven the hyperplane equation as well
 \section{Jensen's Inequality}
-Continuing from our results in previous part, we extract the last feature of $x$ with its corresponding coefficient, to bring an axis of reference to our analysis
-\begin{align}
-    a^Tx+b &= 0\\
-    a_{1:N-1}^Tx+a_Ny+b &= 0 \label{hyperplane_eq}
-\end{align}
-Then we bring up a hypersurface with
+Assume there exists a hypersurface $f$ such that in a region $\Omega$ it is either convex (informally a bowl on a table facing up) or concave (a bowl upside-down). We first start with the case when $f$ is convex. Assume an arbitrary plane $g$ that intersects $f$ defined by the region $\Omega_s$ which is a subregion of $\Omega$. Since $f$ is convex, it is easy to see that 
 \begin{equation}
-    y=f(x) \label{hypersurf_eq}
+    f(x) \leq g(x) \label{jensen1}
 \end{equation}
-which intersects the plane in a region $\Omega$ such that their intersecting region $\Omega_c$ is the boundary of $\Omega$. $f$ is either convex (i.e. a bowl placed on a table in 3D, $y$ increasing toward the sky) or concave (i.e. the bowl upside down in 3D) within $\Omega$. Within $\Omega_c$, we can take any set of points as column vectors organized as a matrix
-$$
-X = \begin{bmatrix}
-    x_0 & x_1 & ... & x_M
-\end{bmatrix}
-$$
-It is easy to see that $X$ satisfies both~\ref{hyperplane_eq} and~\ref{hypersurf_eq}. Let us multiply both sides with a vector of weights $c$ whose Manhattan norm is 1 (sum of its items adds up to 1).
-\begin{align}
-    a_{1:N-1}^TX+(a_Ny+b)1^T &= 0\\
-    a_{1:N-1}^TXc+(a_Ny+b)1^Tc &= 0\\
-    a_{1:N-1}^TXc+a_Ny+b &= 0
-\end{align}
-Whenever only one element $c_i=1$ (and trivially others are zero of course), we have
-\begin{align}
-    a_{1:N-1}^Tx_i+a_Nf(x_i)+b = 0\\
-    a_{1:N-1}^Tx_ic_i+a_Nf(x_i)c_i+bc_i = 0\\
-    \sum_i a_{1:N-1}^Tx_ic_i+\sum_i a_Nf(x_i)c_i+\sum_i bc_i = 0\\
-    a_{1:N-1}^T\sum_i x_ic_i+a_N\sum_i f(x_i)c_i+b = 0\\
-\end{align}
-We have shown for a point $x_c=Xc$
+for any point $x$ in $\Omega$.
+We can choose a set of points in $\Omega_s$ so that
 \begin{equation}
-    y(Xc)=f(X)c=\sum_i c_if(x_i)
+    X_s = 
+    \begin{bmatrix}
+        x_0 & x_1 & ... & x_M   
+    \end{bmatrix}
 \end{equation}
-We will further assume for all $i$, $c_i \in [0,1]$
+where $x_i$ are column vectors. We introduce another vector $c$ whose Manhattan Norm is 1. Then
 \begin{align}
-    \min_kx_{kj} &\leq x_{ij} \leq \max_kx_{kj}\\
-    c_i\min_kx_{kj} &\leq c_ix_{ij} \leq c_i\max_kx_{kj}\\
-    \sum_i c_i\min_kx_{kj} &\leq \sum_i c_ix_{ij} \leq \sum_i c_i\max_kx_{kj}\\
-    \min_kx_{kj} &\leq \sum_i c_ix_{ij} \leq \max_kx_{kj}\\
+    \min_k x_{kj} \leq x_{ij} \sum_i c_i \leq \max_k x_{kj}\\
+    \sum_i c_i \min_k x_{kj} \leq \sum_i c_i x_{ij} \leq \sum_i c_i \max_k x_{kj}\\
+    \min_k x_{kj} \leq \sum_i c_i x_{ij} \leq \max_k x_{kj}\\
+    \min_k x_{kj} \leq x_c \leq \max_k x_{kj}
 \end{align}
-We see that $x_c$ lies within a subregion of $\Omega$, hence by definition of convexity of surface,
+Thus the new point $x_c$ is still within $\Omega$ and \ref{jensen1} holds.
+\begin{align}
+    f(X_sc) &\leq g(X_sc)\\
+    f(X_sc) &\leq g(X_s)c \quad \text{due to superposition property of linear operators}\\
+    f(X_sc) &\leq f(X_s)c \quad \text{since $f(X_s) = g(X_s)$} \label{jensen2}
+\end{align}
+For any $X_s$ in $\Omega$ we can find such $g$ and show that \ref{jensen2} holds hence we can generalize the result removing the subscript $s$. Similar results can be reached for concave functions. Hence
 \begin{equation}
-    f(Xc) =
-    \begin{cases}
-        \leq  f(X)c & \text{if $f$ is convex}\\
-        \geq  f(X)c & \text{if $f$ is concave}
+    f(Xc) = \begin{cases}
+    \leq f(X)c & \text{if $f$ is convex}\\
+    \geq f(X)c & \text{if $f$ is concave}
     \end{cases}
-    \label{c_sum_1}
 \end{equation}
 \section{Positive Semi-definiteness of a Matrix of the Form $X^TX$}
 Let $A$ be a symmetric square matrix, and also $A=X^TX$. For any vector $z$,
