@@ -366,7 +366,7 @@ For any function, $f(x)$ its second order Tailor expansion approximates it in th
 Substituting $A$, $b$ and $c$, this approximation can be used to determine the behavior of $f$ near $x$ in optimization algorithms such as gradient descent (where $\Delta x$ is learning rate times the gradient). For example if $H(x)$ is semi-definite, we have a plateau, as plateau is plane in the neighborhood of $x$ (ground or inclined), which may deteriorate the performance.
 
 \subsection{Arbitrary Gaussian Function}
-Let $g(x) = he^{q(x)}$, with an arbitrary scalar $f$.
+Let $g(x) = he^{q(x)}$, with an arbitrary scalar $h$.
 \begin{equation}
     \nabla g(x) = \nabla q(x) g(x)
 \end{equation}
@@ -387,8 +387,13 @@ Similarly deductions from part~\ref{posneg} can be made. Same as that part, If $
     (\sum_i 4d_i^2\lambda_i^2)e^{\sum_i 2d_i^2\lambda_i}g(x^*)^2 &= \bar{c}^2
 \end{align}
 Note that after this point, I could not come with a rigorous proof, but used a computer.
-If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $f = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased.
-This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample.
+If we use density function of normal distribution which is a special case of $g(x)$ with $b=-2A\mu$ ($x^*$ becomes $\mu$), $c=\mu^TA\mu$, $h = \frac{1}{\sqrt{(2\pi)^n}det(A)} = \frac{1}{\sqrt{(2\pi)^n\prod_j \lambda_j}}$ (to have infinite integral equal 1 by definition of density functions), and inputting the values to a calculator (I used Desmos), the function behaves like an ellipsoid having eigenvectors along its principal semi-axes. please note that $A=-\frac{1}{2}\Sigma^{-1}$, where covariance matrix $\Sigma$ needs to be positive definite (it can trivially be semi-positive definite in the limit for generalization). Therefore, $A$ is negative definite, having all negative eigenvalues. As I increased the eigenvalues, the length of the principal semi-axis corresponding to the eigenvector has decreased.
+This analysis gives ellipsidicity information of the Gaussian that is fitted to a normally distributed sample. The story is different for $\Sigma$ though, which has inversely proportional eigenvalues 
+\begin{align*}
+    \Sigma &= A^{-1}\\ 
+    &= (P\Lambda P^{-1})^{-1}\\
+    &= P\Lambda^{-1} P^{-1}
+\end{align*}
 \chapter{Probability Theory and Statistics}
 \section{Probability}
 Given a probabilistic event $\Omega_X$ with a random variable $X$, $p(x_i)$ denotes probability of $X$ being equal to $x_i$. It is a value in the range [0,1]. For example, given $\Omega_X=\text{"throwing a dice"}$ and $X \in \{1,2,3,4,5,6\}$ is the outcome number, $p(2)$ would be probability of getting a $2$ and $p(X)$ would be the probability distribution of that event. The below is an essential property that all probabilities of a distribution will sum up to one (hence Manhattan norm of a vector of probabilities, see~\ref{man_norm}).
@@ -522,7 +527,7 @@ Further assume, for $i \neq j$, $y_i, y_j$ are conditionally independent given $
 \end{align}
 If we use natural language, then we can say (as also proven above) $y_i$ depends only on $x_i$. This is a foundational assumption that people build their learning models on. Note that $x_i$ can be further divided into features $x_{ij}$ that could be correlated among each other. Then we can further remove those features in the equation above, still having the same result $p(y|x)$.
 
-People use dimension reduction algorithms such as PCA to find those correlated features for removal. PCA simply finds the line having eigenvector with the largest eigenvalue as its normal. Than merges the features affected by this eigenvector. One may iteratively drop the features until the desired dimension.
+People use dimension reduction algorithms such as PCA to find those correlated features. PCA simply finds the eigenvector with the largest eigenvalue which points along the line with most variation as PCA1. It removes the dimensions with smaller eigenvalues. One may iteratively drop the features until the desired dimension.
 \subsection{Markov Property and Markov Chain}
 Markov property is defined for a stochastic process when the future only depends on the present. Using the equation~\ref{cond_independence1} along this definition gives
 \begin{equation}
