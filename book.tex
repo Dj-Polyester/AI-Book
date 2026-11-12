@@ -656,7 +656,7 @@ Negative of any function switches its convexity property (i.e. reversing the bow
      &\geq -\log 1 \\
      &\geq 0
 \end{align}
-When $p$ and $q$ are probability distributions then their manhattan norms become 1 (integral is continuous sum, and see~\ref{p_sum_1} and~\ref{c_sum_1}). With these assumptions, KL-divergence attains a global minimum at zero.
+KL-divergence attains minimum at zero.
 \subsubsection{Monotonicity of KL-Divergence}
 A function $f$ is \textit{monotonically decreasing} if
 \begin{equation}
@@ -673,7 +673,7 @@ To simplify notation, we use continuous indexing with $p_i=p(x_i)$ and omit the 
     &= q_j\frac{-\frac{q_j}{p_j^2}}{\frac{q_j}{p_j}}\ \text{due to~\ref{prob_independence}}\\
     &= -\frac{q_j}{p_j} \label{klmonotonicity}
 \end{align}
-Let us keep $q$ constant and express KL-divergence as a function of $p$. Probability values are non-negative. When KL-divergence is differentiable (nonzero $p_j$) the derivatives are non-positive. Therefore it is monotonically decreasing, hence monotonic. In this regard, its global minimum is also unique (which is only possible when $p=q$). Please note that this is possible when $p$ and $q$ are probability distributions (visually in a unit right triangle in a positive quadrant of a 2D coordinate system).
+Let us keep $q$ constant and express KL-divergence as a function of $p$. Probability values are non-negative. When KL-divergence is differentiable (nonzero $p_j$) the derivatives are non-positive. Therefore it is monotonically decreasing, hence monotonic. In this regard, its minimum is also unique (which is only possible when $p=q$). Please note that this is possible when $p$ and $q$ are probability distributions (visually in a unit right triangle in a positive quadrant of a 2D coordinate system).
 \subsection{Cross-Entropy}
 \subsubsection{Relationship With KL-Divergence}
 \begin{align}
