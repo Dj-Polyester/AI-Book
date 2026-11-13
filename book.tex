@@ -337,7 +337,7 @@ We can deduce from previous results,
     \item $\forall \Delta x [q(x^*) > q(x^*+\Delta x)]$ if $A$ is negative definite ($x^*$ is maximum, maximization problem)
     \label{posneg}
 \end{itemize}
-If $A$ is indefinite, then depending on $\Delta x$, $q(x^*)$ can be less or greater than $q(x^*+\Delta x)$, which means $x^*$ is a saddle point. If $A$ is semi-definite, for some $x$, we have $q(x) = x^Tb+c$ (a hyperplane with a $d+1$-dimensional normal having scalars of $b$ and having $-1$ in the dimension of a reference axis with a bias $c$, i.e. inclined-plane). If $b$ is zero, then we have multiple critical points (a hyperplane with a normal along the reference axis, i.e. ground-plane), otherwise no critical points ().
+If $A$ is indefinite, then depending on $\Delta x$, $q(x^*)$ can be less or greater than $q(x^*+\Delta x)$, which means $x^*$ is a saddle point. If $A$ is semi-definite, for some $x$, we have $q(x) = x^Tb+c$ (a hyperplane with a $d+1$-dimensional normal having scalars of $b$ and having $-1$ in the dimension of a reference axis with a bias $c$, i.e. inclined-plane). If $b$ is zero, then we have multiple critical points (a hyperplane with a normal along the reference axis, i.e. ground-plane), otherwise no critical points.
 
 Let $d$ be an arbitrary vector.
 \begin{align}
@@ -844,13 +844,13 @@ Looking at this definition, we can find partial derivatives
 Using the chain rule with a loss function gives
 \begin{align}
     L_{x_{ij}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta x_{ij}}\\
-    &= \sum_{m=1}^M L_{y_{nm}} w_{jm}\\
+    &= \sum_{m=1}^M L_{y_{im}} w_{jm}\\
     \prescript{N\times D}{}{L_X} &= \prescript{N\times M}{}{L_Y}\prescript{M\times D}{}{W^T}\\
     L_{w_{ij}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta w_{ij}}\\
-    &= \sum_{n=1}^N L_{y_{nm}} x_{ni}\\
-    \prescript{D\times M}{}{L_W} &= \prescript{D\times N}{}{X_T}\prescript{N\times M}{}{L_Y}\\
+    &= \sum_{n=1}^N L_{y_{nj}} x_{ni}\\
+    \prescript{D\times M}{}{L_W} &= \prescript{D\times N}{}{X^T}\prescript{N\times M}{}{L_Y}\\
     L_{b_{j}} &= \sum_{n=1}^N\sum_{m=1}^M L_{y_{nm}} \frac{\delta y_{nm}}{\delta b_{j}}\\
-    &= \sum_{n=1}^N L_{y_{nm}}\\
+    &= \sum_{n=1}^N L_{y_{nj}}\\
     \prescript{1\times M}{}{L_b} &= \prescript{1\times N}{}{1}\prescript{N\times M}{}{L_Y}
 \end{align}
 \chapter{Reinforcement Learning}
